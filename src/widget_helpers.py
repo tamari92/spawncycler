@@ -10,7 +10,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets, QtChart
 from functools import partial
 import random
-import os
 
 icon_mapping = {'Cyst' : 'img/icon_cyst.png',
                 'Slasher' : 'img/icon_slasher.png',
@@ -74,7 +73,7 @@ class QZedPaneButton(QtWidgets.QPushButton):
         if e.buttons() != QtCore.Qt.LeftButton: # Ignore all except LMB press
             return
         # Change cursor to match the zed moved
-        pm = QtGui.QPixmap(resource_path(icon_mapping[self.id])).scaled(48, 48)
+        pm = QtGui.QPixmap(icon_mapping[self.id]).scaled(48, 48)
         mimeData = QtCore.QMimeData()
         drag = QtGui.QDrag(self)
         drag.setPixmap(pm)
@@ -99,7 +98,7 @@ class QSquadButton(QtWidgets.QPushButton):
         if e.buttons() != QtCore.Qt.LeftButton: # Ignore all except LMB press
             return
         # Change cursor to match the zed moved
-        pm = QtGui.QPixmap(resource_path(icon_mapping[self.zed_id])).scaled(48, 48)
+        pm = QtGui.QPixmap(icon_mapping[self.zed_id]).scaled(48, 48)
         mimeData = QtCore.QMimeData()
         drag = QtGui.QDrag(self)
         drag.setPixmap(pm)
@@ -321,7 +320,7 @@ def set_button_icon(button, icon_path, width, height):
 
 # Returns a ZED icon path
 def get_icon_path(zed_id):
-    return resource_path(icon_mapping[zed_id])
+    return icon_mapping[zed_id]
 
 
 # Creates and returns a chart of the given type, initialized with the given data

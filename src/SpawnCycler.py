@@ -14,7 +14,6 @@ from copy import deepcopy
 from about import *
 from analyze import *
 from generate import *
-import os
 import json
 import parse
 import random
@@ -62,17 +61,6 @@ zed_ids = {'Cyst': 'CY',
            'King Fleshpound': 'KF',
            'Abomination': 'AB',
            'Abomination Spawn': 'AS'}
-
-
-def resource_path(relative_path):
-    #return relative_path
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    print(f'returning {os.path.join(base_path, relative_path)}')
-    return os.path.join(base_path, relative_path)
 
 
 # Represents a RGB color
@@ -130,7 +118,7 @@ class Ui_MainWindow(object):
                     x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
                     y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
                     diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
-                    diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+                    diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
                     diag.exec_() # Show a dialog to tell user to check messages
                     has_swapped_modes = True # Never show this message again
             else:
@@ -432,20 +420,20 @@ class Ui_MainWindow(object):
             if i == 0:
                 shiftup_button.setEnabled(False)
                 shiftup_button.setToolTip('')
-                widget_helpers.set_button_icon(shiftup_button, resource_path('img/icon_shiftup_off.png'), 24, 24)
+                widget_helpers.set_button_icon(shiftup_button, 'img/icon_shiftup_off.png', 24, 24)
             else:
                 shiftup_button.setEnabled(True)
                 shiftup_button.setToolTip('Shift this wave up by one')
-                widget_helpers.set_button_icon(shiftup_button, resource_path('img/icon_shiftup.png'), 24, 24)
+                widget_helpers.set_button_icon(shiftup_button, 'img/icon_shiftup.png', 24, 24)
 
             if i == len(self.wavedefs) - 1:
                 shiftdn_button.setEnabled(False)
                 shiftdn_button.setToolTip('')
-                widget_helpers.set_button_icon(shiftdn_button, resource_path('img/icon_shiftdown_off.png'), 24, 24)
+                widget_helpers.set_button_icon(shiftdn_button, 'img/icon_shiftdown_off.png', 24, 24)
             else:
                 shiftdn_button.setEnabled(True)
                 shiftdn_button.setToolTip('Shift this wave down by one')
-                widget_helpers.set_button_icon(shiftdn_button, resource_path('img/icon_shiftdown.png'), 24, 24)
+                widget_helpers.set_button_icon(shiftdn_button, 'img/icon_shiftdown.png', 24, 24)
 
     # Moves the wave up or down
     def shift_wavedef(self, frame, dir=None):
@@ -489,7 +477,7 @@ class Ui_MainWindow(object):
             choice_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y)
             choice_dialog.yes_button.clicked.connect(partial(self.dialog_accept, choice_dialog))
             choice_dialog.no_button.clicked.connect(partial(self.dialog_reject, choice_dialog))
-            choice_dialog.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            choice_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             choice_dialog.exec_()
             if choice_dialog.accepted == False: # Didn't accept the dialog (don't delete)
                 choice_dialog.setParent(None) # Remove the dialog
@@ -564,9 +552,9 @@ class Ui_MainWindow(object):
         wave_options_frame.setSizePolicy(sp_fixed)
         wave_options_layout = QtWidgets.QVBoxLayout(wave_options_frame)
         ss_button = 'QToolTip {color: rgb(0, 0, 0);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
-        shiftup_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Up', tooltip='Shift this wave upwards by one', style=ss_button, icon_path=resource_path('img/icon_shiftup.png'), icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
-        shiftdn_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Down', tooltip='Shift this wave downwards by one', style=ss_button, icon_path=resource_path('img/icon_shiftdown.png'), icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
-        delete_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Delete', tooltip='Delete this wave', style=ss_button, icon_path=resource_path('img/icon_delete.png'), icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
+        shiftup_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Up', tooltip='Shift this wave upwards by one', style=ss_button, icon_path='img/icon_shiftup.png', icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
+        shiftdn_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Down', tooltip='Shift this wave downwards by one', style=ss_button, icon_path='img/icon_shiftdown.png', icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
+        delete_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Delete', tooltip='Delete this wave', style=ss_button, icon_path='img/icon_delete.png', icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
         shiftup_button.clicked.connect(partial(self.shift_wavedef, wavedef_frame, 'up'))
         shiftdn_button.clicked.connect(partial(self.shift_wavedef, wavedef_frame, 'down'))
         delete_button.clicked.connect(partial(self.remove_wavedef, wavedef_frame.id, True))
@@ -656,7 +644,7 @@ class Ui_MainWindow(object):
         self.central_layout.addLayout(self.options_pane)
 
         # Import
-        button_import = widget_helpers.create_button(self.central_widget, self.app, 'Open', text=' Open ', tooltip='Load a SpawnCycle from file', style=ss, icon_path=resource_path('img/icon_open.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_import = widget_helpers.create_button(self.central_widget, self.app, 'Open', text=' Open ', tooltip='Load a SpawnCycle from file', style=ss, icon_path='img/icon_open.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_import)
         self.buttons.update({'Open' : button_import})
 
@@ -686,22 +674,22 @@ class Ui_MainWindow(object):
         self.refresh_recent_menu() # Initialize the "Recent" menu
         
         # Save File
-        button_export = widget_helpers.create_button(self.central_widget, self.app, 'Save', text=' Save ', target=partial(self.save_to_file, False), tooltip='Save the current SpawnCycle', style=ss, icon_path=resource_path('img/icon_save.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_export = widget_helpers.create_button(self.central_widget, self.app, 'Save', text=' Save ', target=partial(self.save_to_file, False), tooltip='Save the current SpawnCycle', style=ss, icon_path='img/icon_save.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_export)
         self.buttons.update({'Save' : button_export})
 
         # Save File As
-        button_exportas = widget_helpers.create_button(self.central_widget, self.app, 'Save As', text=' Save As ', target=partial(self.save_to_file, True), tooltip='Save the current SpawnCycle with a designated name', style=ss, icon_path=resource_path('img/icon_saveas.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_exportas = widget_helpers.create_button(self.central_widget, self.app, 'Save As', text=' Save As ', target=partial(self.save_to_file, True), tooltip='Save the current SpawnCycle with a designated name', style=ss, icon_path='img/icon_saveas.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_exportas)
         self.buttons.update({'Save As' : button_exportas})
 
         # Close File
-        button_close = widget_helpers.create_button(self.central_widget, self.app, 'Close', text=' Close ', target=self.close_file, tooltip='Close the current SpawnCycle', style=ss, icon_path=resource_path('img/icon_delete.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_close = widget_helpers.create_button(self.central_widget, self.app, 'Close', text=' Close ', target=self.close_file, tooltip='Close the current SpawnCycle', style=ss, icon_path='img/icon_delete.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_close)
         self.buttons.update({'Close' : button_close})
 
         # Batch options
-        button_batch = widget_helpers.create_button(self.central_widget, self.app, 'Batch', text=' Batch ', tooltip='Perform operations on the entire SpawnCycle', style=ss, icon_path=resource_path('img/icon_batch.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, options=True, draggable=False)   
+        button_batch = widget_helpers.create_button(self.central_widget, self.app, 'Batch', text=' Batch ', tooltip='Perform operations on the entire SpawnCycle', style=ss, icon_path='img/icon_batch.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, options=True, draggable=False)   
         self.options_pane.addWidget(button_batch)
         self.buttons.update({'Batch' : button_batch})
 
@@ -711,17 +699,17 @@ class Ui_MainWindow(object):
         button_batch.setMenu(batch_menu)
         
         # Analyze Spawncycle
-        button_analyze = widget_helpers.create_button(self.central_widget, self.app, 'Analyze', text=' Analyze ', tooltip='Display SpawnCycle statistics', target=self.open_analyze_dialog, style=ss, icon_path=resource_path('img/icon_analyze.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
+        button_analyze = widget_helpers.create_button(self.central_widget, self.app, 'Analyze', text=' Analyze ', tooltip='Display SpawnCycle statistics', target=self.open_analyze_dialog, style=ss, icon_path='img/icon_analyze.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
         self.options_pane.addWidget(button_analyze)
         self.buttons.update({'Analyze' : button_analyze})
 
         # Generate Spawncycle
-        button_generate = widget_helpers.create_button(self.central_widget, self.app, 'Generate', text=' Generate ', tooltip='Generate a SpawnCycle based on pre-determined critera', target=self.open_generate_dialog, style=ss, icon_path=resource_path('img/icon_generate.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
+        button_generate = widget_helpers.create_button(self.central_widget, self.app, 'Generate', text=' Generate ', tooltip='Generate a SpawnCycle based on pre-determined critera', target=self.open_generate_dialog, style=ss, icon_path='img/icon_generate.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
         self.options_pane.addWidget(button_generate)
         self.buttons.update({'Generate' : button_generate})
 
         # View Help
-        button_about = widget_helpers.create_button(self.central_widget, self.app, 'About', text=' About ', tooltip='Show information about the program', target=self.open_about_dialog, style=ss, icon_path=resource_path('img/icon_about.png'), icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_about = widget_helpers.create_button(self.central_widget, self.app, 'About', text=' About ', tooltip='Show information about the program', target=self.open_about_dialog, style=ss, icon_path='img/icon_about.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_about)
         self.buttons.update({'About' : button_about})
 
@@ -916,7 +904,7 @@ class Ui_MainWindow(object):
         sp_toggle.setHorizontalStretch(0)
         sp_toggle.setVerticalStretch(0)
         ss_toggle = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
-        button_switch = widget_helpers.create_button(self.central_widget, self.app, 'ZED Set', text=' Default' if self.zed_mode == 'Custom' else ' Custom', tooltip='Switch current ZED set', target=partial(self.switch_zed_mode, True), icon_path=resource_path('img/icon_switch.png'), icon_w=32, icon_h=32, style=ss_toggle, font=font_label, size_policy=sp_toggle, draggable=False)
+        button_switch = widget_helpers.create_button(self.central_widget, self.app, 'ZED Set', text=' Default' if self.zed_mode == 'Custom' else ' Custom', tooltip='Switch current ZED set', target=partial(self.switch_zed_mode, True), icon_path='img/icon_switch.png', icon_w=32, icon_h=32, style=ss_toggle, font=font_label, size_policy=sp_toggle, draggable=False)
         self.buttons.update({'Switch ZEDs' : button_switch})
         self.zed_pane.addWidget(button_switch)
 
@@ -928,39 +916,39 @@ class Ui_MainWindow(object):
         self.grid_trashzeds = QtWidgets.QGridLayout()
         self.grid_trashzeds.setObjectName("grid_trashzeds")
 
-        button_cyst = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Cyst', tooltip='Cyst', style=ss_button, icon_path=resource_path('img/icon_cyst.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_cyst = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Cyst', tooltip='Cyst', style=ss_button, icon_path='img/icon_cyst.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_cyst, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Cyst' : button_cyst})
 
-        button_slasher = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Slasher', tooltip='Slasher', style=ss_button, icon_path=resource_path('img/icon_slasher.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_slasher = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Slasher', tooltip='Slasher', style=ss_button, icon_path='img/icon_slasher.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_slasher, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Slasher' : button_slasher})
 
-        button_alphaclot = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Clot', tooltip='Alpha Clot', style=ss_button, icon_path=resource_path('img/icon_alphaclot.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphaclot = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Clot', tooltip='Alpha Clot', style=ss_button, icon_path='img/icon_alphaclot.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_alphaclot, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Alpha Clot' : button_alphaclot})
 
-        button_rioter = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Rioter', tooltip='Rioter', style=ss_button, icon_path=resource_path('img/icon_rioter.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_rioter = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Rioter', tooltip='Rioter', style=ss_button, icon_path='img/icon_rioter.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_rioter, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Rioter' : button_rioter})
 
-        button_gorefast = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefast', tooltip='Gorefast', style=ss_button, icon_path=resource_path('img/icon_gorefast.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_gorefast = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefast', tooltip='Gorefast', style=ss_button, icon_path='img/icon_gorefast.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_gorefast, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'Gorefast' : button_gorefast})
 
-        button_gorefiend = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefiend', tooltip='Gorefiend', style=ss_button, icon_path=resource_path('img/icon_gorefiend.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_gorefiend = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefiend', tooltip='Gorefiend', style=ss_button, icon_path='img/icon_gorefiend.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_gorefiend, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'Gorefiend' : button_gorefiend})
         
-        button_crawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Crawler', tooltip='Crawler', style=ss_button, icon_path=resource_path('img/icon_crawler.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_crawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Crawler', tooltip='Crawler', style=ss_button, icon_path='img/icon_crawler.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_crawler, 3, 0, 1, 1)
         self.zed_pane_buttons.update({'Crawler' : button_crawler})
 
-        button_elitecrawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Elite Crawler', tooltip='Elite Crawler', style=ss_button, icon_path=resource_path('img/icon_elitecrawler.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_elitecrawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Elite Crawler', tooltip='Elite Crawler', style=ss_button, icon_path='img/icon_elitecrawler.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_elitecrawler, 3, 1, 1, 1)
         self.zed_pane_buttons.update({'Elite Crawler' : button_elitecrawler})
 
-        button_stalker = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Stalker', tooltip='Stalker', style=ss_button, icon_path=resource_path('img/icon_stalker.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_stalker = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Stalker', tooltip='Stalker', style=ss_button, icon_path='img/icon_stalker.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_trashzeds.addWidget(button_stalker, 4, 0, 1, 1)
         self.zed_pane_buttons.update({'Stalker' : button_stalker})
 
@@ -974,27 +962,27 @@ class Ui_MainWindow(object):
         self.grid_mediumzeds = QtWidgets.QGridLayout()
         self.grid_mediumzeds.setObjectName("grid_mediumzeds")
 
-        button_bloat = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Bloat', tooltip='Bloat', style=ss_button, icon_path=resource_path('img/icon_bloat.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_bloat = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Bloat', tooltip='Bloat', style=ss_button, icon_path='img/icon_bloat.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_mediumzeds.addWidget(button_bloat, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Bloat' : button_bloat})
 
-        button_husk = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Husk', tooltip='Husk', style=ss_button, icon_path=resource_path('img/icon_husk.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_husk = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Husk', tooltip='Husk', style=ss_button, icon_path='img/icon_husk.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_mediumzeds.addWidget(button_husk, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Husk' : button_husk})
 
-        button_siren = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Siren', tooltip='Siren', style=ss_button, icon_path=resource_path('img/icon_siren.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_siren = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Siren', tooltip='Siren', style=ss_button, icon_path='img/icon_siren.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_mediumzeds.addWidget(button_siren, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Siren' : button_siren})
 
-        button_edar_emp = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Trapper', tooltip='E.D.A.R Trapper', style=ss_button, icon_path=resource_path('img/icon_edar_emp.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_edar_emp = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Trapper', tooltip='E.D.A.R Trapper', style=ss_button, icon_path='img/icon_edar_emp.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_mediumzeds.addWidget(button_edar_emp, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'E.D.A.R Trapper' : button_edar_emp})
 
-        button_edar_laser = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Blaster', tooltip='E.D.A.R Blaster', style=ss_button, icon_path=resource_path('img/icon_edar_laser.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_edar_laser = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Blaster', tooltip='E.D.A.R Blaster', style=ss_button, icon_path='img/icon_edar_laser.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_mediumzeds.addWidget(button_edar_laser, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'E.D.A.R Blaster' : button_edar_laser})
 
-        button_edar_rocket = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Bomber', tooltip='E.D.A.R Bomber', style=ss_button, icon_path=resource_path('img/icon_edar_rocket.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_edar_rocket = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Bomber', tooltip='E.D.A.R Bomber', style=ss_button, icon_path='img/icon_edar_rocket.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_mediumzeds.addWidget(button_edar_rocket, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'E.D.A.R Bomber' : button_edar_rocket})
 
@@ -1008,35 +996,35 @@ class Ui_MainWindow(object):
         self.grid_largezeds = QtWidgets.QGridLayout()
         self.grid_largezeds.setObjectName("grid_largezeds")
 
-        button_quarterpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound', tooltip='Quarter Pound', style=ss_button, icon_path=resource_path('img/icon_quarterpound.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_quarterpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound', tooltip='Quarter Pound', style=ss_button, icon_path='img/icon_quarterpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_quarterpound, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Quarter Pound' : button_quarterpound})
 
-        button_quarterpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound (Enraged)', tooltip='Quarter Pound (Enraged)', style=ss_button, icon_path=resource_path('img/icon_quarterpound.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_quarterpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound (Enraged)', tooltip='Quarter Pound (Enraged)', style=ss_button, icon_path='img/icon_quarterpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_quarterpound_raged, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Quarter Pound (Enraged)' : button_quarterpound_raged})
 
-        button_fleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound', tooltip='Fleshpound', style=ss_button, icon_path=resource_path('img/icon_fleshpound.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_fleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound', tooltip='Fleshpound', style=ss_button, icon_path='img/icon_fleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_fleshpound, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Fleshpound' : button_fleshpound})
 
-        button_fleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound (Enraged)', tooltip='Fleshpound (Enraged)', style=ss_button, icon_path=resource_path('img/icon_fleshpound.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_fleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound (Enraged)', tooltip='Fleshpound (Enraged)', style=ss_button, icon_path='img/icon_fleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_fleshpound_raged, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Fleshpound (Enraged)' : button_fleshpound_raged})
 
-        button_scrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake', tooltip='Scrake', style=ss_button, icon_path=resource_path('img/icon_scrake.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_scrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake', tooltip='Scrake', style=ss_button, icon_path='img/icon_scrake.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_scrake, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'Scrake' : button_scrake})
 
-        button_alphascrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Scrake', tooltip='Alpha Scrake', style=ss_button, icon_path=resource_path('img/icon_alphascrake.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphascrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Scrake', tooltip='Alpha Scrake', style=ss_button, icon_path='img/icon_alphascrake.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_alphascrake, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'Alpha Scrake' : button_alphascrake})
 
-        button_alphafleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound', tooltip='Alpha Fleshpound', style=ss_button, icon_path=resource_path('img/icon_alphafleshpound.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphafleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound', tooltip='Alpha Fleshpound', style=ss_button, icon_path='img/icon_alphafleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_alphafleshpound, 3, 0, 1, 1)
         self.zed_pane_buttons.update({'Alpha Fleshpound' : button_alphafleshpound})
 
-        button_alphafleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound (Enraged)', tooltip='Alpha Fleshpound (Enraged)', style=ss_button, icon_path=resource_path('img/icon_alphafleshpound.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphafleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound (Enraged)', tooltip='Alpha Fleshpound (Enraged)', style=ss_button, icon_path='img/icon_alphafleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_largezeds.addWidget(button_alphafleshpound_raged, 3, 1, 1, 1)
         self.zed_pane_buttons.update({'Alpha Fleshpound (Enraged)' : button_alphafleshpound_raged})
         
@@ -1050,27 +1038,27 @@ class Ui_MainWindow(object):
         self.grid_bosses = QtWidgets.QGridLayout()
         self.grid_bosses.setObjectName("grid_bosses")
 
-        button_abomination_spawn = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination Spawn', tooltip='Abomination Spawn', style=ss_button, icon_path=resource_path('img/icon_abomspawn.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_abomination_spawn = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination Spawn', tooltip='Abomination Spawn', style=ss_button, icon_path='img/icon_abomspawn.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_bosses.addWidget(button_abomination_spawn, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Abomination Spawn' : button_abomination_spawn})
 
-        button_kingfleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'King Fleshpound', tooltip='King Fleshpound', style=ss_button, icon_path=resource_path('img/icon_kingfleshpound.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_kingfleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'King Fleshpound', tooltip='King Fleshpound', style=ss_button, icon_path='img/icon_kingfleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_bosses.addWidget(button_kingfleshpound, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'King Fleshpound' : button_kingfleshpound})
 
-        button_hans = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Dr. Hans Volter', tooltip='Dr. Hans Volter', style=ss_button, icon_path=resource_path('img/icon_hans.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_hans = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Dr. Hans Volter', tooltip='Dr. Hans Volter', style=ss_button, icon_path='img/icon_hans.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_bosses.addWidget(button_hans, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Dr. Hans Volter' : button_hans})
 
-        button_patriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Patriarch', tooltip='Patriarch', style=ss_button, icon_path=resource_path('img/icon_patriarch.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_patriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Patriarch', tooltip='Patriarch', style=ss_button, icon_path='img/icon_patriarch.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_bosses.addWidget(button_patriarch, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Patriarch' : button_patriarch})
 
-        button_abomination = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination', tooltip='Abomination', style=ss_button, icon_path=resource_path('img/icon_abomination.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_abomination = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination', tooltip='Abomination', style=ss_button, icon_path='img/icon_abomination.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_bosses.addWidget(button_abomination, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'Abomination' : button_abomination})
 
-        button_matriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Matriarch', tooltip='Matriarch', style=ss_button, icon_path=resource_path('img/icon_matriarch.png'), icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_matriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Matriarch', tooltip='Matriarch', style=ss_button, icon_path='img/icon_matriarch.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
         self.grid_bosses.addWidget(button_matriarch, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'Matriarch' : button_matriarch})
 
@@ -1123,7 +1111,7 @@ class Ui_MainWindow(object):
         font_button.setBold(True)
         font_button.setWeight(75)
         ss_button = 'QToolTip {color: rgb(0, 0, 0);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
-        button_addwave = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Add Wave', target=self.add_wavedef, text=' Add Wave', tooltip='Add a new wave to the SpawnCycle', style=ss_button, icon_path=resource_path('img/icon_add.png'), icon_w=16, icon_h=16, font=font_button, size_policy=sp_button, draggable=False)
+        button_addwave = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Add Wave', target=self.add_wavedef, text=' Add Wave', tooltip='Add a new wave to the SpawnCycle', style=ss_button, icon_path='img/icon_add.png', icon_w=16, icon_h=16, font=font_button, size_policy=sp_button, draggable=False)
         self.wavedefs_scrollarea_layout.setAlignment(QtCore.Qt.AlignTop)
         self.wavedefs_scrollarea_layout.addWidget(button_addwave)
         self.buttons.update({'Add Wave' : button_addwave})
@@ -1220,7 +1208,7 @@ class Ui_MainWindow(object):
             save_dialog.accepted = True
             save_dialog.no_button.clicked.connect(partial(self.dialog_reject, save_dialog))
             self.save_dialog = save_dialog
-            save_dialog.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            save_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             save_dialog.exec_()
             if not save_dialog.accepted:
                 return
@@ -1272,7 +1260,7 @@ class Ui_MainWindow(object):
         y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
         diag_text = f"Generating.."
         loading_diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=False)
-        loading_diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+        loading_diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
         loading_diag.show() # Show a dialog to tell user to check messages
 
         # Now we can generate
@@ -1383,7 +1371,7 @@ class Ui_MainWindow(object):
         y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
         diag_text = f"Generation completed successfully!"
         diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
-        diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_check.png')))
+        diag.setWindowIcon(QtGui.QIcon('img/icon_check.png'))
         diag.exec_() # Show a dialog to tell user to check messages
 
         # Post messages
@@ -1477,7 +1465,7 @@ class Ui_MainWindow(object):
             # Diplay error
             diag_text = f"File '{filename}' could not be opened!\nEither the file doesn't exist, or it is inaccessible somehow."
             err_dialog = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
-            err_dialog.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            err_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             err_dialog.exec_()
 
             # Remove it from the recent files
@@ -1495,7 +1483,7 @@ class Ui_MainWindow(object):
             save_dialog.cancel_button.clicked.connect(partial(self.dialog_cancel, save_dialog))
             save_dialog.cancelled = False
             self.save_dialog = save_dialog
-            save_dialog.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            save_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             save_dialog.exec_()
             if save_dialog.cancelled:
                 return
@@ -1510,7 +1498,7 @@ class Ui_MainWindow(object):
                 self.add_message('\n\n'.join([e.replace(f"Parse errors ('{filename}'):\n\n", '') for e in errors[1:]]), prefix=False)
             diag_text = f'{len(errors)} syntax error(s) were encountered during the import.\nFile could not be loaded.\nSee the Messages box below for more details.'
             diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
-            diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             diag.exec_() # Show a dialog to tell user to check messages
             return
 
@@ -1528,7 +1516,7 @@ class Ui_MainWindow(object):
         y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
         diag_text = f"Loading.."
         loading_diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=False)
-        loading_diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+        loading_diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
         loading_diag.show() # Show a dialog to tell user to check messages
 
         # Load up the waves!
@@ -1563,7 +1551,7 @@ class Ui_MainWindow(object):
             save_dialog.cancel_button.clicked.connect(partial(self.dialog_cancel, save_dialog))
             save_dialog.cancelled = False
             self.save_dialog = save_dialog
-            save_dialog.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            save_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             save_dialog.exec_()
             if save_dialog.cancelled:
                 return
@@ -1588,7 +1576,7 @@ class Ui_MainWindow(object):
                 self.add_message('\n\n'.join([e.replace(f"Parse errors{fname}:\n\n", '') for e in errors[1:]]), prefix=False)
             diag_text = f'{len(errors)} syntax error(s) were encountered.\nFile could not be saved.\nSee the Messages box below for more details.'
             diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
-            diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             diag.exec_() # Show a dialog to tell user to check messages
             return
 
@@ -1650,7 +1638,7 @@ class Ui_MainWindow(object):
         font_button.setBold(True)
         font_button.setWeight(75)
         ss_button = 'QToolTip {color: rgb(0, 0, 0);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
-        button_addwave = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Add Wave', target=self.add_wavedef, text=' Add Wave', tooltip='Add a new wave to the SpawnCycle', style=ss_button, icon_path=resource_path('img/icon_add.png'), icon_w=16, icon_h=16, font=font_button, size_policy=sp_button, draggable=False)
+        button_addwave = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Add Wave', target=self.add_wavedef, text=' Add Wave', tooltip='Add a new wave to the SpawnCycle', style=ss_button, icon_path='img/icon_add.png', icon_w=16, icon_h=16, font=font_button, size_policy=sp_button, draggable=False)
         self.wavedefs_scrollarea_layout.setAlignment(QtCore.Qt.AlignTop)
         self.wavedefs_scrollarea_layout.addWidget(button_addwave)
         self.buttons.update({'Add Wave' : button_addwave})
@@ -1729,7 +1717,7 @@ class Ui_MainWindow(object):
         dialog.ui = AboutDialog()
         dialog.ui.setupUi(dialog)
         dialog.setWindowTitle('About')
-        dialog.setWindowIcon(QtGui.QIcon(resource_path('img/logo.png')))
+        dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
         dialog.exec_()
 
     # Opens the 'Generate' menu
@@ -1738,7 +1726,7 @@ class Ui_MainWindow(object):
         dialog.ui = GenerateDialog()
         dialog.ui.setupUi(dialog, self.generate_wavedefs, self.last_generate_preset, self.last_generate_mode)
         dialog.setWindowTitle('Generate SpawnCycle')
-        dialog.setWindowIcon(QtGui.QIcon(resource_path('img/logo.png')))
+        dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
         dialog.exec_()
 
     # Called by the Analyze GUI to save the last used preset (so it can be restored later)
@@ -1770,7 +1758,7 @@ class Ui_MainWindow(object):
             x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
             y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
             diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
-            diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             diag.exec_() # Show a dialog to tell user to check messages
             return
 
@@ -1779,7 +1767,7 @@ class Ui_MainWindow(object):
         dialog.ui = AnalyzeDialog()
         dialog.ui.setupUi(dialog, self.wavedefs, self.truncate_filename(self.filename), save_preset=self.save_analyze_preset, last_preset=self.last_analyze_preset)
         dialog.setWindowTitle('Analyze SpawnCycle')
-        dialog.setWindowIcon(QtGui.QIcon(resource_path('img/logo.png')))
+        dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
         dialog.exec_()
 
     # Updates the "Recent Files" menu
@@ -1820,7 +1808,7 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle('SpawnCycler (Untitled)')
-        MainWindow.setWindowIcon(QtGui.QIcon(resource_path('img/logo.png')))
+        MainWindow.setWindowIcon(QtGui.QIcon('img/logo.png'))
         self.switch_zed_mode()
 
 
@@ -1835,7 +1823,7 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             y = self.ui.central_widget.mapToGlobal(self.ui.central_widget.rect().center()).y()
             save_dialog = widget_helpers.create_choice_dialog(self.ui.central_widget, diag_title, diag_text, x, y, yes_target=partial(self.ui.save_to_file, False))
             self.ui.save_dialog = save_dialog
-            save_dialog.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            save_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             save_dialog.exec_()
 
 

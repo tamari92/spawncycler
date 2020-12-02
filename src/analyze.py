@@ -10,7 +10,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from functools import partial
 import widget_helpers
-import os
 
 _DEF_FONT_FAMILY = 'Consolas'
 
@@ -42,17 +41,6 @@ light_colors = {'Header': QtGui.QColor(100, 100, 100),
                 'Fleshpounds': QtGui.QColor(235, 165, 162),
                 'SpawnRage': QtGui.QColor(240, 122, 122),
                 'Total': QtGui.QColor(184, 214, 224)}
-
-
-def resource_path(relative_path):
-    #return relative_path
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    print(f'returning {os.path.join(base_path, relative_path)}')
-    return os.path.join(base_path, relative_path)
 
 
 # Represents a RGB color
@@ -487,7 +475,7 @@ class AnalyzeDialog(object):
         y = self.scrollarea.mapToGlobal(self.scrollarea.rect().center()).y() + 100
         diag_text = f"Analyzing.."
         loading_diag = widget_helpers.create_simple_dialog(self.scrollarea, diag_title, diag_text, x, y, button=False)
-        loading_diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+        loading_diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
         loading_diag.show() # Show a dialog to tell user to check messages
 
         # Get analysis data for each wave
@@ -595,7 +583,7 @@ class AnalyzeDialog(object):
         y = self.scrollarea.mapToGlobal(self.scrollarea.rect().center()).y() + 100
         diag_text = f"Analysis completed successfully!"
         diag = widget_helpers.create_simple_dialog(self.scrollarea, diag_title, diag_text, x, y, button=True)
-        diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_check.png')))
+        diag.setWindowIcon(QtGui.QIcon('img/icon_check.png'))
         diag.exec_() # Show a dialog to tell user to check messages
 
     # Merges dict B into A and returns a new dict C
@@ -664,7 +652,7 @@ class AnalyzeDialog(object):
         font_button.setWeight(75)
 
         #gamelength_label = widget_helpers.create_label(None, text='Game Length', tooltip=None, style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        simulate_button = widget_helpers.create_button(None, None, None, text=' Simulate! ', icon_path=resource_path('img/icon_go.png'), icon_w=24, icon_h=24, style="color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);", size_policy=sp, font=font_button, options=False, squad=False, draggable=False)
+        simulate_button = widget_helpers.create_button(None, None, None, text=' Simulate! ', icon_path='img/icon_go.png', icon_w=24, icon_h=24, style="color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);", size_policy=sp, font=font_button, options=False, squad=False, draggable=False)
         simulate_button.clicked.connect(self.analyze_wavedefs)
         simulate_frame = QtWidgets.QFrame()
         simulate_frame_layout = QtWidgets.QHBoxLayout(simulate_frame)

@@ -9,18 +9,6 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os
 
-
-def resource_path(relative_path):
-    #return relative_path
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    print(f'returning {os.path.join(base_path, relative_path)}')
-    return os.path.join(base_path, relative_path)
-
-
 class AboutDialog(object):
     def setupUi(self, Dialog):
         # Font used for all text
@@ -38,7 +26,7 @@ class AboutDialog(object):
         self.logo = QtWidgets.QLabel(Dialog)
         self.logo.setGeometry(QtCore.QRect(180, 20, 281, 271))
         self.logo.setText('')
-        self.logo.setPixmap(QtGui.QPixmap(resource_path('img/logo.png')))
+        self.logo.setPixmap(QtGui.QPixmap('img/logo.png'))
         self.logo.setScaledContents(True)
         self.logo.setAlignment(QtCore.Qt.AlignCenter)
 

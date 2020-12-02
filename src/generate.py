@@ -10,21 +10,9 @@
 from PyQt5 import QtCore, QtGui, QtWidgets
 from functools import partial
 import widget_helpers
-import os
 
 _DEF_FONT_FAMILY = 'Consolas'
 has_swapped_modes_generate = False
-
-
-def resource_path(relative_path):
-    #return relative_path
-    try:
-        base_path = sys._MEIPASS
-    except Exception:
-        base_path = os.path.abspath(".")
-
-    print(f'returning {os.path.join(base_path, relative_path)}')
-    return os.path.join(base_path, relative_path)
 
 
 # Represents a RGB color
@@ -173,7 +161,7 @@ class GenerateDialog(object):
                     x = self.Dialog.mapToGlobal(self.Dialog.rect().center()).x()-200 # Anchor dialog to center of window
                     y = self.Dialog.mapToGlobal(self.Dialog.rect().center()).y()
                     diag = widget_helpers.create_simple_dialog(self.Dialog, diag_title, diag_text, x, y, button=True)
-                    diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+                    diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
                     diag.exec_() # Show a dialog to tell user to check messages
                     has_swapped_modes_generate = True # Never show this message again
 
@@ -262,9 +250,9 @@ class GenerateDialog(object):
         font.setWeight(75)
 
         # Create buttons
-        generate_button = widget_helpers.create_button(None, None, None, text=' Generate! ', icon_path=resource_path('img/icon_go.png'), icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
+        generate_button = widget_helpers.create_button(None, None, None, text=' Generate! ', icon_path='img/icon_go.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
         generate_button.clicked.connect(self.accept_preset)
-        presets_button = widget_helpers.create_button(None, None, None, text=' Presets ', icon_path=resource_path('img/icon_presets.png'), icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=True, squad=False, draggable=False)
+        presets_button = widget_helpers.create_button(None, None, None, text=' Presets ', icon_path='img/icon_presets.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=True, squad=False, draggable=False)
         menu_opts = {'Light': partial(self.load_preset, 'Light'),
                      'Moderate': partial(self.load_preset, 'Moderate'),
                      'Heavy': partial(self.load_preset, 'Heavy'),
@@ -284,7 +272,7 @@ class GenerateDialog(object):
                      'Boss Rush': partial(self.load_preset, 'Boss Rush')}
         presets_button.init_menu(menu_opts)
 
-        mode_button = widget_helpers.create_button(None, None, None, text=' Custom Settings ', icon_path=resource_path('img/icon_switch.png'), icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
+        mode_button = widget_helpers.create_button(None, None, None, text=' Custom Settings ', icon_path='img/icon_switch.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
         mode_button.clicked.connect(self.swap_modes)
         self.button_pane = QtWidgets.QFrame()
         button_pane_layout = QtWidgets.QHBoxLayout(self.button_pane)
@@ -587,10 +575,14 @@ class GenerateDialog(object):
             errors.append(f"'Large Density' found to be non-zero but all ZEDs in category have 0% Density!")
         if sv['Boss Density'] != 0 and self.all_value(boss_vals, 0):
             errors.append(f"'Boss Density' found to be non-zero but all ZEDs in category have 0% Density!")
-        if sv['Large Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Boss Density'] == 0:
+        if sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] == 0 and sv['Boss Density'] == 0:
+            errors.append(f"At least one Global Density must be non-zero!")
+        if sv['Large Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] > 0 and sv['Boss Density'] == 0:
             errors.append(f"Params suggest Larges Only but 'Large ZED Min Wave' found to be > 1!")
-        if sv['Boss Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] == 0:
-            errors.append(f"Params suggest Bosses Only but 'Boss ZED Min Wave' found to be > 1!")
+        if sv['Boss Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] == 0 and sv['Boss Density'] > 0:
+            errors.append(f"Params suggest Bosses Only but 'Boss Min Wave' found to be > 1!")
+        if sv['Large Min Wave'] > 1 and sv['Boss Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] > 0 and sv['Boss Density'] > 0:
+            errors.append(f"Params suggest Larges/Bosses Only but 'Large ZED Min Wave' and 'Boss Min Wave' found to be > 1!")
 
         if len(errors) > 0: # Errors occurred
             # Show a dialog explaining this
@@ -600,7 +592,7 @@ class GenerateDialog(object):
             err_text = '\n'.join(errors)
             diag_text = f"The following error(s) were encountered while attempting to Generate:\n\n{err_text}\n"
             diag = widget_helpers.create_simple_dialog(self.scrollarea, diag_title, diag_text, x, y, button=True)
-            diag.setWindowIcon(QtGui.QIcon(resource_path('img/icon_warning.png')))
+            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             diag.exec_() # Show a dialog to tell user to check messages
         else: # No errors. Good to go!
             self.generate_target(sv, self.Dialog)
