@@ -1,5 +1,5 @@
 # SpawnCycler
-SpawnCycler is a SpawnCycle editor for Killing Floor 2's Controlled Difficulty mod.
+SpawnCycler is a SpawnCycle editor for Killing Floor 2's Controlled Difficulty mod (initially created by Blackout: https://github.com/notblackout/kf2-controlled-difficulty)
 
 The main purpose of this utility is to allow for swift and intuitive creation, generation, analysis, and editing of SpawnCycles for CD.
 SpawnCycler attempts to simplify and completely replace the (rather tedious) process of creating a SpawnCycle by hand using a Text Editor.
