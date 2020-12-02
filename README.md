@@ -5,7 +5,7 @@ The main purpose of this utility is to allow for swift and intuitive creation, g
 SpawnCycler attempts to simplify and completely replace the (rather tedious) process of creating a SpawnCycle by hand using a Text Editor.
 
 ## Authors/Credits
-### UI Design and General Programming
+#### UI Design and General Programming
 Tamari
 
 ## Features
