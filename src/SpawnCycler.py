@@ -27,7 +27,7 @@ import widget_helpers
 # 1. AutoSave?
 
 _DEF_FONT_FAMILY = 'Consolas'
-_RECENT_MAX = 5 # Max "Recent Files"
+_RECENT_MAX = 8 # Max "Recent Files"
 _WAVE_MAX = 10  # Max number of waves
 _SQUAD_MAX = 10  # Max ZEDs in a squad
 has_swapped_modes = False # Has the user swapped ZED modes yet?
