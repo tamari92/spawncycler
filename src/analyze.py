@@ -839,10 +839,28 @@ class AnalyzeDialog(object):
     def update_wavesize(self):
         # Force an int
         wsf_widget = self.analysis_widgets['WaveSizeFakes']
-        if not wsf_widget.text().isnumeric(): # Only allow numbers in a certain range
-            wsf_widget.setText('')
+        if not wsf_widget.text().isnumeric():
+            wsf_widget.setText('0') # Just set it to default if they provide a non-number
+            self.params.update({'WaveSizeFakes': 0})
             return
-        self.params.update({'WaveSizeFakes': int(wsf_widget.text())})
+
+        # Remove any leading zeroes
+        wsf = int(wsf_widget.text()) # Conv to an int will remove the zeroes on its own. Guaranteed to be numeric at this point
+        if wsf == 0:
+            if wsf_widget.text().count('0') > 1: # Special case for zero, just replace it. Stripping won't work here
+                self.analysis_widgets['WaveSizeFakes'].setText('0')
+        else:
+            self.analysis_widgets['WaveSizeFakes'].setText(wsf_widget.text().lstrip('0'))
+        
+        # Only allow numbers between 0 and 128
+        if wsf < 0:
+            self.analysis_widgets['WaveSizeFakes'].setText('0')
+            wsf = 0
+        elif wsf > 128:
+            self.analysis_widgets['WaveSizeFakes'].setText('128')
+            wsf = 128
+
+        self.params.update({'WaveSizeFakes': wsf})
 
     # Called when the Ignore Zeroes field is changed
     def update_ignore_zeroes(self):
@@ -876,10 +894,24 @@ class AnalyzeDialog(object):
     def update_maxmonsters(self):
         # Force an int
         mm_widget = self.analysis_widgets['MaxMonsters']
-        if not mm_widget.text().isnumeric(): # Only allow numbers in a certain range
-            mm_widget.setText('')
+        if not mm_widget.text().isnumeric():
+            mm_widget.setText('1') # Just set it to default if they provide a non-number
+            self.params.update({'MaxMonsters': 1})
             return
-        self.params.update({'MaxMonsters': int(mm_widget.text())})
+
+        # Remove any leading zeroes
+        mm = int(mm_widget.text()) # Conv to an int will remove the zeroes on its own. Guaranteed to be numeric at this point
+        self.analysis_widgets['MaxMonsters'].setText(mm_widget.text().lstrip('0'))
+
+        # Only allow numbers between 1 and 256
+        if mm < 1:
+            self.analysis_widgets['MaxMonsters'].setText('1')
+            mm = 1
+        elif mm > 256:
+            self.analysis_widgets['MaxMonsters'].setText('256')
+            mm = 256
+
+        self.params.update({'MaxMonsters': mm})
 
     # Called when this dialog is closed
     def teardown(self):
