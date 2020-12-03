@@ -181,6 +181,8 @@ class AnalyzeDialog(object):
                     currently_spawned_zeds.pop(0) # Remove the first ZED and add the new one at the end
                 currently_spawned_zeds.append(next_zed)
             else:
+                if len(currently_spawned_zeds) == 0: # We ran out of zeds to pop (because MM is high)
+                    break
                 currently_spawned_zeds.pop(0) # Remove the first ZED
 
             trash_zeds = ['Cyst', 'Alpha Clot', 'Slasher', 'Rioter', 'Gorefast', 'Gorefiend',
@@ -209,8 +211,11 @@ class AnalyzeDialog(object):
             doshmod = {0: 1.0, 1: 1.25, 2: 1.5, 3: 1.75}
             wave_score_mod = (1.5 * doshmod[self.params['Difficulty']]) * (float(wave_id+1) / float(max_wave[self.params['GameLength']]))
             
+            # Longer waves tend to be harder due to resources having to be further spread out 
+            wsf_mod = 1.0 + (float(self.params['WaveSizeFakes']) / 128.0)
+
             # Calculate the final score
-            difficulty_score = wave_score_mod * zed_score_mod
+            difficulty_score = wsf_mod * wave_score_mod * zed_score_mod
 
             if difficulty_score > 750000: # Cap Difficulty Score at 1M
                 difficulty_score = 750000.0
@@ -355,11 +360,11 @@ class AnalyzeDialog(object):
                 chart_zed_group = widget_helpers.create_chart(None, chart_data, '', chart_type='pie')
 
         if difficulty_data is not None and self.params['Analyze Difficulty']:
-            label_diff_text = f"\n\nESTIMATED WAVE DIFFICULTY\n" if not merged else f"\n\nSPAWNCYCLE DIFFICULTY\n"
+            label_diff_text = f"\n\nESTIMATED WAVE DIFFICULTY" if not merged else f"\n\nSPAWNCYCLE DIFFICULTY"
             label_wave_diff = widget_helpers.create_label(None, text=label_diff_text, tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
-            label_mm = widget_helpers.create_label(None, text=f"MaxMonsters:    {self.params['MaxMonsters']}\nDificulty:      {self.analysis_widgets['Difficulty'].currentText()}\nWaveSizeFakes:  {self.params['WaveSizeFakes']}", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
+            label_mm = widget_helpers.create_label(None, text=f"Max Monsters:    {self.params['MaxMonsters']}\nDificulty:       {self.analysis_widgets['Difficulty'].currentText()}\nWave Size Fakes: {self.params['WaveSizeFakes']}", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
             label_assumes = widget_helpers.create_label(None, text=f"\nASSUMPTIONS", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
-            label_cs = widget_helpers.create_label(None, text=f"SpawnPoll:  1.00\nSpawnMod:   0.00\nPlayers:    6\nFakesMode:  ignore_humans\n\nAll ZEDs are killed in the order they spawn", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
+            label_cs = widget_helpers.create_label(None, text=f"Spawn Poll: 1.00\nSpawn Mod:  0.00\nPlayers:    6\nFakes Mode: ignore_humans\n\nAll ZEDs are killed in the order they spawn", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
             chart_difficulty = widget_helpers.create_chart(None, difficulty_data, '', axis_data=axis_data, chart_type='line')
 
         # Add everything in
@@ -555,7 +560,7 @@ class AnalyzeDialog(object):
         self.scrollarea_contents_layout.addWidget(params_frame)
 
         # Display combined stats
-        avg_difficulty_data = [(i, float(sum([y for _, y in difficulty_data[i]])) / float(len(difficulty_data[i]))) for i in range(0, len(difficulty_data))]
+        avg_difficulty_data = [(0, 0.0)] + [(i+1, float(sum([y for _, y in difficulty_data[i]])) / float(len(difficulty_data[i]))) for i in range(0, len(difficulty_data))]
         axis_data = {'X': {'Title': '\nWave', 'Labels': [str(i) for i in range(1, len(difficulty_data)+1)], 'Min': 0, 'Max': len(self.wavedefs)}, 'Y': {'Title': 'Average Difficulty\n', 'Tick': 10, 'Min': 0, 'Max': 755000}}
         merged_label = widget_helpers.create_label(None, text=f"\n\nALL WAVES", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
         merged_frame, merged_frame_children = self.create_waveframe(merged, merged=True, difficulty_data=avg_difficulty_data, axis_data=axis_data) # Create table
@@ -698,7 +703,7 @@ class AnalyzeDialog(object):
         difficulty_frame_layout.setAlignment(QtCore.Qt.AlignLeft)
 
         # Set up WSF area
-        wavesize_label = widget_helpers.create_label(None, text='Wave Size Fakes   ', tooltip="The number of players to sample the waves from.\nHigher values make the waves larger.\nAssumes the 'Ignore Humans' FakesMode setting.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
+        wavesize_label = widget_helpers.create_label(None, text='Wave Size Fakes   ', tooltip="The number of players to sample the waves from.\nHigher values make the waves larger.\nAssumes the 'Ignore Humans' Fakes Mode setting.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
         wavesize_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
         font = QtGui.QFont()
         font.setFamily(_DEF_FONT_FAMILY)
@@ -711,7 +716,7 @@ class AnalyzeDialog(object):
         wavesize_textarea.setFont(font)
         wavesize_textarea.setText('12')
         wavesize_textarea.setAlignment(QtCore.Qt.AlignCenter)
-        wavesize_textarea.setToolTip("The number of players to sample the waves from.\nHigher values make the waves larger.\nAssumes the 'Ignore Humans' FakesMode setting.")
+        wavesize_textarea.setToolTip("The number of players to sample the waves from.\nHigher values make the waves larger.\nAssumes the 'Ignore Humans' Fakes Mode setting.")
         wavesize_textarea.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
         wavesize_textarea.textChanged.connect(self.update_wavesize)
         self.params.update({'WaveSizeFakes': 12})
@@ -782,7 +787,7 @@ class AnalyzeDialog(object):
         overview_only_frame_layout.setAlignment(QtCore.Qt.AlignLeft)
 
         # Set up MaxMonsters area
-        maxmonsters_label = widget_helpers.create_label(None, text='MaxMonsters            ', tooltip="The maximum number of ZEDs that can be alive at once.\nHigher values make the waves more difficult.\nOnly used if the 'Analyze Difficulty' setting is TRUE.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
+        maxmonsters_label = widget_helpers.create_label(None, text='Max Monsters           ', tooltip="The maximum number of ZEDs that can be alive at once.\nHigher values make the waves more difficult.\nOnly used if the 'Analyze Difficulty' setting is TRUE.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
         maxmonsters_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
         maxmonsters_textarea = QtWidgets.QLineEdit()
         maxmonsters_textarea.setStyleSheet(ss)
