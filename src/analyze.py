@@ -353,10 +353,18 @@ class AnalyzeDialog(object):
             # Create ZEDs by Group Pie Chart
             if self.params['Display Charts']:
                 chart_data = []
+                total_percent = 0.0
+                total_count = 0
                 for (group, count) in wave_data['Group'].items():
                     if group not in ['Total', 'Albino', 'SpawnRage'] and count > 0:
                         percent = (float(count) / float(wave_data['Total'])) * 100.0
+                        total_percent += percent
+                        total_count += count
                         chart_data.append((group, count, light_colors[group], percent))
+                # Add 'Other' group
+                other_percent = 100.0 - total_percent
+                other_count = wave_data['Total'] - total_count
+                chart_data.append(('Other', other_count, QtGui.QColor(175, 175, 175), other_percent))
                 chart_zed_group = widget_helpers.create_chart(None, chart_data, '', chart_type='pie')
 
         if difficulty_data is not None and self.params['Analyze Difficulty']:
