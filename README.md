@@ -1,11 +1,11 @@
 # SpawnCycler
 by Tamari
-### Current Version
+#### Current Version
 1.0
-### Contact
-Discord: Tamari#6292
-Email: nate92@gmail.com
-Steam: steamcommunity.com/id/tamaritm
+#### Contact
+- Discord: Tamari#6292
+- Email: nate92@gmail.com
+- Steam: steamcommunity.com/id/tamaritm
 
 ## Description
 SpawnCycler is a SpawnCycle editor for Killing Floor 2's Controlled Difficulty mod (https://github.com/notblackout/kf2-controlled-difficulty)
