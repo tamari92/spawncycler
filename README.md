@@ -27,7 +27,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 TBD
 
 ## Reference Documentation
-[alt_text](https://i.imgur.com/xOdjvNp.png)
+[Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
 
 
 Created with Python and Qt GUI Library
