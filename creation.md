@@ -21,6 +21,7 @@ Finally, the **Messages Box** contains any System Messages outputted by the prog
 Errors and general notifications will appear here.
 
 
+
 ### Adding Waves, ZEDs, and Squads
 When starting from scratch, the **WaveDefs Pane** will be blank, with an `Add Wave` button at the very top.
 Clicking this button creates a new **Wave Frame**.
