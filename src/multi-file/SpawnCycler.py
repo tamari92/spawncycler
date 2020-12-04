@@ -11,6 +11,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import datetime
 from functools import partial
 from copy import deepcopy
+from convert import *
 from about import *
 from analyze import *
 from generate import *
@@ -150,16 +151,7 @@ class Ui_MainWindow(object):
     # Removes the ZED from the given squad
     def remove_zed_from_squad(self, wave_id, squad_id, zed_id, count=1):
         this_squad = self.wavedefs[wave_id]['Squads'][squad_id]
-        #print(f"(Before deletion) Squads for Wave {wave_id+1}:\n{self.wavedefs[wave_id]}")
         squad_layout = this_squad['Layout'] # Get the layout corresponding to this wave's squad box
-
-        #print(f"zed = {zed_id}")
-        #print(f"wave_id = {wave_id}")
-        #print(f"squad_id = {squad_id}")
-        #print('\n\nThis squad (before)')
-        #print(this_squad)
-        #print('\nSquads before:')
-        #print(self.wavedefs[wave_id]['Squads'])
 
         # Update the internal array and numerical display
         if count != 'all' and this_squad['ZEDs'][zed_id]['Count'] > 1:
@@ -174,9 +166,6 @@ class Ui_MainWindow(object):
             this_squad['ZEDs'][zed_id]['Frame'].setParent(None) # Disassociate the widgets 
             del this_squad['ZEDs'][zed_id]
 
-        #print(f"Removed {zed_id} from Squad {squad_id+1} in Wave {wave_id+1}")
-        #print(f"(After deletion) Squads for Wave {wave_id+1}:\n{self.wavedefs[wave_id]}")
-
         # Is this the last squad in the entire wave?
         if len(this_squad['ZEDs'].keys()) > 0:
             this_squad['Frame'].is_full = False
@@ -187,12 +176,6 @@ class Ui_MainWindow(object):
             this_squad['Frame'].setParent(None)
             self.wavedefs[wave_id]['Squads'].pop(squad_id)
             print(self.wavedefs[wave_id])
-            
-        #print('\n\nThis squad (after)')
-        #print(this_squad)
-        
-        #print('Squads after:')
-        #print(self.wavedefs[wave_id]['Squads'])
 
         self.refresh_wavedefs() # Need to refresh everything
         
@@ -294,14 +277,8 @@ class Ui_MainWindow(object):
             squad_frame.setToolTip('This squad has reached capacity.')
             widget_helpers.set_plain_border(squad_frame, Color(245, 42, 20), 2)
             squad_frame.setStyleSheet('QToolTip {color: rgb(0, 0, 0)}\nQFrame_Drag {color: rgb(255, 0, 0); background-color: rgba(150, 0, 0, 30);}')
-            #squad_frame.anim.start()
 
-        # Update the internal array
-        #print(f"Added new squad ({len(self.wavedefs[wave_id]['Squads'])}) to Wave {wave_id+1}")
         self.wavedefs[wave_id]['Squads'].append({'Frame': squad_frame, 'Layout': squad_frame_layout, 'ZEDs': {zed_id: {'Count': count, 'Raged': raged, 'Frame': zed_frame, 'Children': zed_frame_children}}})
-        #print(f"Squads for Wave {wave_id+1}")
-        #for s in self.wavedefs[wave_id]['Squads']:
-            #print(s)
 
         # The file is now 'dirty'
         self.dirty = True
@@ -342,7 +319,6 @@ class Ui_MainWindow(object):
             raged = True
 
         # Update the internal array and numerical display
-        #print(f"Added {zed_id} to Squad {squad_id+1} in Wave {wave_id+1}")
         if zed_id in this_squad['ZEDs']:
             this_squad['ZEDs'][zed_id]['Count'] += count
             if raged:
@@ -363,7 +339,6 @@ class Ui_MainWindow(object):
             this_squad['ZEDs'][zed_id] = {'Count': count, 'Raged': raged, 'Frame': zed_frame, 'Children': zed_frame_children}
             squad_layout.addWidget(zed_frame)
 
-        #print(f"Squads for Wave {wave_id+1}:\n{self.wavedefs[wave_id]['Squads']}")
         zed_button.squad_uid = this_squad['Frame'].unique_id
 
         # Has this squad reached capacity?
@@ -448,8 +423,6 @@ class Ui_MainWindow(object):
         self.wavedefs_scrollarea_layout.insertWidget(new_idx_label, self.wavedefs[frame.id]['Label']);
         self.wavedefs_scrollarea_layout.insertWidget(new_idx_frame, self.wavedefs[frame.id]['Frames']['WaveFrame']);
 
-        #print('shifted ' + self.wavedefs[frame.id]['orig'] + f' {dir}')
-
         # Shift the array contents
         first = frame.id
         second = frame.id+1 if dir == 'down' else frame.id-1
@@ -458,11 +431,6 @@ class Ui_MainWindow(object):
         self.wavedefs[second] = t
             
         self.refresh_wavedefs() # Refresh wavedefs state (update buttons, etc)
-        #print([w['orig'] for w in self.wavedefs])
-        #print([w['ID'] for w in self.wavedefs])
-        #print([w['Frames']['WaveFrame'].id for w in self.wavedefs])
-        #print([w['Frames']['SquadFrame'].id for w in self.wavedefs])
-        #print(' ')
 
     # Deletes the wave from the list (and GUI)
     def remove_wavedef(self, id, should_warn=True):
@@ -487,21 +455,10 @@ class Ui_MainWindow(object):
         # Remove the widgets
         self.wavedefs_scrollarea_layout.removeWidget(self.wavedefs[id]['Label']);
         self.wavedefs_scrollarea_layout.removeWidget(self.wavedefs[id]['Frames']['WaveFrame']);
-
-        #print(f'id is {id}')
-        #print('wavedefs before deletion:')
-        #for i in range(len(self.wavedefs)):
-        #    print({'real_index': i, 'orig': self.wavedefs[i]['orig'], 'Saved ID': self.wavedefs[i]['ID']})
         self.wavedefs[id]['Label'].setParent(None)
         self.wavedefs[id]['Frames']['SquadFrame'].setParent(None)
         self.wavedefs[id]['Frames']['WaveFrame'].setParent(None)
-
         self.wavedefs.pop(id) # Remove from array
-        # Todo: Remove the squads as well
-
-        #print('\nwavedefs before renumbering (after deletion):')
-        #for i in range(len(self.wavedefs)):
-        #    print({'real_index': i, 'orig': self.wavedefs[i]['orig'], 'Saved ID': self.wavedefs[i]['ID']})
 
         self.refresh_wavedefs() # Refresh wavedefs state (update buttons, etc)
         if len(self.wavedefs) < 10:
@@ -511,16 +468,6 @@ class Ui_MainWindow(object):
         self.dirty = True
         if self.filename != 'Untitled':
             self.set_window_title(f'SpawnCycler ({self.truncate_filename(self.filename)}*)')
-
-        #print('\nFINAL wavedefs after deletion:')
-        #for i in range(len(self.wavedefs)):
-        #    print({'real_index': i, 'orig': self.wavedefs[i]['orig'], 'Saved ID': self.wavedefs[i]['ID']})
-
-        #print([w['orig'] for w in self.wavedefs])
-        #print([w['ID'] for w in self.wavedefs])
-        #print([w['Frames']['WaveFrame'].id for w in self.wavedefs])
-        #print([w['Frames']['SquadFrame'].id for w in self.wavedefs])
-        #print(' ')
 
     # Adds a new wave to the list
     def add_wavedef(self):
@@ -610,12 +557,6 @@ class Ui_MainWindow(object):
             self.buttons['Add Wave'].setVisible(False)
 
         self.refresh_wavedefs() # Refresh wavedefs state (update buttons, etc)
-
-        #print([w['orig'] for w in self.wavedefs])
-        #print([w['ID'] for w in self.wavedefs])
-        #print([w['Frames']['WaveFrame'].id for w in self.wavedefs])
-        #print([w['Frames']['SquadFrame'].id for w in self.wavedefs])
-        #print(' ')
 
     # Set up Options Pane
     def setup_options_pane(self):
@@ -708,6 +649,11 @@ class Ui_MainWindow(object):
         self.options_pane.addWidget(button_generate)
         self.buttons.update({'Generate' : button_generate})
 
+        # Convert SpawnCycles
+        button_convert = widget_helpers.create_button(self.central_widget, self.app, 'Convert', text=' Convert ', tooltip="Convert SpawnCycles for use with FMX's CD Build", target=self.open_convert_dialog, style=ss, icon_path='img/icon_switch.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        self.options_pane.addWidget(button_convert)
+        self.buttons.update({'Convert' : button_convert})
+
         # View Help
         button_about = widget_helpers.create_button(self.central_widget, self.app, 'About', text=' About ', tooltip='Show information about the program', target=self.open_about_dialog, style=ss, icon_path='img/icon_about.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_about)
@@ -785,9 +731,7 @@ class Ui_MainWindow(object):
         return batch_menu, default_replace_menu, custom_replace_menu
 
     # Given the wave ID, squad ID, and a list of zeds, replaces all zeds in squads with the chosen replacement(s)
-    def replace_zeds(self, wave_id, squad_id, zeds_to_replace, replacements):
-        #print(f"wave_id={wave_id}, squad_id={squad_id}, zeds_to_replace={zeds_to_replace}, replacements={replacements}")
-        
+    def replace_zeds(self, wave_id, squad_id, zeds_to_replace, replacements):        
         # Figure out which waves and squads we're looping over
         wave_ids = [wave_id] if wave_id != 'all' else [i for i in range(len(self.wavedefs))]
         squad_ids = [[squad_id] for i in range(len(self.wavedefs))] if squad_id != 'all' else [[j for j in range(len(self.wavedefs[i]['Squads']))] for i in range(len(self.wavedefs))]
@@ -799,7 +743,6 @@ class Ui_MainWindow(object):
             squads = self.wavedefs[wid]['Squads']
 
             # Loop over the selected squads
-            #print(squad_ids)
             for sid in squad_ids[wid]:
                 this_squad_zeds = squads[sid]['ZEDs'] # The ZEDs in this squad
 
@@ -1717,6 +1660,15 @@ class Ui_MainWindow(object):
         dialog.ui = AboutDialog()
         dialog.ui.setupUi(dialog)
         dialog.setWindowTitle('About')
+        dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
+        dialog.exec_()
+
+    # Opens the 'Convert' menu
+    def open_convert_dialog(self):
+        dialog = QtWidgets.QDialog()
+        dialog.ui = ConvertDialog()
+        dialog.ui.setupUi(dialog)
+        dialog.setWindowTitle('Convert SpawnCycles')
         dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
         dialog.exec_()
 
