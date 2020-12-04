@@ -1,8 +1,12 @@
 # SpawnCycler
+by Tamari
+### Current Version
+1.0
 SpawnCycler is a SpawnCycle editor for Killing Floor 2's Controlled Difficulty mod (https://github.com/notblackout/kf2-controlled-difficulty)
 
 The main purpose of this utility is to allow for swift and intuitive creation, generation, analysis, and editing of SpawnCycles for CD.
 SpawnCycler attempts to simplify and completely replace the (rather tedious) process of creating a SpawnCycle by hand using a Text Editor.
+Quality-of-life features such as a built-in parser and "drag-and-drop" UI elements ensure maximum ease-of-use and make iterations quick and simple, with minimal errors.
 
 ## Features
 - Minimalistic and easily navigable UI
@@ -13,11 +17,15 @@ SpawnCycler attempts to simplify and completely replace the (rather tedious) pro
 - The ability to perform Batch operations on a SpawnCycle, such as reversing the wave order or replacing all of one ZED type
 
 ## Binaries
-### Windows
+#### Windows
 TBD
 
-### Linux
+#### Linux
 Not officially supported (yet!)
 
-## Tutorials
+## Contact
+If you have any feedback to give me, I can be reached at:
 
+Discord: Tamari#6292
+Email: nate92@gmail.com
+Steam: steamcommunity.com/id/tamaritm
