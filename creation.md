@@ -25,7 +25,7 @@ Errors and general notifications will appear here.
 When starting from scratch, the **WaveDefs Pane** will be blank, with an `Add Wave` button at the very top.
 Clicking this button creates a new **Wave Frame**.
 
-**Note**: A SpawnCycle **MUST** have either **4**, **7**, or **10** Waves!
+**Note**: A valid SpawnCycle **MUST** have either **4**, **7**, or **10** Waves!
 
 To add ZEDs to the wave, simply **click and drag** an icon from the **ZED Pane** and place it into the newly-created Wave Frame.
 The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are.
