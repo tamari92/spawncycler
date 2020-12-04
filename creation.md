@@ -21,8 +21,8 @@ Finally, the `Messages Box` contains any System Messages outputted by the progra
 Errors and general notifications will appear here.
 
 ### Adding Waves, ZEDs, and Squads
-When starting from scratch, the **WaveDefs Pane** will be blank, with an `Add Wave` button at the very top.
-Clicking this button creates a new **Wave Frame**.
+When starting from scratch, the `WaveDefs Pane` will be blank, with an `Add Wave` button at the very top.
+Clicking this button creates a new `Wave Frame`.
 
 **Note**: A valid SpawnCycle **MUST** have either **4**, **7**, or **10** Waves!
 
@@ -38,6 +38,11 @@ Typically, ZEDs within the same squad will spawn with one another.
 To add more ZEDs to the Squad, simply continue to **drag-and-drop** icons from the ZED Pane into the **Squad Frame**.
 
 **Note**: Each Squad has a maximum capacity of `10`!
+
+### Removing and Reorganizing ZEDs/Squads
+Once a ZED is placed into a Squad, it can be **removed** by *dragging the ZED icon out of the Squad and onto the empty background*.
+Note that in the case that there are multiple of the same ZED in a Squad, this action will only delete **one** of them.
+
 
 
 
