@@ -5,9 +5,9 @@ When opening SpawnCycler, the initial interface you are presented with is the Cr
 This is where you can Create and Edit SpawnCycles.
 
 There are **three** main components to this window:
-- WaveDefs Pane (the larger, blank area)
-- ZED Pane (the pane off to the right with the ZED icons)
-- Messages Box (the bottom-most box)
+- `WaveDefs Pane` (the larger, blank area)
+- `ZED Pane` (the pane off to the right with the ZED icons)
+- `Messages Box` (the bottom-most box)
 
 The **WaveDefs Pane** is where most of the action takes place.
 This is where you will add **Waves** and create and manage **Squads**.
