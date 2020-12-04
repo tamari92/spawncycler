@@ -22,8 +22,20 @@ Errors and general notifications will appear here.
 
 
 ### Adding Waves, ZEDs, and Squads
-When opening SpawnCycler for the first time, you'll be presented with a blank window with an "Add Wave" button.
-Pressing this button adds a new wave to the SpawnCycle.
+When starting from scratch, the **WaveDefs Pane** will be blank, with an `Add Wave` button at the very top.
+Clicking this button creates a new **Wave Frame**.
+
+**Note**: A SpawnCycle **MUST** have either **4**, **7**, or **10** Waves!
+
+To add ZEDs to the wave, simply **click and drag** an icon from the **ZED Pane** and place it into the newly-created Wave Frame.
+The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are.
+This is called a **Squad**.
+
+**Figure 1** - Basic ZED Squad
+
+When reading a SpawnCycle, CD iterates through the Squads for a given wave and attempts to spawn the ZEDs within in order.
+Typically, ZEDs within the same squad will spawn with one another, but this is not always the case, as other factors (such as the `MaxMonsters` setting) can cause fractions of a Squad to be spawned instead of the entire Squad.
+
 
 
 
