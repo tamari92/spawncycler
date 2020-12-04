@@ -4,7 +4,7 @@ block_cipher = None
 
 
 a = Analysis(['SpawnCycler.py'],
-             pathex=['C:\\SpawnCycler\\trunk\src\\'],
+             pathex=['C:\\SpawnCycler\\trunk\src\\one-file\\'],
              binaries=[],
              datas=[],
              hiddenimports=[],
