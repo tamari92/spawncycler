@@ -3,14 +3,21 @@
 ## Overview
 The `SpawnCycle Analysis` tool allows you to analyze a SpawnCycle's contents and show meaningful information about its performance by simulating a full game.
 
-The information shown includes:
-- Total Number of ZEDs by Category (Trash, Medium, Large, Boss, etc.)
-- Total Number of ZEDs by Type (Alpha Clot, Fleshpound, Bloat, etc.)
-- Total Number of ZEDs by Group (Clots, Gorefasts, Robots, etc.)
-- The estimated Difficulty of the wave
+There are two main components to this window:
+- Analysis Results
+- Analysis Parameters
+
+The **Analysis Results** show the results of the simulation and include the following information:
+- **Total Number of ZEDs by Category** (Trash, Medium, Large, Boss, etc.)
+- **Total Number of ZEDs by Type** (Alpha Clot, Fleshpound, Bloat, etc.)
+- **Total Number of ZEDs by Group** (Clots, Gorefasts, Robots, etc.)
+- **The estimated relative Difficulty of the wave**
 
 Each of these include Pie and Line Charts that help visually reinforce the data.
+
 The Simulation Data is first shown for the SpawnCycle as a whole (summary data), followed by Simulation Data on a `per-wave` basis.
+
+The **Analysis Parameters** give you the ability to control the simulation, by setting pre-determined criteria.
 
 ## How the Simulation Works
 A `SpawnCycle` is simply a list of ZED squads to spawn during a specific wave. Both CD and `SpawnCycler` simulate the SpawnCycle in the following way:
@@ -48,27 +55,32 @@ for `GameLength=0` (4 Wave), the base number of ZEDs on **Wave 2** is `32`
 #### WaveSize Multipliers
 ```
 0-1 WSF: 1.00
-2 WSF: 2.0
+2 WSF: 2.00
 3 WSF: 2.75
-4 WSF: 3.5
-5 WSF: 4.0
-6 WSF: 4.5
-6+ WSF: 4.5 + ((WSF - 6) * 0.211718)
+4 WSF: 3.50
+5 WSF: 4.00
+6 WSF: 4.50
+6+ WSF: 4.50 + ((WSF - 6) x 0.211718)
 ```
 
 For example..
-for `WaveSizeFakes=5` the **WaveSizeMultiplier** would be `4.0`
-for `WaveSizeFakes=16` the **WaveSizeMultiplier** be `4.5 + ((16 - 6) * 0.211718)` = `6.61718`
+
+for `WaveSizeFakes=5` the **WaveSizeMultiplier** would be `4.00`
+
+for `WaveSizeFakes=16` the **WaveSizeMultiplier** be `4.50 + ((16 - 6) x 0.211718)` = `6.61718`
 
 #### Calculating the Number of ZEDs to Spawn
 These three values are used to calculate the **Total Number of ZEDs to Spawn**, described by the formula:
-`NumZEDsToSpawn = DifficultyModifier * WaveSizeMultiplier * BaseNumZEDs`
+
+`NumZEDsToSpawn = DifficultyModifier x WaveSizeMultiplier x BaseNumZEDs`
 
 For example..
-On a Long Hell on Earth match, with `WaveSizeFakes=16`, the number of ZEDs to spawn on **Wave 6** would be:
-`NumZEDsToSpawn = 1.70 * 35 * 6.61718` which gives `NumZEDsToSpawn=393` (floored to the nearest integer)
 
-Now that the number of ZEDs to spawn for the given wave is known, `SpawnCycler` simply iterates over the list of Squads for that wave, choosing ZEDs in order until `NumZEDsToSpawn` is reached. During this iteration, a count is kept of each ZED type and Group spawned.
+On a Long Hell on Earth match, with `WaveSizeFakes=16`, the number of ZEDs to spawn on **Wave 6** would be:
+
+`NumZEDsToSpawn = 1.70 x 35 x 6.61718` which gives `NumZEDsToSpawn=393` (floored to the nearest integer)
+
+Now that the number of ZEDs to spawn for the given wave is known, `SpawnCycler` simply iterates over the list of Squads for that wave, choosing ZEDs in order until `NumZEDsToSpawn` is reached. During each iteration, a count is kept of each ZED type and Group spawned.
 
 If `SpawnCycler` reaches the end of the SpawnCycle before the wave is complete, it simply starts over at the beginning.
 
@@ -77,10 +89,11 @@ This section details the Simulation Results, which includes:
 - **Total Number of ZEDs by Category** (Trash, Medium, Large, Boss, etc.)
 - **Total Number of ZEDs by Type** (Alpha Clot, Fleshpound, Bloat, etc.)
 - **Total Number of ZEDs by Group** (Clots, Gorefasts, Robots, etc.)
-- **The estimated Difficulty of the wave**
+- **The estimated relative Difficulty of the wave**
 
 #### ZEDs by Category
 This table shows the summary data for the number of ZEDs spawned of each **Category** in this wave.
+
 There are **four** main Categories of ZEDs:
 - Trash
 - Medium
@@ -140,16 +153,103 @@ There are **nine** main Groups of ZEDs:
 - **SpawnRage** (SpawnRaged QP/FP/AFP)
 - **Other** (anything not falling into the above categories)
 
-#### Difficulty Estimation
+#### Difficulty Estimate
 The **Difficulty Estimate** is a chart that details the relative difficulty of the wave, based on the following:
-- The `MaxMonsters` setting
+- The composition of the **currently spawned ZEDs** (influenced by `MaxMonsters`)
 - The `Difficulty` of the match
 - The `GameLength` (Short, Medium, Long) of the match
 - The `WaveSizeFakes` setting
 
-These values are used to 
+These values are used to determine the `DifficultyScore` for each iteration of the simulation, given by the formula:
+
+`DifficultyScore = WaveSizeFakesModifier x WaveScoreModifier x* ZEDScoreModifier`
+
+##### WaveSizeFakesModifier
+The `WaveSizeFakesModifier` is determined through the following formula:
+
+`WaveSizeFakesModifier = 1 + (WaveSizeFakes / 128)`
+
+As an example, a `WaveSizeFakes` of 12 would give:
+
+`WaveSizeFakesModifier = 1 + (12 / 128) = 1.09375`
+
+This modifier follows a trend in which longer waves (due to higher WSF) results in a higher modifier. Longer waves tend to be harder to due to the sparseness of resources (ammo has to be spread over a longer period of time, for example).
+
+##### WaveScoreModifier
+The value of the `WaveScoreModifier` is determined directly by the game's `Difficulty` and `GameLength`:
+
+`WaveScoreModifier = (1.50 x DoshDifficultyMultiplier) x (WaveNum / MaxWave)`
+
+The `DoshDifficultyMultiplier` depends on the Difficulty of the game. In general, higher difficulties have a higher `DoshDifficultyMultiplier` because ZEDs award less money:
+```
+Normal: 1.00
+Hard: 1.25
+Suicidal: 1.50
+Hell on Earth: 1.75
+```
+
+`WaveNum` is the current wave and `MaxWave` is the maximum wave for the current `GameLength`.
+
+As an example, the `WaveScoreModifier` on Wave 6/10 on Hard Difficulty would be:
+
+`WaveScoreModifier = (1.50 x 1.25) x (6 / 10) = 1.875 x 0.6 = 1.125`
+
+##### ZEDScoreModifier
+The value of the `ZEDScoreModifier` depends directly on what ZEDs are currently spawned, which itself is influenced by the `MaxMonsters` setting.
+
+Each ZED Category (Trash, Medium, Large, Boss) has a specific **weight** associated with it:
+```
+Trash: 500 Points
+Medium: 1,000 Points
+Large: 2,500 Points
+Boss: 7,500 Points
+```
+
+As the wave is simulated, a list is kept of all of the ZEDs that are currently "spawned". The maximum capacity of this list is directly influenced by the `MaxMonsters` setting. The higher `MaxMonsters`, the more ZEDs that can be alive at once.
+
+For each ZED Category, the total score is deterined by: `NumCategory x CategoryWeight`.
+
+For example, **51** Trash ZEDs would give a score of `51 x 500 = 25,500 Points`.
+
+This is then repeated for the remaining ZED categories, and combined to obtain an overall value, called the `TotalZEDScore`:
+
+`TotalZEDScore = (NumTrash x 500) + (NumMedium x 1000) + (NumLarge x 2500) + (NumBoss x 7500)`
+
+The game's `Difficulty` factors into the calculation as well, since on higher difficulties, ZEDs both deal more damage and have more health. Some ZEDs, like the Husk, also have alternate attacks.
+```
+Normal: 1.00
+Hard: 2.00
+Suicidal: 3.00
+Hell on Earth: 4.00
+```
+
+These two intermediate values come together to form the `ZEDScoreModifier`:
+
+`ZEDScoreModifier = TotalZEDScore x ZEDDifficultyModifier`
+
+As an example, the `ZEDScoreModifier` on a random wave of a Suicidal match might look like this:
+
+`ZEDScoreModifier = ((15 x 500) + (21 x 1,000) + (13 x 2,500) + (2 x 7,500)) x 3.00 = 228,000.00`
+
+##### Putting it all together
+With the intermediate values calculated, we can now determine the `DifficultyScore` for the current Simulation iteration:
+
+`DifficultyScore = WaveSizeFakesModifier x WaveScoreModifier x* ZEDScoreModifier`
+
+Suppose `WaveSizeFakesModifier=1.09375`, `WaveScoreModifier=1.125`, and `ZEDScoreModifier=228,000.00`. This would give
+
+`DifficultyScore = 1.09375 x 1.125 x 228,000 = 208,546.875`
+
+Suppose the current iteration were `16/273` (273 ZEDs to spawn total).
+
+This would imply that this `DifficultyScore` corresponds to `*16 / 273) x 100.0 = 58.6%` through the wave.
+
+This allows us to form a pair (x, y) of `(58.6, 208,546.875)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows us to create the **Estimated Difficulty Chart**.
 
 Note that this chart is also created for the entire SpawnCycle, using the average `DifficultyScore` of each wave.
+
+## Analysis Parameters
+
 
 ## Reference Documentation
 [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
