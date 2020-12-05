@@ -70,5 +70,5 @@ The key difference is that replacing a ZED through the contextual right-click me
 
 ## Reference Documentation
 - [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
-- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
 - [Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
