@@ -25,21 +25,28 @@ The **Total Number of ZEDs** to spawn is determined in the following way:
 - Compute the `WaveSize Multiplier` (based on the WaveSizeFakes setting)
 
 #### Difficulty Multipliers
+```
 Normal: 0.85
 Hard: 1.00
 Suicidal: 1.30
 Hell on Earth: 1.70
+```
 
 #### Base Number of ZEDs
+```
 Short (4 Waves): 25 // 32 // 35 // 42
 Medium (7 Waves): 25 // 28 // 32 // 32 // 35 // 40 // 42
 Long (10 Waves): 25 // 28 // 32 // 32 // 35 // 35 // 40 // 42 // 42
+```
 
 For example..
+
 for `GameLength=2` (10 Wave), the base number of ZEDs on **Wave 6** is `35`
+
 for `GameLength=0` (4 Wave), the base number of ZEDs on **Wave 2** is `32`
 
 #### WaveSize Multipliers
+```
 0-1 WSF: 1.00
 2 WSF: 2.0
 3 WSF: 2.75
@@ -47,6 +54,7 @@ for `GameLength=0` (4 Wave), the base number of ZEDs on **Wave 2** is `32`
 5 WSF: 4.0
 6 WSF: 4.5
 6+ WSF: 4.5 + ((WSF - 6) * 0.211718)
+```
 
 For example..
 for `WaveSizeFakes=5` the **WaveSizeMultiplier** would be `4.0`
