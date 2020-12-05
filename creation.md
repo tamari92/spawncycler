@@ -5,7 +5,7 @@ When opening SpawnCycler, the initial interface you are presented with is the Cr
 This is where you can Create and Edit SpawnCycles.
 
 There are **three** main components to this window:
-- **WaveDefs Pane** (the larger, blank area)
+- **WaveDefs Pane* (the larger, blank area)
 - **ZED Pane** (the pane off to the right with the ZED icons)
 - **Messages Box** (the bottom-most box)
 
@@ -57,8 +57,12 @@ You can **delete** a Wave by pressing the red 'X'.
 
 ## Replacing ZEDs
 ZEDs can be replaced in two ways:
-- By right-clicking a ZED in a Squad and selecting `Replace ZED..`
+- By right-clicking a ZED in a Squad and selecting `Replace ZED with..`
 - By using the `Batch` menu located at the top of the screen, and selecting `Replace ZEDs..`
 
 The key difference is that replacing a ZED through the contextual right-click menu affects that ZED's Squad, while using the Batch menu replaces that ZED anywhere it appears in the *entire SpawnCycle*.
 
+## Reference Documentation
+[Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+[Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+[Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
