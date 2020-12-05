@@ -18,9 +18,17 @@ Each of these include Pie and Line Charts that help visually reinforce the data.
 The Simulation Data is first shown for the SpawnCycle as a whole (summary data), followed by Simulation Data on a `per-wave` basis.
 
 The **Analysis Parameters** give you the ability to control the simulation, by setting pre-determined criteria, including:
+- **Difficulty** (Normal // Hard // Suicidal // HoE)
+- **WaveSizeFakes** (How large the waves are, calculated as the number of players currently connected to the game. For example: WSF=16 means 16 players are in the match.)
+- **Overview Only** (Omit per-wave data from the Analysis Results)
+- **Ignore Zeroes** (Omit fields/table rows that have zero value)
+- **Analyze Difficulty** (Calculate and show the Estimated Difficulty chart)
+- **MaxMonsters** (The maximum number of ZEDs that can be alive at once. Used with Analyze Difficulty)
+- **Display Charts** (Whether or not to print Pie and Line charts for Analysis Results)
 
-![alternate_text](https://i.imgur.com/3AeWjbQ.png)
-Figure 1 - SpawnCycle Analysis Tool
+![alternate_text](https://i.imgur.com/sSyeGjn.png)
+
+**Figure 1** - SpawnCycle Analysis Tool
 
 ## Analysis Parameters
 The **Analysis Parameters** allow the user to directly impact the Analysis Results.
@@ -267,5 +275,7 @@ Note that this chart is also created for the entire SpawnCycle, using the averag
 
 ## Reference Documentation
 [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
+
 [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+
 [Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)

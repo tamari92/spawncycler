@@ -20,6 +20,10 @@ A mode toggle can be found at the top of this area, which allows the user to swi
 Finally, the **Messages Box** contains any System Messages outputted by the program.
 Errors and general notifications will appear here.
 
+![alternate_text](https://i.imgur.com/WZGC7Bw.png)
+
+**Figure 1** - SpawnCycle Creation UI
+
 ## Adding Waves, ZEDs, and Squads
 When starting from scratch, the **WaveDefs Pane** will be blank, with an **Add Wave** button at the very top.
 Clicking this button creates a new **Wave Frame**.
@@ -30,7 +34,9 @@ To add ZEDs to the wave, simply **click and drag** an icon from the **ZED Pane**
 The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are.
 This is called a **Squad**. The inner-most box that houses a Squad's ZEDs is called the **Squad Frame**.
 
-**Figure 1** - Basic ZED Squad
+![alternate_text](https://i.imgur.com/HyZe5NY.png)
+
+**Figure 2** - Basic ZED Squad
 
 When reading a SpawnCycle, CD iterates through the Squads for a given wave and attempts to spawn the ZEDs within in order.
 Typically, ZEDs within the same squad will spawn with one another.
@@ -64,5 +70,7 @@ The key difference is that replacing a ZED through the contextual right-click me
 
 ## Reference Documentation
 [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+
 [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+
 [Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
