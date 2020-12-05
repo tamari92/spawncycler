@@ -274,8 +274,6 @@ This allows us to form a pair (x, y) of `(58.6, 208,546.875)`, which implies tha
 Note that this chart is also created for the entire SpawnCycle, using the average `DifficultyScore` of each wave.
 
 ## Reference Documentation
-[Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
-
-[Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
-
-[Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
+- [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
+- [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+- [Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
