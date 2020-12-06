@@ -221,9 +221,9 @@ This modifier follows a trend in which longer waves (due to higher WSF) results 
 ##### WaveDifficultyModifier
 The value of the `WaveDifficultyModifier` is determined directly by the game's `Difficulty` and `GameLength`:
 
-`WaveDifficultyModifier = (1.50 x DoshDifficultyMultiplier) x (WaveNum / MaxWave)`
+`WaveDifficultyModifier = (1.50 x DoshDifficultyModifier) x (WaveNum / MaxWave)`
 
-The `DoshDifficultyMultiplier` depends on the Difficulty of the game. In general, higher difficulties have a higher `DoshDifficultyMultiplier` because ZEDs award less money:
+The `DoshDifficultyModifier` depends on the Difficulty of the game. In general, higher difficulties have a higher `DoshDifficultyModifier` because ZEDs award less money:
 ```
 Normal: 1.00
 Hard: 1.25
@@ -250,7 +250,7 @@ Boss: 7,500 Points
 
 As the wave is simulated, a list is kept of all of the ZEDs that are currently "spawned". The maximum capacity of this list is directly influenced by the `MaxMonsters` setting. The higher the `MaxMonsters` is, the more ZEDs that can be alive at once.
 
-For each ZED Category, the total score is deterined by: `Category x CategoryWeight`.
+For each ZED Category, the total score is deterined by: `NumZEDsInCategory x CategoryWeight`.
 
 For example, **51** Trash ZEDs would give a score of `51 x 500 = 25,500 Points`.
 
