@@ -18,7 +18,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 
 ![alternate_text](https://i.imgur.com/jyyg0WC.png)
 
-**Figure 1** - Text-based SpawnCycle vs SpawnCycler view
+**Figure 1** - Text-based (left) vs SpawnCycler (right)
 
 ## Features
 - Minimalistic and easily-navigable UI
