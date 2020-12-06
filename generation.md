@@ -88,23 +88,23 @@ The **Default** ZED Set is the ZED Set supported by most established builds of C
 
 ## Presets
 The Generator tool supports several `Presets`, including:
-- `Light` (predominantely Trash)
-- `Moderate` (decent mixture of Trash and Larges)
-- `Heavy` (predominantely Larges)
-- `Albino` (predominantely Albino ZEDs)
-- `Poundemonium` (predominantely Larges, spawning earlier in the cycle)
+- `Light` (predominantly Trash ZEDs)
+- `Moderate` (decent mixture of Trash and Large ZEDs)
+- `Heavy` (predominantly Large ZEDs)
+- `Albino` (predominantly Albino ZEDs)
+- `Poundemonium` (predominantly Larges, spawning earlier in the cycle)
 - `GSO` (almost all Larges, spawning very early in the cycle)
 - `Min Settings` (all settings are at their minimum value)
 - `Max Settings` (all settings are at their maximum value)
-- `Unseen Annihilation` (predominantely Stalkers)
-- `Hellish Inferno` (predominantely Husks)
+- `Unseen Annihilation` (predominantly Stalkers)
+- `Hellish Inferno` (predominantly Husks)
 - `Trash Only` (only Trash ZEDs spawn)
 - `Medium Only` (only Medium ZEDs spawn)
 - `Large Only` (only Large ZEDs spawn)
 - `Boss Only` (only Bosses spawn)
-- `Large-less` (no Large ZEDs at all)
-- `Custom Craziness` (predominantely Custom ZEDs)
-- `Boss Rush` (predominantely Bosses)
+- `Large-less` (no Large ZEDs or Bosses at all)
+- `Custom Craziness` (predominantly Custom ZEDs)
+- `Boss Rush` (predominantly Bosses)
 
 ## Reference Documentation
 - [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
