@@ -26,6 +26,12 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 #### Windows
 TBD
 
+## Credits
+UI Design + General Programming: **Tamari**
+ZED Icons: **Louice Adler** (https://www.artstation.com/artwork/VdgnVP)
+Controlled Difficulty: **blackout** (https://github.com/notblackout/kf2-controlled-difficulty)
+Controlled Difficulty - Eternal Edition: **H U N ナ E R** (https://steamcommunity.com/sharedfiles/filedetails/?id=1554427429)
+
 ## Reference Documentation
 - [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
 - [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)

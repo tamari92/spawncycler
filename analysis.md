@@ -17,14 +17,7 @@ Each of these include Pie and Line Charts that help visually reinforce the data.
 
 The Simulation Data is first shown for the SpawnCycle as a whole (summary data), followed by Simulation Data on a `per-wave` basis.
 
-The **Analysis Parameters** give you the ability to control the simulation, by setting pre-determined criteria, including:
-- **Difficulty** (Normal // Hard // Suicidal // HoE)
-- **WaveSizeFakes** (How large the waves are, calculated as the number of players currently connected to the game. For example: WSF=16 means 16 players are in the match.)
-- **Overview Only** (Omit per-wave data from the Analysis Results)
-- **Ignore Zeroes** (Omit fields/table rows that have zero value)
-- **Analyze Difficulty** (Calculate and show the Estimated Difficulty chart)
-- **MaxMonsters** (The maximum number of ZEDs that can be alive at once. Used with Analyze Difficulty)
-- **Display Charts** (Whether or not to print Pie and Line charts for Analysis Results)
+The **Analysis Parameters** give you the ability to control the simulation, by setting pre-determined criteria.
 
 ![alternate_text](https://i.imgur.com/sSyeGjn.png)
 
@@ -34,13 +27,38 @@ The **Analysis Parameters** give you the ability to control the simulation, by s
 The **Analysis Parameters** allow the user to directly impact the Analysis Results.
 
 The following parameters can be set:
-- **Difficulty** (Normal // Hard // Suicidal // HoE)
-- **WaveSizeFakes** (How large the waves are, calculated as the number of players currently connected to the game. For example: WSF=16 means 16 players are in the match.)
-- **Overview Only** (Omit per-wave data from the Analysis Results)
-- **Ignore Zeroes** (Omit fields/table rows that have zero value)
-- **Analyze Difficulty** (Calculate and show the Estimated Difficulty chart)
-- **MaxMonsters** (The maximum number of ZEDs that can be alive at once. Used with Analyze Difficulty)
-- **Display Charts** (Whether or not to print Pie and Line charts for Analysis Results)
+- **Difficulty**
+- **Wave Size Fakes**
+- **Overview Only**
+- **Ignore Zeroes**
+- **Analyze Difficulty**
+- **Max Monsters**
+- **Display Charts**
+
+#### Difficulty
+The Difficulty level of the game (Normal // Hard // Suicidal // Hell on Earth)
+
+#### Wave Size Fakes
+The `WaveSizeFakes` value represents the number of Human players in the current Squad. Higher fakes increases the number of ZEDs in the wave. Typically, in Vanilla KF2, this value scales up and down accordingly with the number of players in the server. CD allows you to set a **"Faked"** value, which locks it at a specific number. `SpawnCycler` also utilizes this behavior. The `WaveSizeFakes` setting is used in conjunction with `FakesMode=ignore_humans`, which means that the WSF value is not influenced by the actual number of players at all.
+
+Min: **0** // Max: **128**
+
+#### Overview Only
+This parameter causes all **per-wave Analysis Data** to be excluded from the report. Only the SpawnCycle summary data will be shown.
+
+#### Ignore Zeroes
+Don't display any table rows or chart elements that represent data which has zero value. Helps reduce clutter and increase focus on relevant data.
+
+#### Analyze Difficulty
+Tells `SpawnCycler` whether or not it should analyze the wave and produce an `Estimated Difficulty` curve (see below for more information on how this works).
+
+#### Max Monsters
+Used in conjunction with the **Analyze Difficulty** setting. Tells `SpawnCycler` the maximum number of ZEDs that can exist on the battlefield at any given time. Increasing this value means more ZEDs can be alive at once, which greatly impacts the overall difficulty of the wave(s).
+
+Min: **1** // Max: **256**
+
+#### Display Charts
+Controls whether or not `SpawnCycler` should produce Pie charts representing the Group, Type, and Categorical total data for the wave. Does not affect whether or not the Difficulty chart is drawn. Use the **Analyze Difficulty** flag for that instead.
 
 ## How the Simulation Works
 This section details how `SpawnCycler` simulates waves.
@@ -187,23 +205,23 @@ The **Difficulty Estimate** is a chart that details the relative difficulty of t
 
 These values are used to determine the `DifficultyScore` for each iteration of the simulation, given by the formula:
 
-`DifficultyScore = WaveSizeFakesModifier x WaveScoreModifier x* ZEDScoreModifier`
+`DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x ZEDScoreModifier`
 
-##### WaveSizeFakesModifier
-The `WaveSizeFakesModifier` is determined through the following formula:
+##### WaveSizeModifier
+The `WaveSizeModifier` is determined through the following formula:
 
-`WaveSizeFakesModifier = 1 + (WaveSizeFakes / 128)`
+`WaveSizeModifier = 1 + (WaveSizeFakes / 128)`
 
 As an example, a `WaveSizeFakes` of 12 would give:
 
-`WaveSizeFakesModifier = 1 + (12 / 128) = 1.09375`
+`WaveSizeModifier = 1 + (12 / 128) = 1.09375`
 
 This modifier follows a trend in which longer waves (due to higher WSF) results in a higher modifier. Longer waves tend to be harder to due to the sparseness of resources (ammo has to be spread over a longer period of time, for example).
 
-##### WaveScoreModifier
-The value of the `WaveScoreModifier` is determined directly by the game's `Difficulty` and `GameLength`:
+##### WaveDifficultyModifier
+The value of the `WaveDifficultyModifier` is determined directly by the game's `Difficulty` and `GameLength`:
 
-`WaveScoreModifier = (1.50 x DoshDifficultyMultiplier) x (WaveNum / MaxWave)`
+`WaveDifficultyModifier = (1.50 x DoshDifficultyMultiplier) x (WaveNum / MaxWave)`
 
 The `DoshDifficultyMultiplier` depends on the Difficulty of the game. In general, higher difficulties have a higher `DoshDifficultyMultiplier` because ZEDs award less money:
 ```
@@ -215,9 +233,9 @@ Hell on Earth: 1.75
 
 `WaveNum` is the current wave and `MaxWave` is the maximum wave for the current `GameLength`.
 
-As an example, the `WaveScoreModifier` on Wave 6/10 on Hard Difficulty would be:
+As an example, the `WaveDifficultyModifier` on Wave 6/10 on Hard Difficulty would be:
 
-`WaveScoreModifier = (1.50 x 1.25) x (6 / 10) = 1.875 x 0.6 = 1.125`
+`WaveDifficultyModifier = (1.50 x 1.25) x (6 / 10) = 1.875 x 0.6 = 1.125`
 
 ##### ZEDScoreModifier
 The value of the `ZEDScoreModifier` depends directly on what ZEDs are currently spawned, which itself is influenced by the `MaxMonsters` setting.
@@ -232,7 +250,7 @@ Boss: 7,500 Points
 
 As the wave is simulated, a list is kept of all of the ZEDs that are currently "spawned". The maximum capacity of this list is directly influenced by the `MaxMonsters` setting. The higher the `MaxMonsters` is, the more ZEDs that can be alive at once.
 
-For each ZED Category, the total score is deterined by: `NumCategory x CategoryWeight`.
+For each ZED Category, the total score is deterined by: `Category x CategoryWeight`.
 
 For example, **51** Trash ZEDs would give a score of `51 x 500 = 25,500 Points`.
 
@@ -259,9 +277,9 @@ As an example, the `ZEDScoreModifier` on an arbitrary wave of a Suicidal match m
 ##### Putting it all together
 With the intermediate values calculated, we can now determine the `DifficultyScore` for the current Simulation iteration:
 
-`DifficultyScore = WaveSizeFakesModifier x WaveScoreModifier x* ZEDScoreModifier`
+`DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x* ZEDScoreModifier`
 
-Suppose `WaveSizeFakesModifier=1.09375`, `WaveScoreModifier=1.125`, and `ZEDScoreModifier=228,000.00`. This would give:
+Suppose `WaveSizeModifier=1.09375`, `WaveDifficultyModifier=1.125`, and `ZEDScoreModifier=228,000.00`. This would give:
 
 `DifficultyScore = 1.09375 x 1.125 x 228,000 = 208,546.875`
 
@@ -269,7 +287,7 @@ Next, suppose the current iteration were `16/273` (16 ZEDs spawned so far / 273 
 
 This would imply that this `DifficultyScore` corresponds to `WaveProgress = (16 / 273) x 100.0 = 58.6%` through the wave.
 
-This allows us to form a pair (x, y) of `(58.6, 208,546.875)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
+This forms a pair (x, y) of `(58.6, 208,546.875)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
 
 Note that this chart is also created for the entire SpawnCycle, using the average `DifficultyScore` of each wave.
 
