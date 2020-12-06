@@ -16,6 +16,10 @@ The main purpose of this utility is to allow for swift and intuitive creation, g
 SpawnCycler attempts to simplify and completely replace the (rather tedious) process of creating a SpawnCycle by hand using a Text Editor.
 Quality-of-life features such as a built-in parser and "drag-and-drop" UI elements ensure maximum ease-of-use and make iterations quick and simple, with minimal errors.
 
+![alternate_text](https://i.imgur.com/jyyg0WC.png)
+
+**Figure 1** - Text-based SpawnCycle vs SpawnCycler view
+
 ## Features
 - Minimalistic and easily-navigable UI
 - Simplistic SpawnCycle creation achieved through intuitive "drag-and-drop" operations and other features such as the ability to change the ordering of the waves
