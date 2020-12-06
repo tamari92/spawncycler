@@ -1,7 +1,9 @@
 # SpawnCycler
 by Tamari
+
 #### Current Version
 1.0
+
 #### Contact
 - Discord: Tamari#6292
 - Email: nate92@gmail.com
@@ -24,7 +26,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 
 ## Binaries
 #### Windows
-TBD
+v1.0: [Google Drive (36.3 MB 7z)](https://drive.google.com/file/d/1fTj4gG_s1D_mfCKhls3wX-v1B5QMzzl9/view?usp=sharing)
 
 ## Credits
 - UI Design + General Programming: **Tamari**
