@@ -291,6 +291,10 @@ This forms a pair (x, y) of `(58.6, 208,546.875)`, which implies that `Difficult
 
 Note that this chart is also created for the entire SpawnCycle, using the average `DifficultyScore` of each wave.
 
+![alternate_text](https://i.imgur.com/AkLdytV.png)
+
+**Figure 2** - Estimated Difficulty Chart
+
 ## Reference Documentation
 - [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
 - [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)

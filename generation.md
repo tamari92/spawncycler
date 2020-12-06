@@ -1,7 +1,7 @@
 # SpawnCycle Generation
 
 ## Overview
-The `SpawnCycle Generation` tool allows the user to randomly generate an entire `SpawnCycle` meeting pre-determined criteria.
+The `SpawnCycle Generation` tool allows the user to pseudo-randomly generate an entire `SpawnCycle` meeting pre-determined criteria.
 
 There are three sets of parameters the user can alter to affect the Generation results:
 - General Settings
@@ -21,25 +21,25 @@ The **General Settings** allow the user to affect the overall behavior of the Ge
 ```
 
 #### SpawnCycle Length
-This slider allows the user to control how many waves the Generator will create: 4 (Short), 7 (Medium), or 10 (Long) waves.
+This slider allows the user to control how many waves the Generator will create: either `4` (Short), `7` (Medium), or `10` (Long) waves.
 
 #### Min / Max Squads Per Wave
-These sliders allow the user to control the **minimum** and **maximum** number of Squads to be generated per wave. The MAX value cannot be lower than the MIN value! Setting both values equal will cause an exact number of squads to be generated each wave.
+These sliders allow the user to control the **minimum** and **maximum** number of Squads to be generated per wave. The MAX value cannot be lower than the MIN value. Setting both values equal will cause an exact number of Squads to be generated each wave.
 
 #### Min / Max Squad Size
-These sliders allow the user to control the **minimum** and **maximum** number of ZEDs to be generated as part of each individual Squad. The MAX value cannot be lower than the MIN value! Setting both values equal will cause an exact number of ZEDs to be generated for each Squad. The Generator cannot create more ZEDs than the Squad cap of `10`.
+These sliders allow the user to control the **minimum** and **maximum** number of ZEDs to be generated as part of each individual Squad. The MAX value cannot be lower than the MIN value. Setting both values equal will cause an exact number of ZEDs to be generated for each Squad. The Generator cannot create more ZEDs than the Squad cap of `10`.
 
 #### Albino Min Wave
-Sets the minimum wave that **Albino ZEDs** (Elite Crawler, Rioter, Gorefiend, etc) are allowed to appear.
+Sets the minimum wave that **Albino ZEDs** (Elite Crawler, Rioter, Gorefiend, etc) are allowed to appear. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 #### Large ZED Min Wave
-Sets the minimum wave that **Large ZEDs** are allowed to appear. If the **Global Density** sliders are configured such that only Large ZEDs will be generated, then this slider **must** be set to `1`.
+Sets the minimum wave that **Large ZEDs** are allowed to appear. If the **Global Density** sliders are configured such that only Large ZEDs will be generated, then this slider **must** be set to `1`. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 #### SpawnRage Min Wave
-Sets the minimum wave that **Fleshpounds, Quarter Pounds, and Alpha Fleshpounds** are allowed to spawn **Enraged**.
+Sets the minimum wave that **Fleshpounds, Quarter Pounds, and Alpha Fleshpounds** are allowed to spawn **Enraged**. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 #### Boss Min Wave
-Sets the minimum wave that **Bosses** are allowed to appear. If the **Global Density** sliders are configured such that only Bosses will be generated, then this slider **must** be set to `1`.
+Sets the minimum wave that **Bosses** are allowed to appear. If the **Global Density** sliders are configured such that only Bosses will be generated, then this slider **must** be set to `1`. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 ## Global Density Settings
 The **Global Density Settings** allow the user to affect the way **ZED Categories** are chosen.
@@ -71,13 +71,13 @@ There are Density sliders for each individual ZED, and like with the **Global De
 
 For example:
 
-If the Bloat Density is set to `0%`, then Bloats will not appear at all in the SpawnCycle.
+If the `Bloat Density` is set to `0%`, then Bloats will not appear at all in the SpawnCycle.
 
-If the Crawler Density is set to `100%` and the Alpha Clot Density is set to `50%`, then Crawlers are **2x more likely** to be chosen than Alpha Clots.
+If the `Crawler Density` is set to `100%` and the `Alpha Clot Density` is set to `50%`, then Crawlers are **2x more likely** to be chosen than Alpha Clots.
 
-For ZEDs with an **Albino** variant, there is an additional slider that allows the user to influence the chance for that Albino ZED to appear.
+For ZEDs with an **Albino** variant (Alpha Clot, Crawler, Gorefast), there is an additional slider that allows the user to influence the chance for that Albino ZED to appear instead of the lesser variant.
 
-For ZEDs that can become **SpawnRaged**, there is an additional slider that allows the user to influence the chance for those ZEDs to spawn Enraged.
+For ZEDs that can become **SpawnRaged** (Fleshpound, Quarter Pound), there is an additional slider that allows the user to influence the chance for those ZEDs to spawn Enraged.
 
 ## Custom Settings
 Like in the **Creation Window**, the current **ZED Set** can be swapped between `Default` and `Custom` ZEDs.
@@ -85,9 +85,6 @@ Like in the **Creation Window**, the current **ZED Set** can be swapped between 
 The **Custom** ZED Set is designed to be used with **Forrest Mark X's** build of Controlled Difficulty, and supports additional ZED Types such as **E.D.A.Rs** and **Bosses**. More Albino ZEDs appear as well, such as the **Alpha Fleshpound** and **Alpha Scrake**, Albino variants of the original SC and FP. These ZEDs are **not** supported by most other builds of CD, so this setting should be used at the user's own risk.
 
 The **Default** ZED Set is the ZED Set supported by most established builds of CD.
-
-## How the Generation Works
-This section details the specific algorithm `SpawnCycler` uses to generate SpawnCycles.
 
 ## Reference Documentation
 - [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
