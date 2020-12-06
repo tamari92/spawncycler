@@ -86,6 +86,26 @@ The **Custom** ZED Set is designed to be used with **Forrest Mark X's** build of
 
 The **Default** ZED Set is the ZED Set supported by most established builds of CD.
 
+## Presets
+The Generator tool supports several `Presets`, including:
+- Light (predominately Trash)
+- Moderate (decent mixture of Trash and Larges)
+- Heavy (predominately Larges)
+- Albino (predominately Albino ZEDs)
+- Poundemonium (predominately Larges, spawning earlier in the cycle)
+- GSO (almost all Larges, spawning very early in the cycle)
+- Min Settings (all settings are at their minimum value)
+- Max Settings (all settings are at their maximum value)
+- Unseen Annihilation (predominately Stalkers)
+- Hellish Inferno (predominately Husks)
+- Trash Only (only Trash ZEDs spawn)
+- Medium Only (only Medium ZEDs spawn)
+- Large Only (only Large ZEDs spawn)
+- Boss Only (only Bosses spawn)
+- Large-less (no Large ZEDs at all)
+- Custom Craziness (predominately Custom ZEDs)
+- Boss Rush (predominately Bosses)
+
 ## Reference Documentation
 - [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
 - [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
