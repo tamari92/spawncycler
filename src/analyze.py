@@ -210,7 +210,7 @@ class AnalyzeDialog(object):
             num_bosses = sum([1 if z in bosses else 0 for z in currently_spawned_zeds])
             zed_count_mod = ((num_trash * zed_weights['Trash']) + (num_medium * zed_weights['Medium']) +
                              (num_large * zed_weights['Large']) + (num_bosses * zed_weights['Boss']))
-            zed_diff_mod = self.params['Difficulty'] + 1 # ZED difficulty modifier: (harder difficulty = stronger attacks / more damage dealt)
+            zed_diff_mod = 1.0 + (0.5 * self.params['Difficulty']) # ZED difficulty modifier: (harder difficulty = stronger attacks / more damage dealt)
             zed_score_mod = zed_diff_mod * zed_count_mod
 
             # Wave modifier, based on how far into the game this is.
@@ -221,7 +221,7 @@ class AnalyzeDialog(object):
             wave_score_mod = (1.5 * doshmod[self.params['Difficulty']]) * (float(wave_id+1) / float(max_wave[self.params['GameLength']]))
             
             # Longer waves tend to be harder due to resources (ammo, etc) having to be further spread out 
-            wsf_mod = 1.0 + (float(self.params['WaveSizeFakes']) / 128.0)
+            wsf_mod = 1.5 + (float(self.params['WaveSizeFakes']) / 128.0)
 
             # Calculate the final score
             difficulty_score = wsf_mod * wave_score_mod * zed_score_mod
