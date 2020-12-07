@@ -10,21 +10,22 @@
 
 ##  LICENSE INFORMATION
 ##  =======================================================================
-##  This file is part of SpawnCycler.
-
-##  SpawnCycler is free software: you can redistribute it and/or modify
+##  This program is free software: you can redistribute it and/or modify
 ##  it under the terms of the GNU General Public License as published by
 ##  the Free Software Foundation, either version 3 of the License, or
 ##  (at your option) any later version.
-
-##  SpawnCycler is distributed in the hope that it will be useful,
+##
+##  This program is distributed in the hope that it will be useful,
 ##  but WITHOUT ANY WARRANTY; without even the implied warranty of
 ##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 ##  GNU General Public License for more details.
-
+##
 ##  You should have received a copy of the GNU General Public License
-##  along with SpawnCycler.  If not, see <https://www.gnu.org/licenses/>.
+##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
+##
+##  © Nathan Ybanez, 2020
+##  All rights reserved.
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
@@ -223,7 +224,7 @@ class AnalyzeDialog(object):
 
             # Get the difficulty score at this point
             # ZED count modifier: ZEDs have varying weights
-            zed_weights = {'Trash': 500, 'Medium': 1000, 'Large': 2500, 'Boss': 7500}
+            zed_weights = {'Trash': 500, 'Medium': 2000, 'Large': 5000, 'Boss': 10000}
             num_trash = sum([1 if z in trash_zeds else 0 for z in currently_spawned_zeds])
             num_medium = sum([1 if z in medium_zeds else 0 for z in currently_spawned_zeds])
             num_large = sum([1 if z in large_zeds else 0 for z in currently_spawned_zeds])
@@ -237,8 +238,8 @@ class AnalyzeDialog(object):
             # Earlier waves tend to be harder due to less money/economy
             # Difficulty also affects this since it changes how much dosh you earn per kill
             max_wave = {0: 10, 1: 7, 2: 4}
-            doshmod = {0: 1.0, 1: 1.25, 2: 1.5, 3: 1.75}
-            wave_score_mod = (1.5 * doshmod[self.params['Difficulty']]) * (float(wave_id+1) / float(max_wave[self.params['GameLength']]))
+            doshmod = {0: 1.00, 1: 1.25, 2: 1.50, 3: 1.75}
+            wave_score_mod = doshmod[self.params['Difficulty']] + (0.25 / (float(wave_id+1) / float(max_wave[self.params['GameLength']])))
             
             # Longer waves tend to be harder due to resources (ammo, etc) having to be further spread out 
             wsf_mod = 1.5 + (float(self.params['WaveSizeFakes']) / 128.0)
@@ -984,8 +985,6 @@ class AnalyzeDialog(object):
         # Finally, override the params
         preset['GameLength'] = self.params['GameLength'] # Except for gamelength, cause this depends on the number of waves
         self.params = preset
-
-        print(f"Loaded params: {self.params}")
         
     def setupUi(self, Dialog, wavedefs, filename, save_preset=None, last_preset=None):
         self.Dialog = Dialog
