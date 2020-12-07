@@ -224,7 +224,7 @@ class AnalyzeDialog(object):
 
             # Get the difficulty score at this point
             # ZED count modifier: ZEDs have varying weights
-            zed_weights = {'Trash': 500, 'Medium': 2000, 'Large': 5000, 'Boss': 10000}
+            zed_weights = {'Trash': 500, 'Medium': 1500, 'Large': 3000, 'Boss': 7500}
             num_trash = sum([1 if z in trash_zeds else 0 for z in currently_spawned_zeds])
             num_medium = sum([1 if z in medium_zeds else 0 for z in currently_spawned_zeds])
             num_large = sum([1 if z in large_zeds else 0 for z in currently_spawned_zeds])

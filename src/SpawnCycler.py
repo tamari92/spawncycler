@@ -308,7 +308,6 @@ class Ui_MainWindow(object):
 
     # Adds a new ZED to the given squad
     def add_zed_to_squad(self, wave_id, squad_id, zed_id, count=1, raged=False, ignore_capacity=False):
-        #print(zed_id)
         this_squad = self.wavedefs[wave_id]['Squads'][squad_id]
         squad_layout = this_squad['Layout'] # Get the layout corresponding to this wave's squad box
 
@@ -1725,10 +1724,11 @@ class Ui_MainWindow(object):
         if len(self.wavedefs) > 0:
             found = False
             for wave in self.wavedefs:
-                if len(wave['Squads']) > 0:
+                if len(wave['Squads']) == 0: # Found an empty wave
                     found = True
-            if not found:
-                error_msg += f"Cannot analyze empty waves. All waves must have at least one ZED!\n\n"
+                    break
+            if found:
+                error_msg += f"Cannot analyze empty waves. All waves must have at least one ZED!\n"
 
         # Print errors
         if error_msg != '':
