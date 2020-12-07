@@ -1672,7 +1672,8 @@ class Ui_MainWindow(object):
                     f"To remove ZEDs from a Squad, simply drag the ZED out of the Squad and onto the empty background.\n"
                     f"ZEDs can also be dragged between waves and Squads, by simply holding MOUSE1 (LMB) and dragging the icon.\n"
                     f"You can perform more actions by using MOUSE2 (RMB) on a ZED icon within a Squad.\n\n"
-                    f"With this tool, you can create your own SpawnCycle, Import and alter other SpawnCycles, or even Generate SpawnCycles based on pre-determined criteria.\n\n"
+                    f"With this tool, you can create your own SpawnCycle, Import and alter other SpawnCycles, and even Generate SpawnCycles based on pre-determined criteria.\n"
+                    f"The Analyze feature allows you to simulate the SpawnCycle and generate detailed summary information on a per-wave basis, including the number of ZEDs spawned and a difficulty estimate.\n\n"
                     f"Enjoy!\n")
         self.add_message(init_msg)
 
