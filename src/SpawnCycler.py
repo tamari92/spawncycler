@@ -166,16 +166,17 @@ class Ui_MainWindow(object):
             this_squad['ZEDs'][zed_id]['Frame'].setParent(None) # Disassociate the widgets 
             del this_squad['ZEDs'][zed_id]
 
-        # Is this the last squad in the entire wave?
-        if len(this_squad['ZEDs'].keys()) > 0:
-            this_squad['Frame'].is_full = False
-            this_squad['Frame'].setToolTip('')
-            widget_helpers.set_plain_border(this_squad['Frame'], Color(255, 255, 255), 2)
-        else: # Last ZED in entire squad. We need to remove the entire Squad Frame too
+        # Is this the last ZED in the Squad?
+        total_zeds = sum([z['Count'] for z in this_squad['ZEDs'].values()])
+        if total_zeds > 0:
+            if total_zeds < _SQUAD_MAX:
+                this_squad['Frame'].is_full = False
+                this_squad['Frame'].setToolTip('')
+                widget_helpers.set_plain_border(this_squad['Frame'], Color(255, 255, 255), 2)
+        else: # Last ZED in Squad. We need to remove the entire Squad Frame
             this_squad['Layout'].setParent(None)
             this_squad['Frame'].setParent(None)
             self.wavedefs[wave_id]['Squads'].pop(squad_id)
-            print(self.wavedefs[wave_id])
 
         self.refresh_wavedefs() # Need to refresh everything
         
@@ -286,13 +287,13 @@ class Ui_MainWindow(object):
             self.set_window_title(f'SpawnCycler ({self.truncate_filename(self.filename)}*)') # Only if file is named though
 
     # Adds a new ZED to the given squad
-    def add_zed_to_squad(self, wave_id, squad_id, zed_id, count=1, raged=False):
+    def add_zed_to_squad(self, wave_id, squad_id, zed_id, count=1, raged=False, ignore_capacity=False):
         #print(zed_id)
         this_squad = self.wavedefs[wave_id]['Squads'][squad_id]
         squad_layout = this_squad['Layout'] # Get the layout corresponding to this wave's squad box
 
         # Squad is full, disallow.
-        if this_squad['Frame'].is_full:
+        if not ignore_capacity and this_squad['Frame'].is_full:
             self.add_message(f'Error: This squad has reached its maximum capacity of {_SQUAD_MAX} ZEDs!\nRemove some and try again.')
             return
 
@@ -343,12 +344,11 @@ class Ui_MainWindow(object):
 
         # Has this squad reached capacity?
         total_zeds = sum([x['Count'] for x in this_squad['ZEDs'].values()])
-        if total_zeds == _SQUAD_MAX:
+        if total_zeds >= _SQUAD_MAX:
             this_squad['Frame'].is_full = True # Mark as full
             this_squad['Frame'].setToolTip('This squad has reached capacity.')
             widget_helpers.set_plain_border(this_squad['Frame'], Color(245, 42, 20), 2)
             this_squad['Frame'].setStyleSheet('QToolTip {color: rgb(0, 0, 0)}\nQFrame_Drag {color: rgb(255, 0, 0); background-color: rgba(150, 0, 0, 30);}')
-            #this_squad['Frame'].anim.start()
 
         self.refresh_wavedefs() # Need to refresh
 
@@ -753,14 +753,14 @@ class Ui_MainWindow(object):
                         zed_count = this_squad_zeds[zid]['Count']
 
                         raged = True if 'Enraged' in new_zid else False
-                        self.add_zed_to_squad(wid, sid, new_zid, count=zed_count, raged=raged) # Add the new ZED
+                        self.add_zed_to_squad(wid, sid, new_zid, count=zed_count, raged=raged, ignore_capacity=True) # Add the new ZED
                         self.remove_zed_from_squad(wid, sid, zid, count='all') # Remove the old ZED after to keep the squad (for squad with len 1)     
                         
                         replaced = True
                         zeds_replaced += zed_count
 
         if replaced:
-            self.add_message(f"Replaced {zeds_replaced} {zeds_to_replace[0]}{'s' if zeds_replaced > 1 else ''} successfully!")
+            self.add_message(f"Replaced {zeds_replaced} {zeds_to_replace[0].replace(' (Enraged)', '')}{'s' if zeds_replaced > 1 else ''} successfully!")
             self.refresh_wavedefs() # Need to refresh everything
         else:
             self.add_message(f"Error: No ZEDs to replace!")
@@ -774,6 +774,15 @@ class Ui_MainWindow(object):
         # Add the current wave set as new waves in reverse order
         orig_len = len(self.wavedefs)
         i = orig_len - 1
+
+        # Show "Reversing Waves" dialog
+        diag_title = 'Reversing Waves..'
+        x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x() - 90 # Anchor dialog to center of window
+        y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
+        diag_text = f"Reversing Waves.."
+        loading_diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=False)
+        loading_diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+        loading_diag.show() # Show a dialog to tell user to check messages
 
         # Process waves in reverse order
         while i >= 0:
@@ -796,6 +805,8 @@ class Ui_MainWindow(object):
         # Remove the old waves
         for i in range(orig_len):
             self.remove_wavedef(0, should_warn=False)
+
+        loading_diag.close()
 
     # Setup ZED Pane
     def setup_zed_pane(self):
@@ -1458,7 +1469,8 @@ class Ui_MainWindow(object):
         waves = []
         for line in lines:
             line = line.replace(' ', '').replace('SpawnCycleDefs=', '').replace('\n', '')
-            waves.append(line.split(','))
+            squads = [parse.format_squad(squad) for squad in line.split(',')] # Convert squads to dict format
+            waves.append(squads)
         num_waves, num_squads, num_zeds = self.populate_waves(waves) # Load up the waves!
         self.dirty = False # Not dirty after freshly loading a file
         self.add_message(f"Successfully loaded {len(self.wavedefs)} waves, {num_squads:,d} squads, {num_zeds:,d} zeds from file '{filename}'.") # Post a message
