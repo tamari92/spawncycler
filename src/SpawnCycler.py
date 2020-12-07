@@ -7,6 +7,26 @@
 #  Main code base for SpawnCycler
 #
 
+
+##  LICENSE INFORMATION
+##  =======================================================================
+##  This file is part of SpawnCycler.
+
+##  SpawnCycler is free software: you can redistribute it and/or modify
+##  it under the terms of the GNU General Public License as published by
+##  the Free Software Foundation, either version 3 of the License, or
+##  (at your option) any later version.
+
+##  SpawnCycler is distributed in the hope that it will be useful,
+##  but WITHOUT ANY WARRANTY; without even the implied warranty of
+##  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+##  GNU General Public License for more details.
+
+##  You should have received a copy of the GNU General Public License
+##  along with SpawnCycler.  If not, see <https://www.gnu.org/licenses/>.
+##  =======================================================================
+
+
 from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import datetime
 from functools import partial
@@ -24,14 +44,13 @@ import widget_helpers
 #import cgitb 
 #cgitb.enable(format = 'text')
 
-# Things I could add maybe:
-# 1. AutoSave?
 
 _DEF_FONT_FAMILY = 'Consolas'
 _RECENT_MAX = 8 # Max "Recent Files"
 _WAVE_MAX = 10  # Max number of waves
 _SQUAD_MAX = 10  # Max ZEDs in a squad
 has_swapped_modes = False # Has the user swapped ZED modes yet?
+
 
 zed_ids = {'Cyst': 'CY',
            'Alpha Clot': 'AL',
