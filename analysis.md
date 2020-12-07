@@ -260,11 +260,18 @@ This is then repeated for the remaining ZED categories, and combined to obtain a
 
 The game's `Difficulty` factors into the calculation as well, since on higher difficulties, ZEDs both deal more damage and have more health. Some ZEDs, like the Husk, also have alternate attacks.
 ```
-Normal: 1.00
-Hard: 2.00
-Suicidal: 3.00
-Hell on Earth: 4.00
+Normal: 0.00
+Hard: 1.00
+Suicidal: 2.00
+Hell on Earth: 3.00
 ```
+The `ZEDDifficultyModifier` is found through the formula:
+
+`ZEDDifficultyModifier = 1.00 + (0.50 x DifficultyMod)`
+
+So for example..
+
+On a Hard difficulty match, the `ZEDDifficultyModifier` would be `1.00 + (0.50 x 1.00) = 1.50`.
 
 These two intermediate values come together to form the `ZEDScoreModifier`:
 
