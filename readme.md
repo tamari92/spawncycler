@@ -46,5 +46,7 @@ v1.0: [Google Drive (36.3 MB 7z)](https://drive.google.com/file/d/1fTj4gG_s1D_mf
 
 ## Legal
 SpawnCycler is written in Python and uses PyQt GUI Library
+
 © Nathan Ybanez, 2020 -- Licensed under GNU General Public License v3.0 (GPLv3)
+
 All rights reserved.
