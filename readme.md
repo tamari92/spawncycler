@@ -38,12 +38,6 @@ v1.0: [Google Drive (36.3 MB 7z)](https://drive.google.com/file/d/1fTj4gG_s1D_mf
 - Controlled Difficulty: **blackout** (https://github.com/notblackout/kf2-controlled-difficulty)
 - Controlled Difficulty - Eternal Edition: **H U N ナ E R** (https://steamcommunity.com/sharedfiles/filedetails/?id=1554427429)
 
-## Reference Documentation
-- [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
-- [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
-- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
-- [Converting SpawnCycles](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
-
 ## Legal / License
 SpawnCycler is written in Python and uses PyQt GUI Library
 
@@ -66,3 +60,9 @@ This software is licensed under GNU General Public License v3.0 (GPLv3):
 © Nathan Ybanez, 2020
 
 All rights reserved.
+
+## Reference Documentation
+- [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
+- [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
+- [Converting SpawnCycles](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
