@@ -239,7 +239,7 @@ class AnalyzeDialog(object):
             # Difficulty also affects this since it changes how much dosh you earn per kill
             max_wave = {0: 10, 1: 7, 2: 4}
             doshmod = {0: 1.00, 1: 1.25, 2: 1.50, 3: 1.75}
-            wave_score_mod = doshmod[self.params['Difficulty']] + (0.25 / (float(wave_id+1) / float(max_wave[self.params['GameLength']])))
+            wave_score_mod = doshmod[self.params['Difficulty']] + (float(wave_id+1) / float(max_wave[self.params['GameLength']]))
             
             # Longer waves tend to be harder due to resources (ammo, etc) having to be further spread out 
             wsf_mod = 1.5 + (float(self.params['WaveSizeFakes']) / 128.0)
