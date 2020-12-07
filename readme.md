@@ -30,7 +30,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 
 ## Binaries
 #### Windows
-v1.0: [Google Drive (36.3 MB 7z)](https://drive.google.com/file/d/1fTj4gG_s1D_mfCKhls3wX-v1B5QMzzl9/view?usp=sharing)
+v1.0: [Google Drive (37.6 MB ZIP)](https://drive.google.com/file/d/1Rnca0TDumABVWtrDA_wxNH5mOhjTgzip/view?usp=sharing)
 
 ## Credits
 - UI Design + General Programming: **Tamari**
