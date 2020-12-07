@@ -1670,6 +1670,7 @@ class Ui_MainWindow(object):
                     f"To get started, click 'Add Wave' and simply drag-and-drop ZEDs from the right-hand pane to form Squads!\n"
                     f"A Squad is a group of ZEDs which CD will attempt to spawn (in order) as it reads through the SpawnCycle.\n\n"
                     f"To remove ZEDs from a Squad, simply drag the ZED out of the Squad and onto the empty background.\n"
+                    f"ZEDs can also be dragged between waves and Squads, by simply holding MOUSE1 (LMB) and dragging the icon.\n"
                     f"You can perform more actions by using MOUSE2 (RMB) on a ZED icon within a Squad.\n\n"
                     f"With this tool, you can create your own SpawnCycle, Import and alter other SpawnCycles, or even Generate SpawnCycles based on pre-determined criteria.\n\n"
                     f"Enjoy!\n")
