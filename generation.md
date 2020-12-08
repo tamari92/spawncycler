@@ -41,6 +41,10 @@ Sets the minimum wave that **Fleshpounds, Quarter Pounds, and Alpha Fleshpounds*
 #### Boss Min Wave
 Sets the minimum wave that **Bosses** are allowed to appear. If the **Global Density** sliders are configured such that only Bosses will be generated, then this slider **must** be set to `1`. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
+![alternate_text](https://i.imgur.com/oYIXlSS.png)
+
+**Figure 1** - General Settings
+
 ## Global Density Settings
 The **Global Density Settings** allow the user to affect the way **ZED Categories** are chosen.
 
@@ -64,6 +68,10 @@ If two categories are at the **same** density (ie: 100% // 100% or 50% // 50%), 
 
 It is not possible to generate a SpawnCycle with all Global Densities set to `0%`.
 
+![alternate_text](https://i.imgur.com/1E3qSvv.png)
+
+**Figure 2** - Global Density Settings
+
 ## ZED Density Settings
 Similar to the **Global Density Settings**, the **ZED Density Settings** allow the user to affect the way **each individual ZED Type** is chosen within their respective categories.
 
@@ -79,6 +87,10 @@ For ZEDs with an **Albino** variant (Alpha Clot, Crawler, Gorefast), there is an
 
 For ZEDs that can become **SpawnRaged** (Fleshpound, Quarter Pound), there is an additional slider that allows the user to influence the chance for those ZEDs to spawn Enraged.
 
+![alternate_text](https://i.imgur.com/fHwuxup.png)
+
+**Figure 3** - ZED Density Settings
+
 ## Custom Settings
 Like in the **Creation Window**, the current **ZED Set** can be swapped between `Default` and `Custom` ZEDs.
 
@@ -93,7 +105,7 @@ The Generator tool supports several `Presets`, including:
 - `Heavy` (predominantly Large ZEDs)
 - `Albino` (predominantly Albino ZEDs)
 - `Poundemonium` (predominantly Larges, spawning earlier in the cycle)
-- `GSO` (almost all Larges, spawning very early in the cycle)
+- `GSO` (almost all Fleshpounds, spawning very early in the cycle)
 - `Min Settings` (all settings are at their minimum value)
 - `Max Settings` (all settings are at their maximum value)
 - `Unseen Annihilation` (predominantly Stalkers)

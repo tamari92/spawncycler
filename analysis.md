@@ -245,20 +245,20 @@ The value of the `ZEDScoreModifier` depends directly on what ZEDs are currently 
 Each ZED Category (Trash, Medium, Large, Boss) has a specific **weight** associated with it:
 ```
 Trash: 500 Points
-Medium: 2,000 Points
-Large: 5,000 Points
-Boss: 10,000 Points
+Medium: 1,500 Points
+Large: 3,000 Points
+Boss: 7,500 Points
 ```
 
 As the wave is simulated, a list is kept of all of the ZEDs that are currently "spawned". The maximum capacity of this list is directly influenced by the `MaxMonsters` setting. The higher the `MaxMonsters` is, the more ZEDs that can be alive at once.
 
 For each ZED Category, the total score is deterined by: `NumZEDsInCategory x CategoryWeight`.
 
-For example, **51** Trash ZEDs would give a score of `51 x 1,000 = 51,000 Points`.
+For example, **51** Trash ZEDs would give a score of `51 x 500 = 25,500 Points`.
 
 This is then repeated for the remaining ZED categories, and combined to obtain an overall value, called the `TotalZEDScore`:
 
-`TotalZEDScore = (NumTrash x 500) + (NumMedium x 2,000) + (NumLarge x 5,000) + (NumBoss x 10,000)`
+`TotalZEDScore = (NumTrash x 500) + (NumMedium x 1,500) + (NumLarge x 3,000) + (NumBoss x 7,500)`
 
 The game's `Difficulty` factors into the calculation as well, since on higher difficulties, ZEDs both deal more damage and have more health. Some ZEDs, like the Husk, also have alternate attacks.
 ```
@@ -281,16 +281,16 @@ These two intermediate values come together to form the `ZEDScoreModifier`:
 
 As an example, the `ZEDScoreModifier` at an arbitrary point of a wave of a Suicidal match might look like this:
 
-`ZEDScoreModifier = ((15 x 500) + (21 x 2,000) + (13 x 5,000) + (0 x 10,000)) x (1.00 + (0.50 x 2.00)) = 229,000`
+`ZEDScoreModifier = ((15 x 500) + (21 x 1,500) + (13 x 3,000) + (0 x 7,500)) x (1.00 + (0.50 x 2.00)) = 156,000.00`
 
 ##### Putting it all together
 With the intermediate values calculated, we can now determine the `DifficultyScore` for the current Simulation iteration:
 
 `DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x* ZEDScoreModifier`
 
-Suppose `WaveSizeModifier=1.09375`, `WaveDifficultyModifier=1.125`, and `ZEDScoreModifier=228,000.00`. This would give:
+Suppose `WaveSizeModifier=1.09375`, `WaveDifficultyModifier=1.125`, and `ZEDScoreModifier=156,000.00`. This would give:
 
-`DifficultyScore = 1.10 x 2.292 x 229,000 = 577,354.80`
+`DifficultyScore = 1.10 x 2.292 x 156,000.00 = 393,307.20`
 
 There is a `DifficultyScore` cap of `750,000.00`, so if this value were higher, it would be reduced to fit within that range.
 
@@ -298,11 +298,11 @@ Next, suppose the current iteration were `16/273` (16 ZEDs spawned so far / 273 
 
 This would imply that this `DifficultyScore` corresponds to `WaveProgress = (16 / 273) x 100.0 = 58.6%` through the wave.
 
-This forms a pair (x, y) of `(58.6, 577,354.80)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
+This forms a pair (x, y) of `(58.6, 393,307.20)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
 
 Note that this chart is also created for the entire SpawnCycle, using the average `DifficultyScore` of each wave.
 
-![alternate_text](https://i.imgur.com/AkLdytV.png)
+![alternate_text](https://i.imgur.com/ahMTaKa.png)
 
 **Figure 2** - Estimated Difficulty Chart
 

@@ -61,6 +61,10 @@ The placement of the ZED depends on where it was dragged:
 By pressing the "Up" and "Down" arrows to the left of each Wave Frame, waves can be *shifted up or down*.
 You can **delete** a Wave by pressing the red 'X'.
 
+![alternate_text](https://i.imgur.com/cUEIgcI.png)
+
+**Figure 3** - Wave Options
+
 ## Replacing ZEDs
 ZEDs can be replaced in two ways:
 - By right-clicking a ZED in a Squad and selecting `Replace ZED with..`
