@@ -30,7 +30,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 
 ## Binaries
 #### Windows
-v1.0: [Google Drive (37.6 MB ZIP)](https://drive.google.com/file/d/1-38HThgFrcDDLqcKsWeOFQacGh-HGHqJ/view?usp=sharing)
+v1.0: https://github.com/nybanez/spawncycler/releases
 
 ## Credits
 - UI Design + General Programming: **Tamari**
