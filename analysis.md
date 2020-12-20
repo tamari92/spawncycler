@@ -186,7 +186,7 @@ This table shows summary data for the number of ZEDs spawned of each individual 
 A ZED Group contains several different types of associated ZEDs.
 
 There are **nine** main Groups of ZEDs:
-- **Clots** (Alpha Clot, Cyst, Slasher, Rioter)
+- **Clots** (Alpha Clot, Cyst, Slasher)
 - **Gorefasts** (Gorefast, Gorefiend)
 - **Crawlers / Stalkers**
 - **Robots** (E.D.A.R Trapper, E.D.A.R Blaster, E.D.A.R Bomber)
@@ -286,7 +286,7 @@ As an example, the `ZEDScoreModifier` at an arbitrary point of a wave of a Suici
 ##### Putting it all together
 With the intermediate values calculated, we can now determine the `DifficultyScore` for the current Simulation iteration:
 
-`DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x* ZEDScoreModifier`
+`DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x ZEDScoreModifier`
 
 Suppose `WaveSizeModifier=1.09375`, `WaveDifficultyModifier=1.125`, and `ZEDScoreModifier=156,000.00`. This would give:
 
@@ -294,11 +294,11 @@ Suppose `WaveSizeModifier=1.09375`, `WaveDifficultyModifier=1.125`, and `ZEDScor
 
 There is a `DifficultyScore` cap of `750,000.00`, so if this value were higher, it would be reduced to fit within that range.
 
-Next, suppose the current iteration were `16/273` (16 ZEDs spawned so far / 273 ZEDs to spawn total).
+Next, suppose the current iteration were `61/273` (61 ZEDs spawned so far / 273 ZEDs to spawn total).
 
-This would imply that this `DifficultyScore` corresponds to `WaveProgress = (16 / 273) x 100.0 = 58.6%` through the wave.
+This would imply that this `DifficultyScore` corresponds to `WaveProgress = (61 / 273) x 100.0 = 22.3%` through the wave.
 
-This forms a pair (x, y) of `(58.6, 393,307.20)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
+This forms a pair (x, y) of `(22.3, 393,307.20)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
 
 Note that this chart is also created for the entire SpawnCycle, using the average `DifficultyScore` of each wave.
 
