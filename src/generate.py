@@ -36,17 +36,6 @@ _DEF_FONT_FAMILY = 'Consolas'
 has_swapped_modes_generate = False
 
 
-# Represents a RGB color
-class Color:
-    def __init__(self, r, g, b):
-        self.r = r
-        self.g = g
-        self.b = b
-
-    def __repr__(self):
-        return f"({self.r}, {self.g}, {self.b})"
-
-
 class GenerateDialog(object):
     # Creates a button with the ZED icon in it
     def create_zed_button(self, zed_id):
@@ -112,14 +101,20 @@ class GenerateDialog(object):
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp.setHorizontalStretch(0)
         sp.setVerticalStretch(0)
-        ss = 'QLabel {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
+        ss_label = 'QLabel {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
+        ss_le = 'QLineEdit {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
+        ss_slider = 'QSlider {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
 
-        low_label = widget_helpers.create_label(None, text=low_text, style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignCenter)
-        slider = widget_helpers.create_slider(min_value, max_value, tick_interval, width=width, default=default)
-        high_label = widget_helpers.create_label(None, text=high_text, style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignCenter)
+        # Create components
+        low_label = widget_helpers.create_label(None, text=low_text, style=ss_label, font=font, size_policy=sp, alignment=QtCore.Qt.AlignCenter)
+        slider = widget_helpers.create_slider(min_value, max_value, tick_interval, style=ss_slider, width=width, default=default)
+        high_label = widget_helpers.create_label(None, text=high_text, style=ss_label, font=font, size_policy=sp, alignment=QtCore.Qt.AlignCenter)
 
+        # Set tooltip
         if tooltip is not None:
             low_label.setToolTip(tooltip)
+            slider.setToolTip(tooltip)
+            high_label.setToolTip(tooltip)
 
         # Create text edit
         if text_box:
@@ -129,7 +124,8 @@ class GenerateDialog(object):
             font.setPointSize(10)
             font.setWeight(75)
             text_edit = QtWidgets.QLineEdit()
-            text_edit.setStyleSheet(ss)
+            text_edit.setStyleSheet(ss_le)
+            text_edit.setToolTip(tooltip)
             text_edit.setSizePolicy(sp)
             text_edit.setMaximumSize(QtCore.QSize(48, 28))
             text_edit.setFont(font)
