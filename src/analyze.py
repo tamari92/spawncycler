@@ -71,25 +71,12 @@ light_colors = {'Header': QtGui.QColor(100, 100, 100),
                 'Total': QtGui.QColor(184, 214, 224)}
 
 
-# Represents a RGB color
-class Color:
-    def __init__(self, r, g, b):
-        self.r = r
-        self.g = g
-        self.b = b
-
-    def __repr__(self):
-        return f"({self.r}, {self.g}, {self.b})"
-
-
 class AnalyzeDialog(object):
     # Returns the WaveSizeMultiplier based on the current WSF
     def get_wavesize_multiplier(self, wsf):
-        multis = [1.0, 2.0, 2.75, 3.5, 4.0, 4.5]
-        if wsf == 0: # 0 WSF means use the 1.0 multiplier
-            return 1.0
-        elif wsf <= 6:
-            return multis[wsf-1] # ie: WSF = 6 corresponds to the 5th entry (0-indexed)
+        multis = [1.0, 1.0, 2.0, 2.75, 3.5, 4.0, 4.5]
+        if wsf <= 6:
+            return multis[wsf]
         return 4.5 + ((wsf-6) * _WAVESIZE_DELTA) # WSF > 6
 
     # Returns the BaseNumZEDs based on the current wave and gamelength
@@ -256,6 +243,9 @@ class AnalyzeDialog(object):
 
     # Creates and returns a Table object representing the wave's data
     def create_waveframe(self, wave_data, merged=False, difficulty_data=None, axis_data=None):
+        if wave_data is None and not merged: # Empty wave
+            return
+
         # Style stuff
         ss_label = 'color: rgb(255, 255, 255);' # Stylesheet
         sp_fixed = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -302,7 +292,7 @@ class AnalyzeDialog(object):
         table_zed_category = widget_helpers.create_table(None, zed_category_data, num_rows=len(zed_category_data) // 3, num_cols=3, stretch=False)
         
         # Format table
-        widget_helpers.set_plain_border(table_zed_category, Color(255, 255, 255), 2)
+        widget_helpers.set_plain_border(table_zed_category, QtGui.QColor(255, 255, 255), 2)
         self.format_table(table_zed_category, table_type='categorical')
 
         # Create ZEDs by Category Pie Chart
@@ -353,7 +343,7 @@ class AnalyzeDialog(object):
         table_zed_type = widget_helpers.create_table(None, zed_type_data, num_rows=len(zed_type_data) // 4, num_cols=4, stretch=True)
 
         # Format table to have a nice border
-        widget_helpers.set_plain_border(table_zed_type, Color(255, 255, 255), 2)
+        widget_helpers.set_plain_border(table_zed_type, QtGui.QColor(255, 255, 255), 2)
         self.format_table(table_zed_type, table_type='type')
 
         # Setup ZEDs by Group Table
@@ -386,7 +376,7 @@ class AnalyzeDialog(object):
             table_zed_group = widget_helpers.create_table(None, zed_group_data, num_rows=len(zed_group_data) // 3, num_cols=3, stretch=True)
             
             # Format table
-            widget_helpers.set_plain_border(table_zed_group, Color(255, 255, 255), 2)
+            widget_helpers.set_plain_border(table_zed_group, QtGui.QColor(255, 255, 255), 2)
             self.format_table(table_zed_group, table_type='categorical')
 
             # Create ZEDs by Group Pie Chart
@@ -539,6 +529,19 @@ class AnalyzeDialog(object):
             wave_stats.append(wave_sample)
             difficulty_data.append(diff_sample)
 
+        # Add missing data for empty waves
+        if len(self.wavedefs) not in [4, 7, 10]:
+            if len(self.wavedefs) < 4:
+                next_interval = 4
+            elif len(self.wavedefs) < 7:
+                next_interval = 7
+            else:
+                next_interval = 10
+
+            num_to_add = next_interval - len(self.wavedefs)
+            wave_stats += [None for j in range(num_to_add)]
+            difficulty_data += [[(0.0, 0.0)] for k in range(num_to_add)]
+
         # Combine wave stats
         merged = {'Total': 0,
                   'Category': {'Trash': 0, 'Medium': 0, 'Large': 0, 'Boss': 0, 'Total': 0}, 
@@ -550,11 +553,12 @@ class AnalyzeDialog(object):
                   'SpawnRage': {'Quarter Pound': 0, 'Fleshpound': 0, 'Alpha Fleshpound': 0, 'Total': 0}}
         
         for ws in wave_stats:
-            merged['Total'] += ws['Total']
-            merged['Category'] = self.merge_dicts(merged['Category'], ws['Category'])
-            merged['Name'] = self.merge_dicts(merged['Name'], ws['Name'])
-            merged['Group'] = self.merge_dicts(merged['Group'], ws['Group'])
-            merged['SpawnRage'] = self.merge_dicts(merged['SpawnRage'], ws['SpawnRage'])
+            if ws is not None:
+                merged['Total'] += ws['Total']
+                merged['Category'] = self.merge_dicts(merged['Category'], ws['Category'])
+                merged['Name'] = self.merge_dicts(merged['Name'], ws['Name'])
+                merged['Group'] = self.merge_dicts(merged['Group'], ws['Group'])
+                merged['SpawnRage'] = self.merge_dicts(merged['SpawnRage'], ws['SpawnRage'])
 
         # Fonts, stylesheets
         ss_label = 'color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);' # Stylesheet
@@ -618,12 +622,13 @@ class AnalyzeDialog(object):
         # Display stats per-wave
         if not self.params['Overview Only']:
             for i in range(len(wave_stats)):
-                x_max = difficulty_data[i][-1][0]
-                axis_data = {'X': {'Title': '\nWave Progress (%)', 'Labels': ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%'], 'Min': 0, 'Max': x_max}, 'Y': {'Title': 'Difficulty\n', 'Tick': 10, 'Min': 0, 'Max': 755000}}
-                wave_label = widget_helpers.create_label(None, text=f"\n\nWAVE {i+1}", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
-                wave_frame, wave_frame_children = self.create_waveframe(wave_stats[i], merged=False, difficulty_data=difficulty_data[i], axis_data=axis_data) # Create table
-                self.scrollarea_contents_layout.addWidget(wave_label)
-                self.scrollarea_contents_layout.addWidget(wave_frame)
+                if wave_stats[i] is not None:
+                    x_max = difficulty_data[i][-1][0]
+                    axis_data = {'X': {'Title': '\nWave Progress (%)', 'Labels': ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%'], 'Min': 0, 'Max': x_max}, 'Y': {'Title': 'Difficulty\n', 'Tick': 10, 'Min': 0, 'Max': 755000}}
+                    wave_label = widget_helpers.create_label(None, text=f"\n\nWAVE {i+1}", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
+                    wave_frame, wave_frame_children = self.create_waveframe(wave_stats[i], merged=False, difficulty_data=difficulty_data[i], axis_data=axis_data) # Create table
+                    self.scrollarea_contents_layout.addWidget(wave_label)
+                    self.scrollarea_contents_layout.addWidget(wave_frame)
             
         # Reset scrollbar to top
         #self.scrollarea.verticalScrollBar().setValue(0);
