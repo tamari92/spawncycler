@@ -130,7 +130,7 @@ class ConvertDialog(object):
 
         # Create go button
         filler_label = widget_helpers.create_label(self.scrollarea, text='\n', style=ss, font=font_label)
-        self.convert_button = widget_helpers.create_button(None, None, None, text=' Convert! ', icon_path='img/icon_go.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font_label)
+        self.convert_button = widget_helpers.create_button(None, None, None, text=' Convert! ', icon_path='img/icon_go.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font_label, draggable=False)
         self.convert_button.setStyleSheet('color: rgb(255, 255, 255); background-color: rgb(60, 60, 60);')
         self.convert_button.clicked.connect(self.convert_spawncycles)
 
@@ -217,7 +217,7 @@ class ConvertDialog(object):
         textfield.setAlignment(QtCore.Qt.AlignLeft)
 
         # Create browse button
-        textfield_button = widget_helpers.create_button(None, None, None, 'Browse..', target=partial(self.browse_file, textfield), style=ss, font=font, size_policy=sp)
+        textfield_button = widget_helpers.create_button(None, None, None, 'Browse..', target=partial(self.browse_file, textfield), style=ss, font=font, size_policy=sp, draggable=False)
         textfield_button.setStyleSheet('color: rgb(255, 255, 255); background-color: rgb(60, 60, 60);')
 
         # Add to layout
@@ -251,17 +251,28 @@ class ConvertDialog(object):
         filename = json_dict['Name'].lower() + '.json'
         dirpath = str(QtWidgets.QFileDialog.getExistingDirectory(None, 'Select Directory')) # Open the dialog and get the dir to save in
         fullpath = f"{dirpath}/{filename}"
-        with open(fullpath, 'w') as f_out: # Save the file
-            f_out.write(json.dumps(json_dict).replace(' ', ''))
 
-        # Add a message
-        self.add_message(f"Conversion successful! Saved to '{fullpath}'.")
+        if dirpath == '': # User cancelled out of the dialog
+            return
+
+        try:
+            with open(fullpath, 'w') as f_out: # Save the file
+                f_out.write(json.dumps(json_dict).replace(' ', ''))
+            successful = True
+        except: # Dir inaccessible somehow (perhaps permission denied)
+            successful = False
+
+        if successful:
+            self.add_message(f"Conversion successful! Saved to '{fullpath}'.")
+            diag_text = f'Conversion successful!'
+        else:
+            self.add_message(f"Conversion failed! The given filepath is either inaccessible or does not exist.")
+            diag_text = f'Errors occurred while attempting to convert.\nSee the Messages box below for more details.'
 
         # Show a dialog upon completion
         x = self.scrollarea.mapToGlobal(self.scrollarea.rect().center()).x() - 90 # Anchor dialog to center of window
         y = self.scrollarea.mapToGlobal(self.scrollarea.rect().center()).y()
         diag_title = 'SpawnCycler'
-        diag_text = f'Conversion successful!'
         diag = widget_helpers.create_simple_dialog(self.scrollarea, diag_title, diag_text, x, y, button=True)
         diag.setWindowIcon(QtGui.QIcon('img/icon_check.png'))
         diag.exec_() # Show a dialog to tell user to check messages
@@ -411,7 +422,7 @@ class ConvertDialog(object):
         # If we reach this point, it's safe to create the JSON
         sdate = self.date_widget.selectedDate()
         sdate_str = f"{sdate.year()}-{sdate.month():02d}-{sdate.day():02d}"
-        json_dict = {'Name': self.name_widget.text(), 'Author': self.author_widget.text(), 'Date': sdate_str, 'ShortSpawnCycle': {}, 'NormalSpawnCycle': {}, 'LongSpawnCycle': {}}
+        json_dict = {'Name': self.name_widget.text().lower(), 'Author': self.author_widget.text(), 'Date': sdate_str, 'ShortSpawnCycle': {}, 'NormalSpawnCycle': {}, 'LongSpawnCycle': {}}
 
         if len(file1_name) > 0:
             spawncycle1 = self.spawncycle_to_dict(file1_lines)
