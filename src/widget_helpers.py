@@ -187,6 +187,58 @@ class QOptionsButton(QtWidgets.QPushButton):
 
 
 # Custom version of QFrame that supports Drag & Drop
+class QSwapFrame(QtWidgets.QFrame):
+    def __init__(self, parent, wave_id, squad_id):
+        super().__init__(parent)
+        self.setAcceptDrops(True)
+        self.wave_id = wave_id
+        self.squad_id = squad_id
+        self.setStyleSheet("color: rgb(255, 255, 255); background-color: rgba(50, 50, 50, 0);")
+
+    # Called when something first enters the widget
+    def dragEnterEvent(self, e):
+        zed_button = e.source()
+        if not isinstance(zed_button, QSquadButton):
+            e.ignore()
+            return
+        else:
+            self.setFrameShape(QtWidgets.QFrame.Box)
+            self.setFrameShadow(QtWidgets.QFrame.Plain)
+            self.setLineWidth(10)
+            self.setStyleSheet("color: rgb(50, 50, 255); background-color: rgba(50, 50, 255, 30);")
+        e.acceptProposedAction()
+
+    # Called when something is dragged out of the widget
+    def dragLeaveEvent(self, e):
+        self.setStyleSheet("color: rgb(255, 255, 255); background-color: rgba(50, 50, 50, 0);")
+        self.setFrameShape(QtWidgets.QFrame.NoFrame)
+        self.setLineWidth(0)
+        e.accept()
+
+    # Called when something is dragged across the widget
+    def dragMoveEvent(self, e):
+        zed_button = e.source()
+        if not isinstance(zed_button, QSquadButton):
+            e.ignore() # Accept all ZED pane buttons
+            return
+        else:
+            e.acceptProposedAction()
+        
+    # Called when something is released onto the widget
+    def dropEvent(self, e):
+        zed_button = e.source()
+
+        if not isinstance(zed_button, QSquadButton):
+            e.ignore()
+            return
+        else:
+            self.setStyleSheet("color: rgb(255, 255, 255); background-color: rgba(50, 50, 50, 0);") # Reset border color
+            self.setFrameShape(QtWidgets.QFrame.NoFrame)
+            self.setLineWidth(0)
+        e.ignore()
+
+
+# Custom version of QFrame that supports Drag & Drop
 class QFrame_Drag(QtWidgets.QFrame):
     def __init__(self, parent, id, squad=True):
         super().__init__(parent)
@@ -321,7 +373,7 @@ class QScrollArea_Drag(QtWidgets.QScrollArea):
 
 # Sets the object to have a white border around it
 def set_plain_border(obj, color, width):
-    obj.setStyleSheet(f"color: rgb{color};")
+    obj.setStyleSheet(f"color: rgb({color.red()}, {color.green()}, {color.blue()});")
     obj.setFrameShape(QtWidgets.QFrame.Box)
     obj.setFrameShadow(QtWidgets.QFrame.Plain)
     obj.setLineWidth(width)
@@ -466,7 +518,7 @@ def create_button(parent, app, id, text=None, target=None, tooltip=None, style=N
 
 
 # Creates, initializes, and returns a QSlider
-def create_slider(min_value, max_value, tick_interval, width=480, default='max'):
+def create_slider(min_value, max_value, tick_interval, style=None, width=480, default='max'):
     slider = QtWidgets.QSlider()
     sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
     sp.setHorizontalStretch(0)
@@ -475,10 +527,17 @@ def create_slider(min_value, max_value, tick_interval, width=480, default='max')
     slider.setMinimumSize(QtCore.QSize(width, 0))
     slider.setMinimum(min_value)
     slider.setMaximum(max_value)
+
+    # Set default value
     if default == 'max':
         slider.setValue(max_value)
     else:
         slider.setValue(default)
+
+    # Set style
+    if style is not None:
+        slider.setStyleSheet(style)
+
     slider.setOrientation(QtCore.Qt.Horizontal)
     slider.setTickPosition(QtWidgets.QSlider.TicksBelow)
     slider.setTickInterval(tick_interval)
