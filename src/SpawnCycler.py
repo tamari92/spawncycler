@@ -84,17 +84,6 @@ zed_ids = {'Cyst': 'CY',
            'Abomination Spawn': 'AS'}
 
 
-# Represents a RGB color
-class Color:
-    def __init__(self, r, g, b):
-        self.r = r
-        self.g = g
-        self.b = b
-
-    def __repr__(self):
-        return f"({self.r}, {self.g}, {self.b})"
-
-
 class Ui_MainWindow(object):
     def __init__(self, app):
         self.app = app
@@ -177,7 +166,7 @@ class Ui_MainWindow(object):
         if count != 'all' and this_squad['ZEDs'][zed_id]['Count'] > 1:
             this_squad['ZEDs'][zed_id]['Count'] -= 1
             if 'Enraged' in zed_id:
-                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']) + ' !')
+                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']) + '!')
             else:
                 this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']))
         else: # Last ZED of its type in the squad. Teardown the zed frame
@@ -192,7 +181,7 @@ class Ui_MainWindow(object):
             if total_zeds < _SQUAD_MAX:
                 this_squad['Frame'].is_full = False
                 this_squad['Frame'].setToolTip('')
-                widget_helpers.set_plain_border(this_squad['Frame'], Color(255, 255, 255), 2)
+                widget_helpers.set_plain_border(this_squad['Frame'], QtGui.QColor(255, 255, 255), 2)
         else: # Last ZED in Squad. We need to remove the entire Squad Frame
             this_squad['Layout'].setParent(None)
             this_squad['Frame'].setParent(None)
@@ -206,7 +195,7 @@ class Ui_MainWindow(object):
             self.set_window_title(f'SpawnCycler ({self.truncate_filename(self.filename)}*)') # Only if file is named though
 
     # Creates a new frame for a ZED in a squad (holding the icon and number)
-    def create_zed_frame(self, parent, zed_button):
+    def create_zed_frame(self, parent, zed_button, wave_id, squad_id, zed_id):
         font_label = QtGui.QFont()
         font_label.setFamily(_DEF_FONT_FAMILY)
         font_label.setPointSize(12)
@@ -214,6 +203,7 @@ class Ui_MainWindow(object):
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp.setHorizontalStretch(0)
         sp.setVerticalStretch(0)
+        ss_button = 'QToolTip {color: rgb(0, 0, 0)};\nQPushButton{background-color: rgb(40, 40, 40)};' # Stylesheet
         ss_label = 'color: rgb(255, 255, 255);' # Stylesheet
 
         # Create the frame
@@ -221,18 +211,49 @@ class Ui_MainWindow(object):
         zed_frame.setSizePolicy(sp)
         zed_frame.setMinimumSize(QtCore.QSize(1, 1))
         zed_frame_layout = QtWidgets.QVBoxLayout(zed_frame) # Add layout
+        zed_frame_layout.setContentsMargins(0, 4, 0, 4)
         zed_frame.setStyleSheet("background-color: rgba(0, 0, 0, 0)")
 
         # Create label
         zed_label = widget_helpers.create_label(zed_frame, text='1', style=ss_label, font=font_label)
         zed_label.setAlignment(QtCore.Qt.AlignCenter)
 
-        # Put it all together
-        zed_frame_layout.addWidget(zed_button)
-        zed_frame_layout.addWidget(zed_label)
-        zed_frame_layout.setSpacing(0)
+        # Create button frame
+        zed_icon_frame = QtWidgets.QFrame()
+        zed_icon_frame_layout = QtWidgets.QHBoxLayout(zed_icon_frame)
+        zed_icon_frame_layout.addWidget(zed_button)
+        zed_icon_frame_layout.setAlignment(QtCore.Qt.AlignCenter)
+        zed_icon_frame_layout.setContentsMargins(0, 0, 0, 0)
 
-        return zed_frame, {'Button': zed_button, 'Label': zed_label}
+        # Create up and down arrows
+        icon_w = 8
+        icon_h = 8
+        button_frame = QtWidgets.QFrame()
+        button_frame.setSizePolicy(sp)
+        button_layout = QtWidgets.QHBoxLayout(button_frame)
+        add_button = widget_helpers.create_button(None, None, None, style=ss_button, icon_path='img/icon_plus.png', size_policy=sp, icon_w=icon_w, icon_h=icon_h, squad=False, draggable=False)
+        sub_button = widget_helpers.create_button(None, None, None, style=ss_button, icon_path='img/icon_minus.png', size_policy=sp, icon_w=icon_w, icon_h=icon_h, squad=False, draggable=False)
+
+        # Hook up the buttons
+        raged = True if '(Enraged)' in zed_id else False
+        add_button.clicked.connect(partial(self.add_zed_to_squad, wave_id, squad_id, zed_id, 1, raged, False))
+        sub_button.clicked.connect(partial(self.remove_zed_from_squad, wave_id, squad_id, zed_id, 1))
+
+        # Add the stuff to the button layout
+        button_layout.addWidget(sub_button)
+        button_layout.addWidget(zed_label)
+        button_layout.addWidget(add_button)
+        button_layout.setAlignment(QtCore.Qt.AlignCenter)
+        button_layout.setSpacing(1)
+        button_layout.setContentsMargins(0, 0, 0, 0)
+
+        # Put it all together
+        zed_frame_layout.addWidget(zed_icon_frame)
+        zed_frame_layout.addWidget(button_frame)
+        zed_frame_layout.setSpacing(0)
+        zed_frame_layout.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignTop)
+
+        return zed_frame, {'Button': zed_button, 'Label': zed_label, 'AddButton': add_button, 'SubtractButton': sub_button}
 
     # Adds a squad to the specified wave
     def add_squad(self, wave_id, zed_id, count=1, raged=False):
@@ -253,7 +274,8 @@ class Ui_MainWindow(object):
         zed_button.zed_mode = self.zed_mode
 
         # Create a new frame for the squad
-        squad_frame = widget_helpers.QFrame_Drag(self.wavedefs[wave_id]['Frames']['SquadFrame'], id=len(self.wavedefs[wave_id]['Squads']), squad=True)
+        squad_id = len(self.wavedefs[wave_id]['Squads'])
+        squad_frame = widget_helpers.QFrame_Drag(self.wavedefs[wave_id]['Frames']['SquadFrame'], id=squad_id, squad=True)
         squad_frame.raise_() # Raise to top-layer
         squad_frame.wave_id = wave_id
         squad_frame.add_zed_to_squad = self.add_zed_to_squad
@@ -273,30 +295,43 @@ class Ui_MainWindow(object):
             raged = True
 
         # Create a frame for the ZED and its count
-        zed_frame, zed_frame_children = self.create_zed_frame(squad_frame, zed_button)
+        zed_frame, zed_frame_children = self.create_zed_frame(squad_frame, zed_button, wave_id, squad_id, zed_id)
         if raged:
-            zed_frame_children['Label'].setText(str(count) + ' !')
+            zed_frame_children['Label'].setText(str(count) + '!')
             zed_frame_children['Label'].setStyleSheet("color: rgb(255, 55, 55);")
             zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid red;}")
         else:
             zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid white;}")
             zed_frame_children['Label'].setText(str(count))
 
+        # Add the swap frames
+        swap_frame_before = widget_helpers.QSwapFrame(None, wave_id, squad_id)
+        swap_frame_before.setFixedSize(QtCore.QSize(10, 86))
+        swap_frame_after = widget_helpers.QSwapFrame(None, wave_id, squad_id)
+        swap_frame_after.setFixedSize(QtCore.QSize(10, 86))
+
+
         # Add the widgets
+        squad_frame_layout.addWidget(swap_frame_before)
         squad_frame_layout.addWidget(zed_frame)
+        squad_frame_layout.addWidget(swap_frame_after)
         wave_layout.addWidget(squad_frame)
+
+        vbar = self.wavedefs_scrollarea.verticalScrollBar()
+        try: # Hacky: try to disconnect any functions on the vertical bar. If none, just ignore and do nothing
+            vbar.rangeChanged.disconnect()
+        except:
+            pass
 
         # Set the horizontal scrollbar to the right
         hbar = self.wavedefs_scrollarea.horizontalScrollBar()
         hbar.rangeChanged.connect(lambda: hbar.setValue(hbar.maximum()))
 
-        self.refresh_wavedefs() # Need to refresh
-
         # Squad is full
         if count == _SQUAD_MAX:
             squad_frame.is_full = True # Mark as full
             squad_frame.setToolTip('This squad has reached capacity.')
-            widget_helpers.set_plain_border(squad_frame, Color(245, 42, 20), 2)
+            widget_helpers.set_plain_border(squad_frame, QtGui.QColor(245, 42, 20), 2)
             squad_frame.setStyleSheet('QToolTip {color: rgb(0, 0, 0)}\nQFrame_Drag {color: rgb(255, 0, 0); background-color: rgba(150, 0, 0, 30);}')
 
         self.wavedefs[wave_id]['Squads'].append({'Frame': squad_frame, 'Layout': squad_frame_layout, 'ZEDs': {zed_id: {'Count': count, 'Raged': raged, 'Frame': zed_frame, 'Children': zed_frame_children}}})
@@ -342,22 +377,29 @@ class Ui_MainWindow(object):
         if zed_id in this_squad['ZEDs']:
             this_squad['ZEDs'][zed_id]['Count'] += count
             if raged:
-                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']) + ' !')
+                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']) + '!')
             else:
                 this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']))
         else: # Zed isn't in the squad yet
-            zed_frame, zed_frame_children = self.create_zed_frame(this_squad['Frame'], zed_button)
+            zed_frame, zed_frame_children = self.create_zed_frame(this_squad['Frame'], zed_button, wave_id, squad_id, zed_id)
 
             if raged: # Mark spawn raged FP
                 zed_frame_children['Label'].setStyleSheet("color: rgb(255, 55, 55);")
                 zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid red;}")
-                zed_frame_children['Label'].setText(str(count) + ' !')
+                zed_frame_children['Label'].setText(str(count) + '!')
             else:
                 zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid white;}")
                 zed_frame_children['Label'].setText(str(count))
 
             this_squad['ZEDs'][zed_id] = {'Count': count, 'Raged': raged, 'Frame': zed_frame, 'Children': zed_frame_children}
+
+            # Add the swap frame
+            swap_frame_after = widget_helpers.QSwapFrame(None, wave_id, squad_id)
+            swap_frame_after.setFixedSize(QtCore.QSize(10, 86))
+            #swap_frame_after.setSizePolicy(sp)
+
             squad_layout.addWidget(zed_frame)
+            squad_layout.addWidget(swap_frame_after)
 
         zed_button.squad_uid = this_squad['Frame'].unique_id
 
@@ -366,10 +408,8 @@ class Ui_MainWindow(object):
         if total_zeds >= _SQUAD_MAX:
             this_squad['Frame'].is_full = True # Mark as full
             this_squad['Frame'].setToolTip('This squad has reached capacity.')
-            widget_helpers.set_plain_border(this_squad['Frame'], Color(245, 42, 20), 2)
+            widget_helpers.set_plain_border(this_squad['Frame'], QtGui.QColor(245, 42, 20), 2)
             this_squad['Frame'].setStyleSheet('QToolTip {color: rgb(0, 0, 0)}\nQFrame_Drag {color: rgb(255, 0, 0); background-color: rgba(150, 0, 0, 30);}')
-
-        self.refresh_wavedefs() # Need to refresh
 
         # The file is now 'dirty'
         self.dirty = True
@@ -405,9 +445,14 @@ class Ui_MainWindow(object):
             j = 0
             for squad in self.wavedefs[i]['Squads']:
                 squad['Frame'].id = j
-                for z in squad['ZEDs'].values():
-                    z['Children']['Button'].squad_id = j
-                    z['Children']['Button'].zed_mode = self.zed_mode
+                for (zed_id, zed_data) in squad['ZEDs'].items():
+                    zed_data['Children']['Button'].squad_id = j
+                    zed_data['Children']['Button'].zed_mode = self.zed_mode
+                    #print(f"{i} {j}")
+                    # Re-hook up the +/- buttons
+                    raged = True if '(Enraged)' in zed_id else False
+                    widget_helpers.button_changetarget(zed_data['Children']['AddButton'], partial(self.add_zed_to_squad, i, j, zed_id, 1, raged, False))
+                    widget_helpers.button_changetarget(zed_data['Children']['SubtractButton'], partial(self.remove_zed_from_squad, i, j, zed_id, 1))
                 j += 1
 
             # Disable Shift buttons if at the ends of the array
@@ -591,9 +636,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         font.setKerning(True)
 
-        button_text_color = Color(255, 255, 255)
-        button_bg_color = Color(40, 40, 40)
-        ss = 'QPushButton {color: rgb' + str(button_text_color) + ';\nbackground-color: rgb' + str(button_bg_color) + ';}' # Stylesheet
+        ss = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
         icon_w = 24
         icon_h = 24
 
@@ -780,7 +823,6 @@ class Ui_MainWindow(object):
 
         if replaced:
             self.add_message(f"Replaced {zeds_replaced} {zeds_to_replace[0].replace(' (Enraged)', '')}{'s' if zeds_replaced > 1 else ''} successfully!")
-            self.refresh_wavedefs() # Need to refresh everything
         else:
             self.add_message(f"Error: No ZEDs to replace!")
 
@@ -890,7 +932,7 @@ class Ui_MainWindow(object):
         label_trashzeds = widget_helpers.create_label(self.zed_grid_contents, text='Trash ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
         self.labels.update({'Trash ZEDs' : label_trashzeds})
         self.gridLayout_2.addWidget(label_trashzeds, 0, 0, 1, 1)
-        widget_helpers.set_plain_border(label_trashzeds, color=Color(255, 255, 255), width=2)
+        widget_helpers.set_plain_border(label_trashzeds, color=QtGui.QColor(255, 255, 255), width=2)
         self.grid_trashzeds = QtWidgets.QGridLayout()
         self.grid_trashzeds.setObjectName("grid_trashzeds")
 
@@ -936,7 +978,7 @@ class Ui_MainWindow(object):
         label_mediumzeds = widget_helpers.create_label(self.zed_grid_contents, text='Medium ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
         self.labels.update({'Medium ZEDs' : label_mediumzeds})
         self.gridLayout_2.addWidget(label_mediumzeds, 2, 0, 1, 1)
-        widget_helpers.set_plain_border(label_mediumzeds, color=Color(255, 255, 255), width=2)
+        widget_helpers.set_plain_border(label_mediumzeds, color=QtGui.QColor(255, 255, 255), width=2)
         self.grid_mediumzeds = QtWidgets.QGridLayout()
         self.grid_mediumzeds.setObjectName("grid_mediumzeds")
 
@@ -970,7 +1012,7 @@ class Ui_MainWindow(object):
         label_largezeds = widget_helpers.create_label(self.zed_grid_contents, text='Large ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
         self.labels.update({'Large ZEDs' : label_largezeds})
         self.gridLayout_2.addWidget(label_largezeds, 4, 0, 1, 1)
-        widget_helpers.set_plain_border(label_largezeds, color=Color(255, 255, 255), width=2)
+        widget_helpers.set_plain_border(label_largezeds, color=QtGui.QColor(255, 255, 255), width=2)
         self.grid_largezeds = QtWidgets.QGridLayout()
         self.grid_largezeds.setObjectName("grid_largezeds")
 
@@ -1012,7 +1054,7 @@ class Ui_MainWindow(object):
         label_bosses = widget_helpers.create_label(self.zed_grid_contents, text='Bosses', style=ss_label, font=font_label, size_policy=sp_label)
         self.labels.update({'Bosses' : label_bosses})
         self.gridLayout_2.addWidget(label_bosses, 6, 0, 1, 1)
-        widget_helpers.set_plain_border(label_bosses, color=Color(255, 255, 255), width=2)
+        widget_helpers.set_plain_border(label_bosses, color=QtGui.QColor(255, 255, 255), width=2)
         self.grid_bosses = QtWidgets.QGridLayout()
         self.grid_bosses.setObjectName("grid_bosses")
 
@@ -1110,6 +1152,10 @@ class Ui_MainWindow(object):
         vbar = self.messages_textedit.verticalScrollBar()
         vbar.setValue(vbar.maximum())
 
+    # Clears the messages window
+    def clear_messages(self):
+        self.messages_textedit.setText('')
+
     # Sets up the messages box
     def setup_messages(self):
         # Font stuff
@@ -1125,14 +1171,26 @@ class Ui_MainWindow(object):
         font_messages.setBold(True)
         font_messages.setWeight(75)
 
+        sp_button = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        sp_button.setHorizontalStretch(0)
+        sp_button.setVerticalStretch(0)
+        ss_button = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
         ss_label = 'color: rgb(255, 255, 255);' # Stylesheet
         ss_textedit = 'color: rgb(255, 255, 255); background-color: rgba(40, 40, 40, 255);'
 
         # Set up Messages area
+        messages_header_frame = QtWidgets.QFrame()
+        messages_header_layout = QtWidgets.QHBoxLayout(messages_header_frame)
+        messages_header_layout.setAlignment(QtCore.Qt.AlignLeft|QtCore.Qt.AlignVCenter)
+        messages_header_layout.setSpacing(15)
         label_messages_header = widget_helpers.create_label(self.central_widget, text='Messages', style=ss_label, font=font_label)
         label_messages_header.setAlignment(QtCore.Qt.AlignLeft)
+        button_clear_messages = widget_helpers.create_button(self.central_widget, None, 'Clear', target=self.clear_messages, text=' Clear', tooltip='Clears all Messages', style=ss_button, font=font_messages, size_policy=sp_button, draggable=False)
         self.labels.update({'Messages Header' : label_messages_header})
-        self.wavedefs_area.addWidget(label_messages_header)
+        self.buttons.update({'Clear Messages' : button_clear_messages})
+        messages_header_layout.addWidget(label_messages_header)
+        messages_header_layout.addWidget(button_clear_messages)
+        self.wavedefs_area.addWidget(messages_header_frame)
 
         # Set up Messages area
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Expanding, QtWidgets.QSizePolicy.Fixed)
@@ -1155,12 +1213,6 @@ class Ui_MainWindow(object):
         for i in reversed(range(self.wavedefs_scrollarea_layout.count())): 
             self.wavedefs_scrollarea_layout.itemAt(i).widget().setParent(None)
         self.wavedefs = []
-
-    # Completely clears the Messages box
-    def clear_messages(self):
-        for l in self.message_labels:
-            l.setParent(None)
-        self.message_labels = []
 
     def dialog_cancel(self, dialog):
         dialog.cancelled = True
@@ -1353,12 +1405,12 @@ class Ui_MainWindow(object):
         diag.exec_() # Show a dialog to tell user to check messages
 
         # Post messages
-        gen_str = (f"Generation complete!\n\n"
-                   f"Summary\n----------------------\n"
-                   f"{sd['Game Length']} Waves generated\n"
-                   f"{num_squads_generated} Squads generated\n"
-                   f"{num_zeds_generated} ZEDs generated ({num_trash_generated} Trash, {num_medium_generated} Mediums, {num_larges_generated} Larges, {num_bosses_generated} Bosses)\n"
-                   f"{num_albino_generated} Albino ZEDs generated\n"
+        gen_str = (f"Generation complete!\n\n" +
+                   f"Summary\n----------------------\n" +
+                   f"{sd['Game Length']} Waves generated\n" +
+                   f"{num_squads_generated} Squads generated\n" +
+                   f"{num_zeds_generated} ZEDs generated ({num_trash_generated} Trash, {num_medium_generated} Mediums, {num_larges_generated} Larges, {num_bosses_generated} Bosses)\n" +
+                   f"{num_albino_generated} Albino ZEDs generated\n" +
                    f"{num_spawnrage_generated} SpawnRaged ZEDs generated")
         self.add_message(gen_str)
 
@@ -1422,6 +1474,7 @@ class Ui_MainWindow(object):
 
         # Attempt to read in the file
         try:
+            self.add_message(f"Attempting to open file '{filename}'..")
             with open(filename, 'r') as f_in: 
                 lines = f_in.readlines()
 
@@ -1439,6 +1492,8 @@ class Ui_MainWindow(object):
                     self.recent_files.remove(fname)
                     self.refresh_recent_menu() # Refresh the "Recent" menu
             return
+
+        self.add_message('Success!')
 
         # Now we can finally open the new file and process it.
         # The current file is 'dirty', needs saving before we populate with the new stuff
@@ -1594,7 +1649,7 @@ class Ui_MainWindow(object):
     def reset_state(self):
         self.dirty = False # Reset dirty status
         self.clear_wavedefs() # Delete all waves
-        self.clear_messages() # Delete all messages
+        #self.clear_messages() # Delete all messages
 
         # Re-add the "Add Wave" button
         sp_button = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
@@ -1717,18 +1772,18 @@ class Ui_MainWindow(object):
         error_msg = ''
 
         # Invalid SpawnCycle length
-        if len(self.wavedefs) not in [4, 7, 10]:
-            error_msg += f"Cannot analyze SpawnCycle of length {len(self.wavedefs)} wave(s).\nWave count must be 4, 7, or 10!\n"
+        if len(self.wavedefs) < 1:
+            error_msg += f"Error: Cannot analyze an empty SpawnCycle. Must have at least one wave with ZEDs within!"
 
         # Check for empty waves
-        if len(self.wavedefs) > 0:
+        else:
             found = False
             for wave in self.wavedefs:
                 if len(wave['Squads']) == 0: # Found an empty wave
                     found = True
                     break
             if found:
-                error_msg += f"Cannot analyze empty waves. All waves must have at least one ZED!\n"
+                error_msg += f"Error: Cannot analyze empty waves. All waves must have at least one ZED!"
 
         # Print errors
         if error_msg != '':
