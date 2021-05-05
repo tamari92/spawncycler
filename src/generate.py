@@ -249,7 +249,7 @@ class GenerateDialog(object):
     # Sets up the options buttons at the bottom of the window
     def setup_button_pane(self, Dialog):
         # Style stuff
-        ss = 'color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);' # Stylesheet
+        ss = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}; QToolTip {color: rgb(0, 0, 0)};' # Stylesheet
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp.setHorizontalStretch(0)
         sp.setVerticalStretch(0)
@@ -259,10 +259,10 @@ class GenerateDialog(object):
         font.setWeight(75)
 
         # Create buttons
-        generate_button = widget_helpers.create_button(None, None, None, text=' Generate! ', icon_path='img/icon_go.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
+        generate_button = widget_helpers.create_button(None, None, None, text=' Generate! ', tooltip='Generate the SpawnCycle using the selected settings.', icon_path='img/icon_go.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
         generate_button.clicked.connect(self.accept_preset)
-        presets_button = widget_helpers.create_button(None, None, None, text=' Presets ', icon_path='img/icon_presets.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=True, squad=False, draggable=False)
-        menu_opts = {'Light': partial(self.load_preset, 'Light'),
+        presets_button = widget_helpers.create_button(None, None, None, text=' Presets ', tooltip='Load a preset Generator configuration.', icon_path='img/icon_presets.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=True, squad=False, draggable=False)
+        targets =   {'Light': partial(self.load_preset, 'Light'),
                      'Moderate': partial(self.load_preset, 'Moderate'),
                      'Heavy': partial(self.load_preset, 'Heavy'),
                      'Albino': partial(self.load_preset, 'Albino'),
@@ -270,7 +270,11 @@ class GenerateDialog(object):
                      'GSO': partial(self.load_preset, 'GSO'),
                      'Min Settings': partial(self.load_preset, 'Min Settings'),
                      'Max Settings': partial(self.load_preset, 'Max Settings'),
-                     'Unseen Annihilation': partial(self.load_preset, 'Unseen Annihilation'),
+                     'Putrid Pollution': partial(self.load_preset, 'Putrid Pollution'),
+                     'Sonic Subversion': partial(self.load_preset, 'Sonic Subversion'),
+                     'Android Annihilation': partial(self.load_preset, 'Android Annihilation'),
+                     'Arachnophobia': partial(self.load_preset, 'Arachnophobia'),
+                     'Cloaked Carnage': partial(self.load_preset, 'Cloaked Carnage'),
                      'Hellish Inferno': partial(self.load_preset, 'Hellish Inferno'),
                      'Trash Only': partial(self.load_preset, 'Trash Only'),
                      'Medium Only': partial(self.load_preset, 'Medium Only'),
@@ -279,17 +283,45 @@ class GenerateDialog(object):
                      'Large-less': partial(self.load_preset, 'Large-less'),
                      'Custom Craziness': partial(self.load_preset, 'Custom Craziness'),
                      'Boss Rush': partial(self.load_preset, 'Boss Rush')}
-        presets_button.init_menu(menu_opts)
+        tooltips = {'Light': 'Predominantly Trash ZEDs',
+                    'Moderate': 'Decent mixture of Trash and Large ZEDs',
+                    'Heavy': 'Predominantly Large ZEDs',
+                    'Albino': 'Predominantly Albino ZEDs',
+                    'Poundemonium': 'Predominantly Larges, spawning earlier in the cycle',
+                    'GSO': 'Almost all Fleshpounds, spawning very early in the cycle',
+                    'Min Settings': 'All settings are at their minimum values',
+                    'Max Settings': 'All settings are at their maximum values',
+                    'Putrid Pollution': 'Predominantly Bloats',
+                    'Sonic Subversion': 'Predominantly Sirens',
+                    'Android Annihilation': 'Predominantly E.D.A.Rs',
+                    'Arachnophobia': 'Predominantly Crawlers',
+                    'Cloaked Carnage': 'Predominantly Stalkers',
+                    'Hellish Inferno': 'Predominantly Husks',
+                    'Trash Only': 'Only Trash ZEDs spawn',
+                    'Medium Only': 'Only Medium ZEDs spawn',
+                    'Large Only': 'Only Large ZEDs spawn',
+                    'Boss Only': 'Only Bosses spawn',
+                    'Large-less': 'No Large ZEDs or Bosses at all',
+                    'Custom Craziness': 'Predominantly Custom ZEDs',
+                    'Boss Rush': 'Predominantly Bosses'}
+        presets_button.init_menu(targets, tooltips)
 
-        mode_button = widget_helpers.create_button(None, None, None, text=' Custom Settings ', icon_path='img/icon_switch.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
+        # Setup mode button
+        mode_button = widget_helpers.create_button(None, None, None, text=' Custom Settings ', tooltip='Swap the current ZED set/settings.', icon_path='img/icon_switch.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
         mode_button.clicked.connect(self.swap_modes)
+        reset_button = widget_helpers.create_button(None, None, None, text=' Restore Defaults ', tooltip='Reset all settings back to their defaults.', icon_path='img/icon_clear.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
+        reset_button.clicked.connect(partial(self.load_preset, 'Default', None))
         self.button_pane = QtWidgets.QFrame()
-        button_pane_layout = QtWidgets.QHBoxLayout(self.button_pane)
-        button_pane_layout.addWidget(generate_button)
-        button_pane_layout.addWidget(presets_button)
-        button_pane_layout.addWidget(mode_button)
 
+        # Insert everything into the layout
+        button_pane_layout = QtWidgets.QGridLayout(self.button_pane)
+        button_pane_layout.addWidget(generate_button, 0, 0, 1, 1)
+        button_pane_layout.addWidget(presets_button, 0, 1, 1, 1)
+        button_pane_layout.addWidget(reset_button, 0, 2, 1, 1)
+        button_pane_layout.addWidget(mode_button, 0, 3, 1, 1)
+        
         self.buttons.update({'Generate': generate_button})
+        self.buttons.update({'Reset': reset_button})
         self.buttons.update({'Presets': presets_button})
         self.buttons.update({'Swap Modes': mode_button})
 
@@ -345,7 +377,7 @@ class GenerateDialog(object):
         density_tooltip_sfx = 'to appear in the SpawnCycle.'
 
         # Create Global Density slider panes
-        self.density_settings_label = widget_helpers.create_label(None, text='\nGlobal Density Settings\n', font=font_label, alignment=QtCore.Qt.AlignCenter)
+        self.density_settings_label = widget_helpers.create_label(None, text='\nCategory Settings\n', font=font_label, alignment=QtCore.Qt.AlignCenter)
         self.density_settings_label.setStyleSheet(ss_header)
         self.density_settings_label.setFrameShape(QtWidgets.QFrame.Box)
         self.density_settings_label.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -368,7 +400,7 @@ class GenerateDialog(object):
         self.boss_label = widget_helpers.create_label(None, text='\n\nBosses', style=ss_label, font=font_label, alignment=QtCore.Qt.AlignCenter)
 
         # Create ZED settings slider panes
-        self.zed_settings_label = widget_helpers.create_label(None, text='\nZED Density Settings\n', font=font_label, alignment=QtCore.Qt.AlignCenter)
+        self.zed_settings_label = widget_helpers.create_label(None, text='\nZED Settings\n', font=font_label, alignment=QtCore.Qt.AlignCenter)
         self.zed_settings_label.setStyleSheet(ss_header)
         self.zed_settings_label.setFrameShape(QtWidgets.QFrame.Box)
         self.zed_settings_label.setFrameShadow(QtWidgets.QFrame.Plain)
@@ -523,7 +555,11 @@ class GenerateDialog(object):
                    'GSO': [3, 25, 40, 8, 10, 4, 3, 5, 10, 15, 15, 100, 0, 100, 100, 15, 100, 100, 15, 100, 15, 100, 100, 100, 100, 0, 0, 0, 10, 0, 100, 12, 100, 0, 12, 0, 0, 0, 0, 0, 0],
                    'Min Settings': [1, 1, 50, 1, 8, 1, 1, 1, 4, 100, 100, 100, 0, 100, 100, 0, 100, 100, 0, 100, 0, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 0, 100, 0, 0, 0, 0, 100, 0, 0, 100],
                    'Max Settings': [3, 100, 100, 10, 10, 1, 1, 1, 10, 100, 100, 100, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 100, 100, 0, 100, 0, 0, 100, 0, 0, 100],
-                   'Unseen Annihilation': [3, 15, 25, 5, 8, 3, 5, 10, 10, 100, 10, 10, 0, 10, 10, 5, 10, 10, 5, 10, 5, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
+                   'Putrid Pollution': [3, 15, 25, 5, 8, 3, 5, 10, 10, 60, 75, 10, 0, 100, 100, 5, 100, 100, 5, 100, 5, 100, 100, 30, 30, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
+                   'Sonic Subversion': [3, 15, 25, 5, 8, 3, 5, 10, 10, 60, 75, 10, 0, 100, 100, 5, 100, 100, 5, 100, 5, 100, 30, 30, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
+                   'Android Annihilation': [3, 15, 25, 5, 8, 3, 5, 10, 10, 60, 75, 10, 0, 100, 100, 5, 100, 100, 5, 100, 5, 100, 30, 30, 30, 10, 100, 100, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
+                   'Arachnophobia': [3, 15, 25, 5, 8, 3, 5, 10, 10, 100, 10, 10, 0, 10, 10, 5, 10, 10, 5, 100, 15, 10, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
+                   'Cloaked Carnage': [3, 15, 25, 5, 8, 3, 5, 10, 10, 100, 10, 10, 0, 10, 10, 5, 10, 10, 5, 10, 5, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
                    'Hellish Inferno': [2, 15, 25, 5, 10, 2, 4, 7, 7, 10, 100, 10, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 0, 100, 0, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
                    'Trash Only': [3, 15, 20, 1, 4, 3, 4, 8, 10, 100, 0, 0, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
                    'Medium Only': [3, 15, 20, 1, 4, 3, 4, 8, 10, 0, 100, 0, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
@@ -531,7 +567,8 @@ class GenerateDialog(object):
                    'Boss Only': [3, 15, 20, 1, 4, 3, 4, 8, 1, 0, 0, 0, 100, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 100, 100, 100, 100, 100, 100],
                    'Large-less': [2, 15, 25, 5, 10, 3, 7, 7, 7, 100, 100, 0, 0, 100, 100, 30, 100, 100, 30, 100, 30, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 10, 100, 0, 10, 0, 0, 0, 0, 0, 0],
                    'Custom Craziness': [3, 20, 30, 3, 6, 2, 4, 7, 7, 100, 100, 100, 50, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 100, 100, 100, 100, 35, 75, 8, 100, 35, 8, 100, 100, 100, 100, 100, 0],
-                   'Boss Rush': [1, 15, 20, 3, 6, 2, 3, 4, 2, 10, 10, 10, 100, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 100, 100, 100, 100, 15, 100, 5, 100, 15, 5, 100, 100, 100, 100, 100, 0]}
+                   'Boss Rush': [1, 15, 20, 3, 6, 2, 3, 4, 2, 10, 10, 10, 100, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 100, 100, 100, 100, 15, 100, 5, 100, 15, 5, 100, 100, 100, 100, 100, 0],
+                   'Default': [3, 8, 15, 3, 7, 3, 4, 7, 7, 100, 100, 100, 0, 100, 100, 30, 100, 100, 30, 100, 30, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 10, 100, 0, 10, 0, 0, 100, 0, 0, 100]}
 
         if isinstance(preset, list): # This an old preset from last generation
             preset_data = preset
@@ -544,9 +581,11 @@ class GenerateDialog(object):
             preset_data = presets[preset]
 
             # Swap to the appropriate ZED set for these presets for the first time
-            if preset in ['Boss Rush', 'Custom Craziness', 'Boss Only'] and self.zed_mode == 'Default':
+            if preset == 'Default' and self.zed_mode == 'Custom':
                 self.swap_modes()
-            elif preset not in ['Boss Rush', 'Custom Craziness', 'Boss Only'] and self.zed_mode == 'Custom':
+            elif preset in ['Boss Rush', 'Custom Craziness', 'Boss Only', 'Android Annihilation'] and self.zed_mode == 'Default':
+                self.swap_modes()
+            elif preset not in ['Boss Rush', 'Custom Craziness', 'Boss Only', 'Android Annihilation'] and self.zed_mode == 'Custom':
                 self.swap_modes()
 
         # Activate the preset
@@ -624,6 +663,8 @@ class GenerateDialog(object):
 
     def setupUi(self, Dialog, generate_target, last_used_preset=None, last_used_mode=None):
         self.cancelled = False
+        self.params = {}
+        self.param_widgets = {}
         self.slider_panes = {}
         self.buttons = {}
         self.generate_target = generate_target

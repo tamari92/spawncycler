@@ -177,12 +177,15 @@ class QOptionsButton(QtWidgets.QPushButton):
         super().__init__(parent)
 
     # Sets up the options menu
-    def init_menu(self, params):
+    def init_menu(self, targets, tooltips):
         self.menu = QtWidgets.QMenu(self)
         self.menu.setMouseTracking(True);
-        self.menu.setStyleSheet("color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);")
-        for (name, targ) in params.items():
-            self.menu.addAction(name, targ)
+        self.menu.setStyleSheet("QMenu {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);} QToolTip {color: rgb(0, 0, 0)};")
+        targets = list(targets.items())
+        tooltips = list(tooltips.values())
+        for i in range(len(tooltips)):
+            act = self.menu.addAction(targets[i][0], targets[i][1]).setToolTip(tooltips[i])
+        self.menu.setToolTipsVisible(True)
         self.setMenu(self.menu)
 
 
@@ -639,7 +642,7 @@ def create_label(parent, text=None, tooltip=None, style=None, font=None, size_po
 
 
 # Creates and returns a Y/N dialog box
-def create_choice_dialog(parent, title, text, x, y, yes_target=None, no_target=None, cancel_button=False, cancel_target=None):
+def create_choice_dialog(parent, title, text, x, y, no=True, cancel_button=False, yes_target=None, no_target=None, cancel_target=None):
     dialog = QtWidgets.QDialog()
     dialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint) # Disable X and minimize
     hbox_master = QtWidgets.QHBoxLayout(dialog)
@@ -649,7 +652,6 @@ def create_choice_dialog(parent, title, text, x, y, yes_target=None, no_target=N
     font = QtGui.QFont()
     font.setPointSize(8)
     font.setBold(True)
-    dialog_label.setObjectName('dialog_label')
     dialog_label.setFont(font)
     dialog_label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
     dialog_label.setStyleSheet("color: rgb(255, 255, 255);")
@@ -658,7 +660,6 @@ def create_choice_dialog(parent, title, text, x, y, yes_target=None, no_target=N
     # Set up Yes button
     yes_button = QtWidgets.QPushButton('Yes')
     yes_button.setStyleSheet("color: rgb(255, 255, 255);")
-    yes_button.setObjectName('yes_button')
     
     sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
     sp.setHorizontalStretch(0)
@@ -673,23 +674,22 @@ def create_choice_dialog(parent, title, text, x, y, yes_target=None, no_target=N
         yes_button.clicked.connect(dialog.close)
 
     # Set up No button
-    no_button = QtWidgets.QPushButton('No')
-    no_button.setStyleSheet("color: rgb(255, 255, 255);")
-    no_button.setObjectName('no_button')
-    no_button.setSizePolicy(sp)
-    dialog.no_button = no_button
+    if no:
+        no_button = QtWidgets.QPushButton('No')
+        no_button.setStyleSheet("color: rgb(255, 255, 255);")
+        no_button.setSizePolicy(sp)
+        dialog.no_button = no_button
 
-    # Assign the target of the no button
-    if no_target is not None:
-        no_button.clicked.connect(no_target)
-    else:
-        no_button.clicked.connect(dialog.close)
+        # Assign the target of the no button
+        if no_target is not None:
+            no_button.clicked.connect(no_target)
+        else:
+            no_button.clicked.connect(dialog.close)
 
     # Set up Cancel button
     if cancel_button:
         cancel_button = QtWidgets.QPushButton('Cancel')
         cancel_button.setStyleSheet("color: rgb(255, 255, 255);")
-        cancel_button.setObjectName('cancel_button')
         cancel_button.setSizePolicy(sp)
         dialog.cancel_button = cancel_button
 
@@ -701,16 +701,16 @@ def create_choice_dialog(parent, title, text, x, y, yes_target=None, no_target=N
 
     # Set layout
     vbox = QtWidgets.QVBoxLayout()
-    vbox.setObjectName('vbox')
     hbox = QtWidgets.QHBoxLayout()
-    hbox.setObjectName('hbox')
     hbox.addWidget(yes_button) # Add buttons
-    hbox.addWidget(no_button)
+    if no:
+        hbox.addWidget(no_button)
     if cancel_button:
         hbox.addWidget(cancel_button)
     vbox.addWidget(dialog_label)
     vbox.addLayout(hbox)
     hbox_master.addLayout(vbox)
+    dialog.layout = vbox
 
     # Set up window
     dialog.setWindowTitle(title)
