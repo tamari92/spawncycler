@@ -22,7 +22,7 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020
+##  © Nathan Ybanez, 2020-2021
 ##  All rights reserved.
 
 
