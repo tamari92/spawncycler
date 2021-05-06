@@ -249,7 +249,7 @@ class GenerateDialog(object):
     # Sets up the options buttons at the bottom of the window
     def setup_button_pane(self, Dialog):
         # Style stuff
-        ss = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}; QToolTip {color: rgb(0, 0, 0)};' # Stylesheet
+        ss = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);} QToolTip {color: rgb(0, 0, 0)};' # Stylesheet
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp.setHorizontalStretch(0)
         sp.setVerticalStretch(0)

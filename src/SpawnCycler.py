@@ -681,7 +681,7 @@ class Ui_MainWindow(object):
         font.setWeight(75)
         font.setKerning(True)
 
-        ss = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
+        ss = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}  QToolTip {color: rgb(0, 0, 0)};' # Stylesheet
         icon_w = 24
         icon_h = 24
 
@@ -973,7 +973,7 @@ class Ui_MainWindow(object):
         sp_toggle = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Preferred, QtWidgets.QSizePolicy.Fixed)
         sp_toggle.setHorizontalStretch(0)
         sp_toggle.setVerticalStretch(0)
-        ss_toggle = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
+        ss_toggle = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);} QToolTip {color: rgb(0, 0, 0)};' # Stylesheet
         button_switch = widget_helpers.create_button(self.central_widget, self.app, 'ZED Set', text=' Default' if self.zed_mode == 'Custom' else ' Custom', tooltip='Switch current ZED set', target=partial(self.switch_zed_mode, True), icon_path='img/icon_switch.png', icon_w=32, icon_h=32, style=ss_toggle, font=font_label, size_policy=sp_toggle, draggable=False)
         self.buttons.update({'Switch ZEDs' : button_switch})
         self.zed_pane.addWidget(button_switch)
@@ -1224,7 +1224,7 @@ class Ui_MainWindow(object):
         sp_button = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp_button.setHorizontalStretch(0)
         sp_button.setVerticalStretch(0)
-        ss_button = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
+        ss_button = 'QPushButton {color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);} QToolTip {color: rgb(0, 0, 0)};' # Stylesheet
         ss_label = 'color: rgb(255, 255, 255);' # Stylesheet
         ss_textedit = 'color: rgb(255, 255, 255); background-color: rgba(40, 40, 40, 255);'
 
