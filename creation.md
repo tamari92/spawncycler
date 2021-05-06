@@ -20,7 +20,7 @@ A mode toggle can be found at the top of this area, which allows the user to swi
 Finally, the **Messages Box** contains any System Messages outputted by the program.
 Errors and general notifications will appear here.
 
-![alternate_text](https://i.imgur.com/WZGC7Bw.png)
+![alternate_text](https://i.imgur.com/KvjtYRX.png)
 
 **Figure 1** - SpawnCycle Creation UI
 
@@ -32,9 +32,12 @@ Clicking this button creates a new **Wave Frame**.
 
 To add ZEDs to the wave, simply **click and drag** an icon from the **ZED Pane** and place it into the newly-created Wave Frame.
 The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are.
+There is also a **+** button next to the ZED counter that lets you quickly add more ZEDs of that type from the squad.
 This is called a **Squad**. The inner-most box that houses a Squad's ZEDs is called the **Squad Frame**.
 
-![alternate_text](https://i.imgur.com/HyZe5NY.png)
+The UI also shows the **total number of ZEDs added to the Wave**, which allows you to accurately predict how many ZEDs will spawn before the cycle repeats during a wave. Using the **Analysis** tool, one can determine where to place specific ZEDs so that they spawn at a particular point in the wave (based on the size of the wave).
+
+![alternate_text](https://i.imgur.com/inUuuSt.png)
 
 **Figure 2** - Basic ZED Squad
 
@@ -49,6 +52,8 @@ To create another new Squad, drag the icon into the outer-most Wave Frame instea
 ## Removing and Reorganizing ZEDs/Squads
 Once a ZED is placed into a Squad, it can be **removed** by *dragging the ZED icon out of the Squad and onto the empty background*.
 Note that in the case that there are multiple of the same ZED in a Squad, this action will only remove **one** of them.
+
+Alternatively, you can also press the **-** button next to the ZED counter to quickly remove more ZEDs of that type from the squad.
 
 To remove **all** of a specific ZED from a Squad, you can *right-click* the ZED to bring up a contextual menu, and select `Remove ZED from Squad`.
 
