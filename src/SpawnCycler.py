@@ -454,11 +454,10 @@ class Ui_MainWindow(object):
             widget_helpers.button_changetarget(shiftdn_button, partial(self.shift_wavedef, thisdef['Frames']['WaveFrame'], 'down'))
             widget_helpers.button_changetarget(delete_button, partial(self.remove_wavedef, i, True))
 
-            if squads and len(thisdef['Squads']) > 0:
-                squad_range = range(len(thisdef['Squads'])) if squad_id is None else range(squad_id, squad_id+1)
 
+            if squads and len(thisdef['Squads']) > 0:
                 # Shift +/- buttons to match the new wave
-                for j in squad_range:
+                for j in range(len(thisdef['Squads'])):
                     squad_id = j
                     for (zed_id, zed_info) in thisdef['Squads'][j]['ZEDs'].items():
                         raged = '(Enraged)' in zed_id
