@@ -1520,7 +1520,7 @@ class Ui_MainWindow(object):
     def load_from_file(self, fname=None):
         # Ask user for filename to open, but only if no filename given
         if fname is None:
-            filename, _ = QtWidgets.QFileDialog.getOpenFileName(None, 'Open File', '', 'Standard SpawnCycles (*.txt), FMX SpawnCycles (*.json)',)
+            filename, _ = QtWidgets.QFileDialog.getOpenFileName(None, 'Open File', '', 'Standard SpawnCycles (*.txt);;FMX SpawnCycles (*.json)',)
             if filename == '': # Leave if the user cancelled
                 return
         else:
