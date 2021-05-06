@@ -32,7 +32,6 @@ Clicking this button creates a new **Wave Frame**.
 
 To add ZEDs to the wave, simply **click and drag** an icon from the **ZED Pane** and place it into the newly-created Wave Frame.
 The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are.
-There is also a **+** button next to the ZED counter that lets you quickly add more ZEDs of that type from the squad.
 This is called a **Squad**. The inner-most box that houses a Squad's ZEDs is called the **Squad Frame**.
 
 The UI also shows the **total number of ZEDs added to the Wave**, which allows you to accurately predict how many ZEDs will spawn before the cycle repeats during a wave. Using the **Analysis** tool, one can determine where to place specific ZEDs so that they spawn at a particular point in the wave (based on the size of the wave).
@@ -44,7 +43,7 @@ The UI also shows the **total number of ZEDs added to the Wave**, which allows y
 When reading a SpawnCycle, CD iterates through the Squads for a given wave and attempts to spawn the ZEDs within in order.
 Typically, ZEDs within the same squad will spawn with one another.
 
-To add more ZEDs to the Squad, simply continue to **drag-and-drop** icons from the ZED Pane into the **Squad Frame**.
+To add more ZEDs to the Squad, simply continue to **drag-and-drop** icons from the ZED Pane into the **Squad Frame** or press **+** button next to the ZED counter.
 To create another new Squad, drag the icon into the outer-most Wave Frame instead.
 
 **Note**: Each Squad has a maximum capacity of `10`! When a Squad is at capacity, it's border will turn red and it will no longer accept any new ZEDs dragged into it.
