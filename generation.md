@@ -45,8 +45,8 @@ Sets the minimum wave that **Bosses** are allowed to appear. If the **Global Den
 
 **Figure 1** - General Settings
 
-## Global Density Settings
-The **Global Density Settings** allow the user to affect the way **ZED Categories** are chosen.
+## Category Settings
+The **Category Settings** allow the user to affect the way **ZED Categories** are chosen.
 
 Four sliders are present:
 ```
@@ -70,12 +70,12 @@ It is not possible to generate a SpawnCycle with all Global Densities set to `0%
 
 ![alternate_text](https://i.imgur.com/1E3qSvv.png)
 
-**Figure 2** - Global Density Settings
+**Figure 2** - Category Settings
 
-## ZED Density Settings
-Similar to the **Global Density Settings**, the **ZED Density Settings** allow the user to affect the way **each individual ZED Type** is chosen within their respective categories.
+## ZED Settings
+Similar to the **Category Settings**, the **ZED Settings** allow the user to affect the way **each individual ZED Type** is chosen within their respective categories.
 
-There are Density sliders for each individual ZED, and like with the **Global Density** sliders, these influence the **relative probability** of the respective ZED being chosen compared to the other ZEDs.
+There are Density sliders for each individual ZED, and like with the **Category** sliders, these influence the **relative probability** of the respective ZED being chosen compared to the other ZEDs.
 
 For example:
 
@@ -89,7 +89,7 @@ For ZEDs that can become **SpawnRaged** (Fleshpound, Quarter Pound), there is an
 
 ![alternate_text](https://i.imgur.com/fHwuxup.png)
 
-**Figure 3** - ZED Density Settings
+**Figure 3** - ZED Settings
 
 ## Custom Settings
 Like in the **Creation Window**, the current **ZED Set** can be swapped between `Default` and `Custom` ZEDs.
@@ -108,7 +108,11 @@ The Generator tool supports several `Presets`, including:
 - `GSO` (almost all Fleshpounds, spawning very early in the cycle)
 - `Min Settings` (all settings are at their minimum value)
 - `Max Settings` (all settings are at their maximum value)
-- `Unseen Annihilation` (predominantly Stalkers)
+- `Putrid Pollution` (predominantly Bloats)
+- `Sonic Subversion` (predominantly Sirens)
+- `Android Annihilation` (predominantly E.D.A.Rs)
+- `Arachnophobia` (predominantly Crawlers)
+- `Cloaked Carnage` (predominantly Stalkers)
 - `Hellish Inferno` (predominantly Husks)
 - `Trash Only` (only Trash ZEDs spawn)
 - `Medium Only` (only Medium ZEDs spawn)
