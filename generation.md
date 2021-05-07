@@ -5,8 +5,8 @@ The `SpawnCycle Generation` tool allows the user to pseudo-randomly generate an 
 
 There are three sets of parameters the user can alter to affect the Generation results:
 - General Settings
-- Global Density Settings
-- ZED Density Settings
+- Category Settings
+- ZED Settings
 
 ## General Settings
 The **General Settings** allow the user to affect the overall behavior of the Generator. The following settings can be modified:
