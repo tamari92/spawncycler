@@ -66,7 +66,7 @@ If a single category is at `100%` Density, while the other categories are set to
 
 If two categories are at the **same** density (ie: 100% // 100% or 50% // 50%), then those categories have **equal chance to be chosen**.
 
-It is not possible to generate a SpawnCycle with all Global Densities set to `0%`.
+It is not possible to generate a SpawnCycle with all Category Densities set to `0%`.
 
 ![alternate_text](https://i.imgur.com/1E3qSvv.png)
 
