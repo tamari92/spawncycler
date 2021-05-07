@@ -33,13 +33,13 @@ These sliders allow the user to control the **minimum** and **maximum** number o
 Sets the minimum wave that **Albino ZEDs** (Elite Crawler, Rioter, Gorefiend, etc) are allowed to appear. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 #### Large ZED Min Wave
-Sets the minimum wave that **Large ZEDs** are allowed to appear. If the **Global Density** sliders are configured such that only Large ZEDs will be generated, then this slider **must** be set to `1`. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
+Sets the minimum wave that **Large ZEDs** are allowed to appear. If the **Category Density** sliders are configured such that only Large ZEDs will be generated, then this slider **must** be set to `1`. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 #### SpawnRage Min Wave
 Sets the minimum wave that **Fleshpounds, Quarter Pounds, and Alpha Fleshpounds** are allowed to spawn **Enraged**. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 #### Boss Min Wave
-Sets the minimum wave that **Bosses** are allowed to appear. If the **Global Density** sliders are configured such that only Bosses will be generated, then this slider **must** be set to `1`. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
+Sets the minimum wave that **Bosses** are allowed to appear. If the **Category Density** sliders are configured such that only Bosses will be generated, then this slider **must** be set to `1`. Note that changing the **SpawnCycle Length** parameter affects the maximum value of this field.
 
 ![alternate_text](https://i.imgur.com/oYIXlSS.png)
 
