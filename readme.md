@@ -30,7 +30,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 
 ## Binaries
 #### Windows
-v1.0: https://github.com/nybanez/spawncycler/releases
+v1.1: https://github.com/nybanez/spawncycler/releases/tag/v1.1
 
 ## Credits
 - UI Design + General Programming: **Tamari**
