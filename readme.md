@@ -2,7 +2,7 @@
 by Tamari
 
 #### Current Version
-1.1
+1.2
 
 #### Contact
 - Discord: Tamari#6292
@@ -30,7 +30,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 
 ## Binaries
 #### Windows
-v1.1: https://github.com/nybanez/spawncycler/releases/tag/v1.1
+v1.2: https://github.com/nybanez/spawncycler/releases/tag/v1.2
 
 ## Credits
 - UI Design + General Programming: **Tamari**
