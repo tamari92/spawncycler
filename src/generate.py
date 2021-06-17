@@ -35,13 +35,19 @@ import widget_helpers
 _DEF_FONT_FAMILY = 'Consolas'
 has_swapped_modes_generate = False
 
+omega_zeds = ['Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler', 'Medium Crawler',
+                  'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
+                  'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
 
 class GenerateDialog(object):
     # Creates a button with the ZED icon in it
     def create_zed_button(self, zed_id):
         icon_path = widget_helpers.get_icon_path(zed_id)
         icon_w = icon_h = 40
-        ss = 'QToolTip {color: rgb(0, 0, 0);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
+        if zed_id in omega_zeds:
+            ss = "QToolTip {color: rgb(0, 0, 0);\nbackground-color: rgb(40, 40, 40);}\nQPushButton {border: 2px solid purple;}"
+        else:
+            ss = 'QToolTip {color: rgb(0, 0, 0);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp.setHorizontalStretch(0)
         sp.setVerticalStretch(0)
@@ -175,53 +181,113 @@ class GenerateDialog(object):
                     has_swapped_modes_generate = True # Never show this message again
 
             # Show custom stuff
+            self.slider_panes['Slasher Omega Density']['Frame'].setVisible(True)
+            self.slider_panes['Gorefast Omega Density']['Frame'].setVisible(True)
+            self.slider_panes['Tiny Crawler Density']['Frame'].setVisible(True)
+            self.slider_panes['Medium Crawler Density']['Frame'].setVisible(True)
+            self.slider_panes['Big Crawler Density']['Frame'].setVisible(True)
+            self.slider_panes['Huge Crawler Density']['Frame'].setVisible(True)
+            self.slider_panes['Ultra Crawler Density']['Frame'].setVisible(True)
+            self.slider_panes['Stalker Omega Density']['Frame'].setVisible(True)
+            self.slider_panes['Husk Omega Density']['Frame'].setVisible(True)
+            self.slider_panes['Tiny Husk Density']['Frame'].setVisible(True)
+            self.slider_panes['Siren Omega Density']['Frame'].setVisible(True)
             self.slider_panes['E.D.A.R Trapper Density']['Frame'].setVisible(True)
             self.slider_panes['E.D.A.R Blaster Density']['Frame'].setVisible(True)
             self.slider_panes['E.D.A.R Bomber Density']['Frame'].setVisible(True)
             self.slider_panes['Scrake Albino Density']['Frame'].setVisible(True)
+            self.slider_panes['Scrake Omega Density']['Frame'].setVisible(True)
+            self.slider_panes['Scrake Emperor Density']['Frame'].setVisible(True)
+            self.slider_panes['Tiny Scrake Density']['Frame'].setVisible(True)
             self.slider_panes['Fleshpound Albino Density']['Frame'].setVisible(True)
+            self.slider_panes['Fleshpound Omega Density']['Frame'].setVisible(True)
             self.slider_panes['Hans Density']['Frame'].setVisible(True)
             self.slider_panes['Patriarch Density']['Frame'].setVisible(True)
             self.slider_panes['Abomination Density']['Frame'].setVisible(True)
             self.slider_panes['Matriarch Density']['Frame'].setVisible(True)
 
             # Set default values
+            self.slider_panes['Slasher Omega Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Gorefast Omega Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Tiny Crawler Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Medium Crawler Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Big Crawler Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Huge Crawler Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Ultra Crawler Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Stalker Omega Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Husk Omega Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Tiny Husk Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Siren Omega Density']['Children']['Slider'].setValue(100)
             self.slider_panes['E.D.A.R Trapper Density']['Children']['Slider'].setValue(100)
             self.slider_panes['E.D.A.R Blaster Density']['Children']['Slider'].setValue(100)
             self.slider_panes['E.D.A.R Bomber Density']['Children']['Slider'].setValue(100)
             self.slider_panes['Scrake Albino Density']['Children']['Slider'].setValue(30)
+            self.slider_panes['Scrake Omega Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Scrake Emperor Density']['Children']['Slider'].setValue(100)
+            self.slider_panes['Tiny Scrake Density']['Children']['Slider'].setValue(100)
             self.slider_panes['Fleshpound Albino Density']['Children']['Slider'].setValue(30)
+            self.slider_panes['Fleshpound Omega Density']['Children']['Slider'].setValue(100)
             self.slider_panes['Hans Density']['Children']['Slider'].setValue(100)
             self.slider_panes['Patriarch Density']['Children']['Slider'].setValue(100)
             self.slider_panes['Abomination Density']['Children']['Slider'].setValue(100)
             self.slider_panes['Matriarch Density']['Children']['Slider'].setValue(100)
 
-            self.buttons['Swap Modes'].setText(' Default Settings ')
+            self.buttons['Swap Modes'].setText(' Custom ')
             self.zed_mode = 'Custom'
         else: # Swap to Default
             # Hide all custom stuff
+            self.slider_panes['Slasher Omega Density']['Frame'].setVisible(False)
+            self.slider_panes['Gorefast Omega Density']['Frame'].setVisible(False)
+            self.slider_panes['Tiny Crawler Density']['Frame'].setVisible(False)
+            self.slider_panes['Medium Crawler Density']['Frame'].setVisible(False)
+            self.slider_panes['Big Crawler Density']['Frame'].setVisible(False)
+            self.slider_panes['Huge Crawler Density']['Frame'].setVisible(False)
+            self.slider_panes['Ultra Crawler Density']['Frame'].setVisible(False)
+            self.slider_panes['Stalker Omega Density']['Frame'].setVisible(False)
+            self.slider_panes['Husk Omega Density']['Frame'].setVisible(False)
+            self.slider_panes['Tiny Husk Density']['Frame'].setVisible(False)
+            self.slider_panes['Siren Omega Density']['Frame'].setVisible(False)
             self.slider_panes['E.D.A.R Trapper Density']['Frame'].setVisible(False)
             self.slider_panes['E.D.A.R Blaster Density']['Frame'].setVisible(False)
             self.slider_panes['E.D.A.R Bomber Density']['Frame'].setVisible(False)
             self.slider_panes['Scrake Albino Density']['Frame'].setVisible(False)
+            self.slider_panes['Scrake Omega Density']['Frame'].setVisible(False)
+            self.slider_panes['Scrake Emperor Density']['Frame'].setVisible(False)
+            self.slider_panes['Tiny Scrake Density']['Frame'].setVisible(False)
             self.slider_panes['Fleshpound Albino Density']['Frame'].setVisible(False)
+            self.slider_panes['Fleshpound Omega Density']['Frame'].setVisible(False)
             self.slider_panes['Hans Density']['Frame'].setVisible(False)
             self.slider_panes['Patriarch Density']['Frame'].setVisible(False)
             self.slider_panes['Abomination Density']['Frame'].setVisible(False)
             self.slider_panes['Matriarch Density']['Frame'].setVisible(False)
 
             # Set default values
+            self.slider_panes['Slasher Omega Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Gorefast Omega Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Tiny Crawler Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Medium Crawler Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Big Crawler Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Huge Crawler Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Ultra Crawler Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Stalker Omega Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Husk Omega Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Tiny Husk Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Siren Omega Density']['Children']['Slider'].setValue(0)
             self.slider_panes['E.D.A.R Trapper Density']['Children']['Slider'].setValue(0)
             self.slider_panes['E.D.A.R Blaster Density']['Children']['Slider'].setValue(0)
             self.slider_panes['E.D.A.R Bomber Density']['Children']['Slider'].setValue(0)
             self.slider_panes['Scrake Albino Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Scrake Omega Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Scrake Emperor Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Tiny Scrake Density']['Children']['Slider'].setValue(0)
             self.slider_panes['Fleshpound Albino Density']['Children']['Slider'].setValue(0)
+            self.slider_panes['Fleshpound Omega Density']['Children']['Slider'].setValue(0)
             self.slider_panes['Hans Density']['Children']['Slider'].setValue(0)
             self.slider_panes['Patriarch Density']['Children']['Slider'].setValue(0)
             self.slider_panes['Abomination Density']['Children']['Slider'].setValue(0)
             self.slider_panes['Matriarch Density']['Children']['Slider'].setValue(0)
 
-            self.buttons['Swap Modes'].setText(' Custom Settings ')
+            self.buttons['Swap Modes'].setText(' Default ')
             self.zed_mode = 'Default'
 
     # Set up main window stuff
@@ -282,7 +348,8 @@ class GenerateDialog(object):
                      'Boss Only': partial(self.load_preset, 'Boss Only'),
                      'Large-less': partial(self.load_preset, 'Large-less'),
                      'Custom Craziness': partial(self.load_preset, 'Custom Craziness'),
-                     'Boss Rush': partial(self.load_preset, 'Boss Rush')}
+                     'Boss Rush': partial(self.load_preset, 'Boss Rush'),
+                     'Omega Onslaught': partial(self.load_preset, 'Omega Onslaught')}
         tooltips = {'Light': 'Predominantly Trash ZEDs',
                     'Moderate': 'Decent mixture of Trash and Large ZEDs',
                     'Heavy': 'Predominantly Large ZEDs',
@@ -303,11 +370,12 @@ class GenerateDialog(object):
                     'Boss Only': 'Only Bosses spawn',
                     'Large-less': 'No Large ZEDs or Bosses at all',
                     'Custom Craziness': 'Predominantly Custom ZEDs',
-                    'Boss Rush': 'Predominantly Bosses'}
+                    'Boss Rush': 'Predominantly Bosses',
+                    'Omega Onslaught': 'Predominantly Omega ZEDs'}
         presets_button.init_menu(targets, tooltips)
 
         # Setup mode button
-        mode_button = widget_helpers.create_button(None, None, None, text=' Custom Settings ', tooltip='Swap the current ZED set/settings.', icon_path='img/icon_switch.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
+        mode_button = widget_helpers.create_button(None, None, None, text=' Default ', tooltip='Swap the current ZED set/settings.', icon_path='img/icon_switch.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
         mode_button.clicked.connect(self.swap_modes)
         reset_button = widget_helpers.create_button(None, None, None, text=' Restore Defaults ', tooltip='Reset all settings back to their defaults.', icon_path='img/icon_clear.png', icon_w=24, icon_h=24, style=ss, size_policy=sp, font=font, options=False, squad=False, draggable=False)
         reset_button.clicked.connect(partial(self.load_preset, 'Default', None))
@@ -382,9 +450,9 @@ class GenerateDialog(object):
         self.density_settings_label.setFrameShape(QtWidgets.QFrame.Box)
         self.density_settings_label.setFrameShadow(QtWidgets.QFrame.Plain)
         self.density_settings_label.setLineWidth(2)
-        trash_density_pane = self.create_slider_pane('Trash ZED Density       0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Trash ZEDs {density_tooltip_sfx}", width=384)
-        medium_density_pane = self.create_slider_pane('Medium ZED Density      0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Medium ZEDs {density_tooltip_sfx}", width=384)
-        large_density_pane = self.create_slider_pane('Large ZED Density       0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Large ZEDs {density_tooltip_sfx}", width=384)
+        trash_density_pane = self.create_slider_pane('Trash Density           0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Trash ZEDs {density_tooltip_sfx}", width=384)
+        medium_density_pane = self.create_slider_pane('Medium Density          0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Medium ZEDs {density_tooltip_sfx}", width=384)
+        large_density_pane = self.create_slider_pane('Large Density           0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Large ZEDs {density_tooltip_sfx}", width=384)
         boss_density_pane = self.create_slider_pane('Boss Density            0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Bosses {density_tooltip_sfx}", width=384, default=0)
 
         # Add this stuff to the global dict to access later
@@ -407,25 +475,40 @@ class GenerateDialog(object):
         self.zed_settings_label.setLineWidth(2)
 
         cyst_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Cysts {density_tooltip_sfx}")
-        alphaclot_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Alpha Clots {density_tooltip_sfx}")
         slasher_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Slashers {density_tooltip_sfx}")
+        slasher_omega_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Slasher Omegas {density_tooltip_sfx}")
+        alphaclot_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Alpha Clots {density_tooltip_sfx}")
         alphaclot_albino_pane = self.create_slider_pane('Albino Chance         0% ', ' 100%   ', 0, 100, 10, tooltip='Sets the chance for Alpha Clots to become Rioters.', width=256, default=30)
         gorefast_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Gorefasts {density_tooltip_sfx}")
         gorefast_albino_pane = self.create_slider_pane('Albino Chance         0% ', ' 100%   ', 0, 100, 10, tooltip='Sets the chance for Gorefasts to become Gorefiends.', width=256, default=30)
+        gorefast_omega_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Gorefast Omegas {density_tooltip_sfx}")
         crawler_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Crawlers {density_tooltip_sfx}")
         crawler_albino_pane = self.create_slider_pane('Albino Chance         0% ', ' 100%   ', 0, 100, 10, tooltip='Sets the chance for Crawlers to become Elite Crawlers.', width=256, default=30)
+        crawler_tiny_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Tiny Crawlers {density_tooltip_sfx}")
+        crawler_medium_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Medium Crawlers {density_tooltip_sfx}")
+        crawler_big_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Big Crawlers {density_tooltip_sfx}")
+        crawler_huge_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Huge Crawlers {density_tooltip_sfx}")
+        crawler_ultra_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Ultra Crawlers {density_tooltip_sfx}")
         stalker_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Stalkers {density_tooltip_sfx}")
+        stalker_omega_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Stalker Omegas {density_tooltip_sfx}")
         bloat_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Bloats {density_tooltip_sfx}")
         husk_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Husks {density_tooltip_sfx}")
+        husk_omega_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Husk Omegas {density_tooltip_sfx}")
+        husk_tiny_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Tiny Husks {density_tooltip_sfx}")
         siren_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Sirens {density_tooltip_sfx}")
+        siren_omega_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Siren Omegas {density_tooltip_sfx}")
         edar_trapper_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} E.D.A.R Trappers {density_tooltip_sfx}")
         edar_blaster_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} E.D.A.R Blasters {density_tooltip_sfx}")
         edar_bomber_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} E.D.A.R Bombers {density_tooltip_sfx}")
         scrake_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Scrakes {density_tooltip_sfx}")
+        scrake_omega_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Scrake Omegas {density_tooltip_sfx}")
+        scrake_emperor_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Scrake Emperors {density_tooltip_sfx}")
+        scrake_tiny_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Tiny Scrakes {density_tooltip_sfx}")
         quarterpound_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Quarter Pounds {density_tooltip_sfx}")
         quarterpound_rage_pane = self.create_slider_pane('SpawnRage Chance      0% ', ' 100%   ', 0, 100, 10, tooltip='Sets the chance for Quarter Pounds to spawn Enraged.', width=256, default=10)
         fleshpound_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Fleshpounds {density_tooltip_sfx}")
         fleshpound_rage_pane = self.create_slider_pane('SpawnRage Chance      0% ', ' 100%   ', 0, 100, 10, tooltip='Sets the chance for Fleshpounds/Alpha Fleshpounds to spawn Enraged.', width=256, default=10)
+        fleshpound_omega_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, tooltip=f"{density_tooltip_pfx} Fleshpound Omegas {density_tooltip_sfx}")
         scrake_albino_pane = self.create_slider_pane('Albino Chance         0% ', ' 100%   ', 0, 100, 10, tooltip='Sets the chance for Scrakes to become Alpha Scrakes.', width=256, default=30)
         fleshpound_albino_pane = self.create_slider_pane('Albino Chance         0% ', ' 100%   ', 0, 100, 10, tooltip='Sets the chance for Fleshpounds to become Alpha Fleshpounds.', width=256, default=30)
         hans_pane = self.create_slider_pane('  0% ', ' 100%   ', 0, 100, 10, default=100, tooltip=f"{density_tooltip_pfx} Dr. Hans Volter {density_tooltip_sfx}")
@@ -437,20 +520,35 @@ class GenerateDialog(object):
 
         # Add buttons into hboxes
         cyst_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Cyst'))
-        alphaclot_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Alpha Clot'))
         slasher_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Slasher'))
+        slasher_omega_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Slasher Omega'))
+        alphaclot_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Alpha Clot'))
         gorefast_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Gorefast'))
+        gorefast_omega_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Gorefast Omega'))
         crawler_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Crawler'))
+        crawler_tiny_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Tiny Crawler'))
+        crawler_medium_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Medium Crawler'))
+        crawler_big_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Big Crawler'))
+        crawler_huge_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Huge Crawler'))
+        crawler_ultra_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Ultra Crawler'))
         stalker_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Stalker'))
+        stalker_omega_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Stalker Omega'))
         bloat_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Bloat'))
         husk_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Husk'))
+        husk_omega_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Husk Omega'))
+        husk_tiny_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Tiny Husk'))
         siren_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Siren'))
+        siren_omega_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Siren Omega'))
         edar_trapper_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('E.D.A.R Trapper'))
         edar_blaster_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('E.D.A.R Blaster'))
         edar_bomber_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('E.D.A.R Bomber'))
         scrake_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Scrake'))
+        scrake_omega_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Scrake Omega'))
+        scrake_emperor_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Scrake Emperor'))
+        scrake_tiny_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Tiny Scrake'))
         quarterpound_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Quarter Pound'))
         fleshpound_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Fleshpound'))
+        fleshpound_omega_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Fleshpound Omega'))
         hans_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Dr. Hans Volter'))
         patriarch_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('Patriarch'))
         kingfleshpound_pane['Children']['Layout'].insertWidget(0, self.create_zed_button('King Fleshpound'))
@@ -460,27 +558,42 @@ class GenerateDialog(object):
 
         # Add this stuff to the global dict to access later
         self.slider_panes.update({'Cyst Density': cyst_pane})
+        self.slider_panes.update({'Slasher Density': slasher_pane})
+        self.slider_panes.update({'Slasher Omega Density': slasher_omega_pane})
         self.slider_panes.update({'Alpha Clot Density': alphaclot_pane})
         self.slider_panes.update({'Alpha Clot Albino Density': alphaclot_albino_pane})
-        self.slider_panes.update({'Slasher Density': slasher_pane})
         self.slider_panes.update({'Gorefast Density': gorefast_pane})
         self.slider_panes.update({'Gorefast Albino Density': gorefast_albino_pane})
+        self.slider_panes.update({'Gorefast Omega Density': gorefast_omega_pane})
         self.slider_panes.update({'Crawler Density': crawler_pane})
         self.slider_panes.update({'Crawler Albino Density': crawler_albino_pane})
+        self.slider_panes.update({'Tiny Crawler Density': crawler_tiny_pane})
+        self.slider_panes.update({'Medium Crawler Density': crawler_medium_pane})
+        self.slider_panes.update({'Big Crawler Density': crawler_big_pane})
+        self.slider_panes.update({'Huge Crawler Density': crawler_huge_pane})
+        self.slider_panes.update({'Ultra Crawler Density': crawler_ultra_pane})
         self.slider_panes.update({'Stalker Density': stalker_pane})
+        self.slider_panes.update({'Stalker Omega Density': stalker_omega_pane})
         self.slider_panes.update({'Bloat Density': bloat_pane})
         self.slider_panes.update({'Husk Density': husk_pane})
+        self.slider_panes.update({'Husk Omega Density': husk_omega_pane})
+        self.slider_panes.update({'Tiny Husk Density': husk_tiny_pane})
         self.slider_panes.update({'Siren Density': siren_pane})
+        self.slider_panes.update({'Siren Omega Density': siren_omega_pane})
         self.slider_panes.update({'E.D.A.R Trapper Density': edar_trapper_pane})
         self.slider_panes.update({'E.D.A.R Blaster Density': edar_blaster_pane})
         self.slider_panes.update({'E.D.A.R Bomber Density': edar_bomber_pane})
         self.slider_panes.update({'Scrake Density': scrake_pane})
         self.slider_panes.update({'Scrake Albino Density': scrake_albino_pane})
+        self.slider_panes.update({'Scrake Omega Density': scrake_omega_pane})
+        self.slider_panes.update({'Scrake Emperor Density': scrake_emperor_pane})
+        self.slider_panes.update({'Tiny Scrake Density': scrake_tiny_pane})
         self.slider_panes.update({'Quarter Pound Density': quarterpound_pane})
         self.slider_panes.update({'Quarter Pound Rage Density': quarterpound_rage_pane})
         self.slider_panes.update({'Fleshpound Density': fleshpound_pane})
         self.slider_panes.update({'Fleshpound Albino Density': fleshpound_albino_pane})
         self.slider_panes.update({'Fleshpound Rage Density': fleshpound_rage_pane})
+        self.slider_panes.update({'Fleshpound Omega Density': fleshpound_omega_pane})
         self.slider_panes.update({'Hans Density': hans_pane})
         self.slider_panes.update({'Patriarch Density': patriarch_pane})
         self.slider_panes.update({'King Fleshpound Density': kingfleshpound_pane})
@@ -512,18 +625,29 @@ class GenerateDialog(object):
         self.scrollarea_contents_layout.addWidget(self.trash_label)
         self.scrollarea_contents_layout.addWidget(cyst_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(slasher_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(slasher_omega_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(alphaclot_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(alphaclot_albino_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(gorefast_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(gorefast_albino_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(gorefast_omega_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(crawler_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(crawler_albino_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(crawler_tiny_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(crawler_medium_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(crawler_big_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(crawler_huge_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(crawler_ultra_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(stalker_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(stalker_omega_pane['Frame'])
 
         self.scrollarea_contents_layout.addWidget(self.medium_label)
         self.scrollarea_contents_layout.addWidget(bloat_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(husk_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(husk_omega_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(husk_tiny_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(siren_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(siren_omega_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(edar_trapper_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(edar_blaster_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(edar_bomber_pane['Frame'])
@@ -531,11 +655,15 @@ class GenerateDialog(object):
         self.scrollarea_contents_layout.addWidget(self.large_label)
         self.scrollarea_contents_layout.addWidget(scrake_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(scrake_albino_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(scrake_omega_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(scrake_emperor_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(scrake_tiny_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(quarterpound_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(quarterpound_rage_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(fleshpound_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(fleshpound_albino_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(fleshpound_rage_pane['Frame'])
+        self.scrollarea_contents_layout.addWidget(fleshpound_omega_pane['Frame'])
 
         self.scrollarea_contents_layout.addWidget(self.boss_label)
         self.scrollarea_contents_layout.addWidget(hans_pane['Frame'])
@@ -547,29 +675,30 @@ class GenerateDialog(object):
 
     # Loads a preset into the generator
     def load_preset(self, preset, last_used_mode=None):
-        presets = {'Light': [3, 15, 20, 3, 5, 5, 7, 10, 10, 100, 50, 15, 0, 100, 100, 5, 100, 100, 5, 100, 5, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 0, 100, 0, 0, 0, 0, 0, 0, 0, 0],
-                   'Moderate': [3, 20, 25, 4, 7, 4, 4, 8, 10, 75, 60, 35, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Heavy': [3, 30, 35, 5, 10, 2, 2, 7, 10, 60, 50, 40, 0, 100, 100, 15, 100, 100, 15, 100, 15, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 10, 100, 0, 10, 0, 0, 0, 0, 0, 0],
-                   'Albino': [3, 25, 30, 4, 8, 1, 4, 8, 10, 100, 30, 30, 0, 50, 100, 80, 50, 100, 80, 100, 80, 50, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Poundemonium': [3, 25, 35, 5, 10, 4, 3, 8, 10, 30, 30, 65, 0, 100, 100, 15, 100, 100, 15, 100, 15, 100, 100, 100, 100, 0, 0, 0, 50, 0, 100, 7, 100, 0, 7, 0, 0, 0, 0, 0, 0],
-                   'GSO': [3, 25, 40, 8, 10, 4, 3, 5, 10, 15, 15, 100, 0, 100, 100, 15, 100, 100, 15, 100, 15, 100, 100, 100, 100, 0, 0, 0, 10, 0, 100, 12, 100, 0, 12, 0, 0, 0, 0, 0, 0],
-                   'Min Settings': [1, 1, 50, 1, 8, 1, 1, 1, 4, 100, 100, 100, 0, 100, 100, 0, 100, 100, 0, 100, 0, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 0, 100, 0, 0, 0, 0, 100, 0, 0, 100],
-                   'Max Settings': [3, 100, 100, 10, 10, 1, 1, 1, 10, 100, 100, 100, 0, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 100, 100, 0, 100, 0, 0, 100, 0, 0, 100],
-                   'Putrid Pollution': [3, 15, 25, 5, 8, 3, 5, 10, 10, 60, 75, 10, 0, 100, 100, 5, 100, 100, 5, 100, 5, 100, 100, 30, 30, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Sonic Subversion': [3, 15, 25, 5, 8, 3, 5, 10, 10, 60, 75, 10, 0, 100, 100, 5, 100, 100, 5, 100, 5, 100, 30, 30, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Android Annihilation': [3, 15, 25, 5, 8, 3, 5, 10, 10, 60, 75, 10, 0, 100, 100, 5, 100, 100, 5, 100, 5, 100, 30, 30, 30, 10, 100, 100, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Arachnophobia': [3, 15, 25, 5, 8, 3, 5, 10, 10, 100, 10, 10, 0, 10, 10, 5, 10, 10, 5, 100, 15, 10, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Cloaked Carnage': [3, 15, 25, 5, 8, 3, 5, 10, 10, 100, 10, 10, 0, 10, 10, 5, 10, 10, 5, 10, 5, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Hellish Inferno': [2, 15, 25, 5, 10, 2, 4, 7, 7, 10, 100, 10, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 0, 100, 0, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Trash Only': [3, 15, 20, 1, 4, 3, 4, 8, 10, 100, 0, 0, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Medium Only': [3, 15, 20, 1, 4, 3, 4, 8, 10, 0, 100, 0, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Large Only': [3, 15, 20, 1, 4, 3, 1, 8, 10, 0, 0, 100, 0, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 0, 0, 0, 0, 0, 0],
-                   'Boss Only': [3, 15, 20, 1, 4, 3, 4, 8, 1, 0, 0, 0, 100, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 5, 100, 0, 5, 100, 100, 100, 100, 100, 100],
-                   'Large-less': [2, 15, 25, 5, 10, 3, 7, 7, 7, 100, 100, 0, 0, 100, 100, 30, 100, 100, 30, 100, 30, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 10, 100, 0, 10, 0, 0, 0, 0, 0, 0],
-                   'Custom Craziness': [3, 20, 30, 3, 6, 2, 4, 7, 7, 100, 100, 100, 50, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 100, 100, 100, 100, 35, 75, 8, 100, 35, 8, 100, 100, 100, 100, 100, 0],
-                   'Boss Rush': [1, 15, 20, 3, 6, 2, 3, 4, 2, 10, 10, 10, 100, 100, 100, 10, 100, 100, 10, 100, 10, 100, 100, 100, 100, 100, 100, 100, 100, 15, 100, 5, 100, 15, 5, 100, 100, 100, 100, 100, 0],
-                   'Default': [3, 8, 15, 3, 7, 3, 4, 7, 7, 100, 100, 100, 0, 100, 100, 30, 100, 100, 30, 100, 30, 100, 100, 100, 100, 0, 0, 0, 100, 0, 100, 10, 100, 0, 10, 0, 0, 100, 0, 0, 100]}
-
+        presets = {'Light': [3, 15, 20, 3, 5, 5, 7, 10, 10,                        100, 50, 15, 0,               100, 100, 0, 100, 5, 100, 5, 0, 100, 5, 0, 0, 0, 0, 0, 100, 0,                      100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 0, 100, 0, 0, 0,                   0, 0, 0, 0, 0, 0],
+                   'Moderate': [3, 20, 25, 4, 7, 4, 4, 8, 10,                      75, 60, 35, 0,                100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Heavy': [3, 30, 35, 5, 10, 2, 2, 7, 10,                        60, 50, 40, 0,                100, 100, 0, 100, 15, 100, 15, 0, 100, 15, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 10, 100, 0, 10, 0,                 0, 0, 0, 0, 0, 0],
+                   'Albino': [3, 25, 30, 4, 8, 1, 4, 8, 10,                        100, 30, 30, 0,               50, 50, 0, 100, 80, 100, 80, 0, 100, 80, 0, 0, 0, 0, 0, 50, 0,                      100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Poundemonium': [3, 25, 35, 5, 10, 4, 3, 8, 10,                 30, 30, 65, 0,                100, 100, 0, 100, 15, 100, 15, 0, 100, 15, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   50, 0, 0, 0, 0, 100, 7, 100, 0, 7, 0,                    0, 0, 0, 0, 0, 0],
+                   'GSO': [3, 25, 40, 8, 10, 4, 3, 5, 10,                          15, 15, 100, 0,               100, 100, 0, 100, 15, 100, 15, 0, 100, 15, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   10, 0, 0, 0, 0, 100, 12, 100, 0, 12, 0,                  0, 0, 0, 0, 0, 0],
+                   'Min Settings': [1, 1, 50, 1, 8, 1, 1, 1, 4,                    100, 100, 100, 0,             100, 100, 0, 100, 0, 100, 0, 0, 100, 0, 0, 0, 0, 0, 0, 100, 0,                      100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 0, 100, 0, 0, 0,                   0, 0, 100, 0, 0, 100],
+                   'Max Settings': [3, 100, 100, 10, 10, 1, 1, 1, 10,              100, 100, 100, 0,             100, 100, 0, 100, 100, 100, 100, 0, 100, 100, 0, 0, 0, 0, 0, 100, 0,                100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 100, 100, 0, 100, 0,               0, 0, 100, 0, 0, 100],
+                   'Putrid Pollution': [3, 15, 25, 5, 8, 3, 5, 10, 10,             60, 75, 10, 0,                100, 100, 0, 100, 5, 100, 5, 0, 100, 5, 0, 0, 0, 0, 0, 100, 0,                      100, 30, 0, 0, 30, 0, 0, 0, 0,                     100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Sonic Subversion': [3, 15, 25, 5, 8, 3, 5, 10, 10,             60, 75, 10, 0,                100, 100, 0, 100, 5, 100, 5, 0, 100, 5, 0, 0, 0, 0, 0, 100, 0,                      30, 30, 0, 0, 100, 0, 0, 0, 0,                     100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Android Annihilation': [3, 15, 25, 5, 8, 3, 5, 10, 10,         60, 75, 10, 0,                100, 100, 0, 100, 5, 100, 5, 0, 100, 5, 0, 0, 0, 0, 0, 100, 0,                      30, 30, 0, 0, 30, 0, 10, 100, 100,                 100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Arachnophobia': [3, 15, 25, 5, 8, 3, 5, 10, 10,                100, 10, 10, 0,               10, 10, 0, 10, 5, 10, 5, 0, 100, 15, 0, 0, 0, 0, 0, 10,  0,                         100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Cloaked Carnage': [3, 15, 25, 5, 8, 3, 5, 10, 10,              100, 10, 10, 0,               10, 10, 0, 10, 5, 10, 5, 0, 10, 5, 0, 0, 0, 0, 0, 100, 0,                           100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Hellish Inferno': [2, 15, 25, 5, 10, 2, 4, 7, 7,               10, 100, 10, 0,               100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   0, 100, 0, 0, 0, 0, 0, 0, 0,                       100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Trash Only': [3, 15, 20, 1, 4, 3, 4, 8, 10,                    100, 0, 0, 0,                 100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Medium Only': [3, 15, 20, 1, 4, 3, 4, 8, 10,                   0, 100, 0, 0,                 100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Large Only': [3, 15, 20, 1, 4, 3, 1, 8, 10,                    0, 0, 100, 0,                 100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
+                   'Boss Only': [3, 15, 20, 1, 4, 3, 4, 8, 1,                      0, 0, 0, 100,                 100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   100, 100, 100, 100, 100, 100],
+                   'Large-less': [2, 15, 25, 5, 10, 3, 7, 7, 7,                    100, 100, 0, 0,               100, 100, 0, 100, 30, 100, 30, 0, 100, 30, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 10, 100, 0, 10, 0,                 0, 0, 0, 0, 0, 0],
+                   'Custom Craziness': [3, 20, 30, 3, 6, 2, 4, 7, 7,               100, 100, 100, 50,            100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 100, 100, 100,             100, 35, 0, 0, 0, 75, 8, 100, 35, 8, 0,                  100, 100, 100, 100, 100, 0],
+                   'Boss Rush': [1, 15, 20, 3, 6, 2, 3, 4, 2,                      10, 10, 10, 100,              100, 100, 0, 10, 100, 100, 100, 0, 10, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 100, 100, 100,             100, 15, 0, 0, 0, 100, 5, 100, 15, 5, 0,                 100, 100, 100, 100, 100, 0],
+                   'Omega Onslaught': [3, 8, 15, 3, 7, 3, 4, 10, 10,               100, 100, 100, 0,             100, 100, 75, 100, 10, 100, 10, 75, 100, 10, 20, 20, 20, 5, 5, 100, 75,             100, 100, 75, 15, 100, 75, 0, 0, 0,                100, 0, 15, 5, 15, 100, 0, 100, 0, 0, 60,                0, 0, 0, 0, 0, 0],
+                   'Default': [3, 8, 15, 3, 7, 3, 4, 7, 7,                         100, 100, 100, 0,             100, 100, 0, 100, 30, 100, 30, 0, 100, 30, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 10, 100, 0, 10, 0,                 0, 0, 100, 0, 0, 100]}
+        
         if isinstance(preset, list): # This an old preset from last generation
             preset_data = preset
             if last_used_mode is not None and last_used_mode == 'Custom':
@@ -583,9 +712,9 @@ class GenerateDialog(object):
             # Swap to the appropriate ZED set for these presets for the first time
             if preset == 'Default' and self.zed_mode == 'Custom':
                 self.swap_modes()
-            elif preset in ['Boss Rush', 'Custom Craziness', 'Boss Only', 'Android Annihilation'] and self.zed_mode == 'Default':
+            elif preset in ['Boss Rush', 'Custom Craziness', 'Boss Only', 'Android Annihilation', 'Omega Onslaught'] and self.zed_mode == 'Default':
                 self.swap_modes()
-            elif preset not in ['Boss Rush', 'Custom Craziness', 'Boss Only', 'Android Annihilation'] and self.zed_mode == 'Custom':
+            elif preset not in ['Boss Rush', 'Custom Craziness', 'Boss Only', 'Android Annihilation', 'Omega Onslaught'] and self.zed_mode == 'Custom':
                 self.swap_modes()
 
         # Activate the preset

@@ -52,6 +52,7 @@ dark_colors = {'Trash': QtGui.QColor(85, 107, 43),
                'Scrakes': QtGui.QColor(130, 105, 73),
                'Fleshpounds': QtGui.QColor(161, 67, 64),
                'SpawnRage': QtGui.QColor(125, 44, 44),
+               'Omega': QtGui.QColor(108, 69, 165),
                'Other': QtGui.QColor(75, 75, 75),
                'Total': QtGui.QColor(58, 122, 145)}
 light_colors = {'Header': QtGui.QColor(100, 100, 100),
@@ -67,6 +68,7 @@ light_colors = {'Header': QtGui.QColor(100, 100, 100),
                 'Scrakes': QtGui.QColor(227, 189, 154),
                 'Fleshpounds': QtGui.QColor(235, 165, 162),
                 'SpawnRage': QtGui.QColor(240, 122, 122),
+                'Omega': QtGui.QColor(178, 153, 214),
                 'Other': QtGui.QColor(175, 175, 175),
                 'Total': QtGui.QColor(184, 214, 224)}
 
@@ -102,11 +104,16 @@ class AnalyzeDialog(object):
         wave_num_zeds = int((base_num_zeds * diffmod * wavesize_multi) // 1)
 
         trash_zeds = ['Cyst', 'Alpha Clot', 'Slasher', 'Rioter', 'Gorefast', 'Gorefiend',
-                      'Crawler', 'Elite Crawler', 'Stalker']
-        medium_zeds = ['Bloat', 'Husk', 'Siren', 'E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber']
-        large_zeds = ['Quarter Pound', 'Fleshpound', 'Scrake', 'Alpha Scrake', 'Alpha Fleshpound']
+                      'Crawler', 'Elite Crawler', 'Stalker', 'Slasher Omega', 'Gorefast Omega', 'Abomination Spawn',
+                      'Stalker Omega', 'Tiny Crawler', 'Medium Crawler', 'Big Crawler', 'Huge Crawler', 'Ultra Crawler']
+        medium_zeds = ['Bloat', 'Husk', 'Siren', 'E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Siren Omega', 'Husk Omega', 'Tiny Husk']
+        large_zeds = ['Quarter Pound', 'Fleshpound', 'Scrake', 'Alpha Scrake', 'Alpha Fleshpound', 'Tiny Scrake',
+                      'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
         albino = ['Rioter', 'Gorefiend', 'Elite Crawler', 'Alpha Scrake', 'Alpha Fleshpound']
-        bosses = ['King Fleshpound', 'Abomination', 'Dr. Hans Volter', 'Patriarch', 'Matriarch', 'Abomination Spawn']
+        bosses = ['King Fleshpound', 'Abomination', 'Dr. Hans Volter', 'Patriarch', 'Matriarch']
+        omega = ['Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler', 'Medium Crawler',
+                 'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
+                 'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
 
         # Expand this wave's squads
         expanded_squads = self.expand_squads(self.wavedefs[wave_id])
@@ -115,11 +122,12 @@ class AnalyzeDialog(object):
         # Simulate the wave!
         wave_stats = {'Total': wave_num_zeds,
                       'Category': {'Trash': 0, 'Medium': 0, 'Large': 0, 'Boss': 0, 'Total': 0}, 
-                      'Name': {'Cyst': 0, 'Alpha Clot': 0, 'Slasher': 0, 'Rioter': 0, 'Gorefast': 0, 'Gorefiend': 0, 'Crawler': 0, 'Elite Crawler': 0,
-                               'Stalker': 0, 'Bloat': 0, 'Husk': 0, 'Siren': 0, 'E.D.A.R Trapper': 0, 'E.D.A.R Blaster': 0, 'E.D.A.R Bomber': 0,
-                               'Quarter Pound': 0, 'Fleshpound': 0, 'Scrake': 0, 'Alpha Scrake': 0, 'Alpha Fleshpound': 0, 'Abomination Spawn': 0, 'King Fleshpound': 0,
-                               'Dr. Hans Volter': 0, 'Patriarch': 0, 'Abomination': 0, 'Matriarch': 0, 'Total': 0},
-                      'Group': {'Clots': 0, 'Gorefasts': 0, 'Crawlers / Stalkers': 0, 'Robots': 0, 'Scrakes': 0, 'Fleshpounds': 0, 'Albino': 0, 'SpawnRage': 0, 'Total': 0},
+                      'Name': {'Cyst': 0, 'Alpha Clot': 0, 'Slasher': 0, 'Slasher Omega': 0,  'Rioter': 0, 'Gorefast': 0, 'Gorefast Omega': 0, 'Gorefiend': 0, 'Crawler': 0, 'Elite Crawler': 0, 'Tiny Crawler': 0, 'Medium Crawler': 0, 'Big Crawler': 0,
+                               'Huge Crawler': 0, 'Ultra Crawler': 0, 'Stalker': 0, 'Stalker Omega': 0, 'Abomination Spawn': 0, 'Bloat': 0, 'Husk': 0, 'Husk Omega': 0, 'Tiny Husk': 0, 'Siren': 0,
+                               'Siren Omega': 0, 'E.D.A.R Trapper': 0, 'E.D.A.R Blaster': 0, 'E.D.A.R Bomber': 0, 'Quarter Pound': 0, 'Scrake': 0, 'Scrake Omega': 0, 'Tiny Scrake': 0,
+                               'Scrake Emperor': 0, 'Alpha Scrake': 0, 'Fleshpound': 0, 'Fleshpound Omega': 0, 'Alpha Fleshpound': 0, 'King Fleshpound': 0, 'Dr. Hans Volter': 0,
+                               'Patriarch': 0, 'Abomination': 0, 'Matriarch': 0, 'Total': 0},
+                      'Group': {'Clots': 0, 'Gorefasts': 0, 'Crawlers / Stalkers': 0, 'Robots': 0, 'Scrakes': 0, 'Fleshpounds': 0, 'Albino': 0, 'Omega': 0, 'SpawnRage': 0, 'Total': 0},
                       'SpawnRage': {'Quarter Pound': 0, 'Fleshpound': 0, 'Alpha Fleshpound': 0, 'Total': 0}}
 
         # Count up the ZEDs
@@ -141,11 +149,11 @@ class AnalyzeDialog(object):
                 # Trash ZEDs
                 if next_zed in trash_zeds:
                     # Add to group stats
-                    if next_zed in ['Cyst', 'Alpha Clot', 'Slasher', 'Rioter']:
+                    if next_zed in ['Cyst', 'Alpha Clot', 'Slasher', 'Rioter', 'Slasher Omega']:
                         wave_stats['Group']['Clots'] += 1
-                    elif next_zed in ['Gorefast', 'Gorefiend']:
+                    elif next_zed in ['Gorefast', 'Gorefiend', 'Gorefast Omega']:
                         wave_stats['Group']['Gorefasts'] += 1
-                    elif next_zed in ['Crawler', 'Elite Crawler', 'Stalker']:
+                    elif next_zed in ['Crawler', 'Elite Crawler', 'Stalker', 'Tiny Crawler', 'Medium Crawler', 'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Stalker Omega']:
                         wave_stats['Group']['Crawlers / Stalkers'] += 1
                     wave_stats['Category']['Trash'] += 1
 
@@ -157,9 +165,9 @@ class AnalyzeDialog(object):
 
                 # Large ZEDs
                 elif next_zed in large_zeds:
-                    if next_zed in ['Scrake', 'Alpha Scrake']:
+                    if next_zed in ['Scrake', 'Alpha Scrake', 'Scrake Omega', 'Scrake Emperor', 'Tiny Scrake']:
                         wave_stats['Group']['Scrakes'] += 1
-                    elif next_zed in ['Fleshpound', 'Alpha Fleshpound', 'Quarter Pound']:
+                    elif next_zed in ['Fleshpound', 'Alpha Fleshpound', 'Quarter Pound', 'Fleshpound Omega']:
                         wave_stats['Group']['Fleshpounds'] += 1
                     wave_stats['Category']['Large'] += 1
 
@@ -169,6 +177,9 @@ class AnalyzeDialog(object):
 
                 if next_zed in albino: # Check for albinos
                     wave_stats['Group']['Albino'] += 1
+
+                if next_zed in omega: # Check for omegas
+                    wave_stats['Group']['Omega'] += 1
 
             # Add to totals
             wave_stats['Category']['Total'] += 1
@@ -201,13 +212,6 @@ class AnalyzeDialog(object):
                 if len(currently_spawned_zeds) == 0: # We ran out of zeds to pop (because MM is high)
                     break # Leave early. We had less ZEDs remaining than there were MaxMonsters
                 currently_spawned_zeds.pop(0) # Remove the first ZED
-
-            trash_zeds = ['Cyst', 'Alpha Clot', 'Slasher', 'Rioter', 'Gorefast', 'Gorefiend',
-                          'Crawler', 'Elite Crawler', 'Stalker', 'Abomination Spawn'] # Abom spawn is considered Trash ZED for this calculation
-            medium_zeds = ['Bloat', 'Husk', 'Siren', 'E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber']
-            large_zeds = ['Quarter Pound', 'Fleshpound', 'Scrake', 'Alpha Scrake', 'Alpha Fleshpound']
-            albino = ['Rioter', 'Gorefiend', 'Elite Crawler', 'Alpha Scrake', 'Alpha Fleshpound']
-            bosses = ['King Fleshpound', 'Abomination', 'Dr. Hans Volter', 'Patriarch', 'Matriarch']
 
             # Get the difficulty score at this point
             # ZED count modifier: ZEDs have varying weights
@@ -386,7 +390,7 @@ class AnalyzeDialog(object):
                 total_count = 0
                 # Iterate over all groups
                 for (group, count) in wave_data['Group'].items():
-                    if group not in ['Total', 'Albino', 'SpawnRage'] and count > 0: # Ignore Total/Albino/SpawnRage as they are not unique groups
+                    if group not in ['Total', 'Albino', 'SpawnRage', 'Omega'] and count > 0: # Ignore Total/Albino/SpawnRage as they are not unique groups
                         percent = (float(count) / float(wave_data['Total'])) * 100.0
                         total_percent += percent
                         total_count += count
@@ -448,11 +452,17 @@ class AnalyzeDialog(object):
         font.setBold(True)
 
         # ZED lists
-        trash_zeds = ['Cyst', 'Alpha Clot', 'Slasher', 'Gorefast', 'Crawler', 'Stalker']
-        albino_zeds = ['Rioter', 'Elite Crawler', 'Gorefiend', 'Alpha Scrake', 'Alpha Fleshpound']
-        medium_zeds = ['Bloat', 'Husk', 'Siren', 'E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber']
-        large_zeds = ['Quarter Pound', 'Fleshpound', 'Scrake']
-        bosses = ['King Fleshpound', 'Abomination', 'Dr. Hans Volter', 'Patriarch', 'Matriarch', 'Abomination Spawn']
+        trash_zeds = ['Cyst', 'Alpha Clot', 'Slasher', 'Rioter', 'Gorefast', 'Gorefiend',
+                      'Crawler', 'Elite Crawler', 'Stalker', 'Slasher Omega', 'Gorefast Omega', 'Abomination Spawn',
+                      'Stalker Omega', 'Tiny Crawler', 'Medium Crawler', 'Big Crawler', 'Huge Crawler', 'Ultra Crawler']
+        medium_zeds = ['Bloat', 'Husk', 'Siren', 'E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Siren Omega', 'Husk Omega', 'Tiny Husk']
+        large_zeds = ['Quarter Pound', 'Fleshpound', 'Scrake', 'Alpha Scrake', 'Alpha Fleshpound', 'Tiny Scrake',
+                      'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
+        albino_zeds = ['Rioter', 'Gorefiend', 'Elite Crawler', 'Alpha Scrake', 'Alpha Fleshpound']
+        bosses = ['King Fleshpound', 'Abomination', 'Dr. Hans Volter', 'Patriarch', 'Matriarch']
+        omega_zeds = ['Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler', 'Medium Crawler',
+                 'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
+                 'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
 
         if table_type == 'categorical': # Category table
             # Colorify header row
@@ -482,7 +492,13 @@ class AnalyzeDialog(object):
                 zed_type = table.item(row, 0).text()
 
                 # Figure out what color this row should be
-                if zed_type in trash_zeds:
+                if zed_type in albino_zeds:
+                    bg_color = light_colors['Albino']
+                    fg_color = dark_colors['Albino']
+                elif zed_type in omega_zeds:
+                    bg_color = light_colors['Omega']
+                    fg_color = dark_colors['Omega']
+                elif zed_type in trash_zeds:
                     bg_color = light_colors['Trash']
                     fg_color = dark_colors['Trash']
                 elif zed_type in medium_zeds:
@@ -491,9 +507,6 @@ class AnalyzeDialog(object):
                 elif zed_type in large_zeds:
                     bg_color = light_colors['Large']
                     fg_color = dark_colors['Large']
-                elif zed_type in albino_zeds:
-                    bg_color = light_colors['Albino']
-                    fg_color = dark_colors['Albino']
                 elif zed_type in bosses:
                     bg_color = light_colors['Boss']
                     fg_color = dark_colors['Boss']
@@ -572,7 +585,8 @@ class AnalyzeDialog(object):
         font_label.setWeight(75)
 
         # Display params
-        title_label = widget_helpers.create_label(None, text=f"SPAWNCYCLE ANALYSIS " + (f":: {self.filename[:-4]}" if self.filename != 'Untitled' else ''), tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
+        stripped_fname = self.filename.replace('.json', '').replace('.txt', '')
+        title_label = widget_helpers.create_label(None, text=f"SPAWNCYCLE ANALYSIS " + (f":: {stripped_fname}" if self.filename != 'Untitled' else ''), tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
         params_label = widget_helpers.create_label(None, text=f"\n\nPARAMETERS", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
         params_frame = QtWidgets.QFrame()
         params_frame_layout = QtWidgets.QVBoxLayout(params_frame)

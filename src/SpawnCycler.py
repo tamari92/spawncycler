@@ -81,13 +81,34 @@ zed_ids = {'Cyst': 'CY',
            'Matriarch': 'MT',
            'King Fleshpound': 'KF',
            'Abomination': 'AB',
-           'Abomination Spawn': 'AS'}
+           'Abomination Spawn': 'AS',
+           'Slasher Omega': 'OSL',
+           'Fleshpound Omega': 'OFP',
+           'Gorefast Omega': 'OGF',
+           'Husk Omega': 'OHS',
+           'Tiny Husk': 'MHS',
+           'Scrake Emperor': 'ESC',
+           'Scrake Omega': 'OSC',
+           'Tiny Scrake': 'TSC',
+           'Siren Omega': 'OS',
+           'Stalker Omega': 'OST',
+           'Big Crawler': 'BCR',
+           'Huge Crawler': 'HCR',
+           'Medium Crawler': 'MCR',
+           'Tiny Crawler': 'CRM',
+           'Ultra Crawler': 'UCR'}
+
+custom_zeds = ['E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Alpha Scrake', 'Alpha Fleshpound',
+               'Alpha Fleshpound (Enraged)', 'Dr. Hans Volter', 'Patriarch', 'Abomination', 'Matriarch']
+omega_zeds = ['Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler', 'Medium Crawler',
+                  'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
+                  'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
 
 
 class Ui_MainWindow(object):
     def __init__(self, app):
         self.app = app
-        self.zed_mode = 'Custom'
+        self.zed_mode = 'Omega'
         self.active_dialog = None
         self.loaded_json = None
         self.last_generate_preset = None # Last preset used in the Generate dialog
@@ -98,7 +119,7 @@ class Ui_MainWindow(object):
     # Switches from Default to Custom zed set
     def switch_zed_mode(self, should_warn=True):
         if self.zed_mode == 'Custom':
-            # Need to remove all the custom zeds from the grid
+            # Hide custom ZEDs
             self.zed_pane_buttons['E.D.A.R Trapper'].setVisible(False)
             self.zed_pane_buttons['E.D.A.R Blaster'].setVisible(False)
             self.zed_pane_buttons['E.D.A.R Bomber'].setVisible(False)
@@ -110,26 +131,143 @@ class Ui_MainWindow(object):
             self.zed_pane_buttons['Patriarch'].setVisible(False)
             self.zed_pane_buttons['Abomination'].setVisible(False)
             self.zed_pane_buttons['Matriarch'].setVisible(False)
+            self.zed_pane_buttons['Abomination Spawn'].setVisible(False)
+
+            # Hide default ZEDs
+            self.zed_pane_buttons['Cyst'].setVisible(False)
+            self.zed_pane_buttons['Slasher'].setVisible(False)
+            self.zed_pane_buttons['Alpha Clot'].setVisible(False)
+            self.zed_pane_buttons['Rioter'].setVisible(False)
+            self.zed_pane_buttons['Gorefast'].setVisible(False)
+            self.zed_pane_buttons['Gorefiend'].setVisible(False)
+            self.zed_pane_buttons['Crawler'].setVisible(False)
+            self.zed_pane_buttons['Elite Crawler'].setVisible(False)
+            self.zed_pane_buttons['Stalker'].setVisible(False)
+            self.zed_pane_buttons['Bloat'].setVisible(False)
+            self.zed_pane_buttons['Husk'].setVisible(False)
+            self.zed_pane_buttons['Siren'].setVisible(False)
+            self.zed_pane_buttons['Quarter Pound'].setVisible(False)
+            self.zed_pane_buttons['Quarter Pound (Enraged)'].setVisible(False)
+            self.zed_pane_buttons['Fleshpound'].setVisible(False)
+            self.zed_pane_buttons['Fleshpound (Enraged)'].setVisible(False)
+            self.zed_pane_buttons['Scrake'].setVisible(False)
+            self.zed_pane_buttons['King Fleshpound'].setVisible(False)
+
+            # Show Omega ZEDs
+            self.zed_pane_buttons['Slasher Omega'].setVisible(True)
+            self.zed_pane_buttons['Gorefast Omega'].setVisible(True)
+            self.zed_pane_buttons['Stalker Omega'].setVisible(True)
+            self.zed_pane_buttons['Tiny Crawler'].setVisible(True)
+            self.zed_pane_buttons['Medium Crawler'].setVisible(True)
+            self.zed_pane_buttons['Big Crawler'].setVisible(True)
+            self.zed_pane_buttons['Huge Crawler'].setVisible(True)
+            self.zed_pane_buttons['Ultra Crawler'].setVisible(True)
+            self.zed_pane_buttons['Siren Omega'].setVisible(True)
+            self.zed_pane_buttons['Husk Omega'].setVisible(True)
+            self.zed_pane_buttons['Tiny Husk'].setVisible(True)
+            self.zed_pane_buttons['Scrake Omega'].setVisible(True)
+            self.zed_pane_buttons['Scrake Emperor'].setVisible(True)
+            self.zed_pane_buttons['Tiny Scrake'].setVisible(True)
+            self.zed_pane_buttons['Fleshpound Omega'].setVisible(True)
+
+            # Hide/show labels
+            self.labels['Trash ZEDs'].setVisible(False)
+            self.labels['Medium ZEDs'].setVisible(False)
+            self.labels['Large ZEDs'].setVisible(False)
+            self.labels['Bosses'].setVisible(False)
+            self.labels['Omega Trash'].setVisible(True)
+            self.labels['Omega Medium'].setVisible(True)
+            self.labels['Omega Large'].setVisible(True)
 
             for button in self.zed_pane_buttons.values():
                 button.setIconSize(QtCore.QSize(48, 48));
 
             # Update button
-            self.buttons['Switch ZEDs'].setText(' Custom')
-            self.default_replace_menu.menuAction().setVisible(True)
-            self.custom_replace_menu.menuAction().setVisible(False)
+            self.buttons['Switch ZEDs'].setText(' Omega')
+            self.zed_mode = 'Omega'
+            #self.refresh_wavedefs()
+
+        elif self.zed_mode == 'Omega':
+            # Hide custom ZEDs
+            self.zed_pane_buttons['E.D.A.R Trapper'].setVisible(False)
+            self.zed_pane_buttons['E.D.A.R Blaster'].setVisible(False)
+            self.zed_pane_buttons['E.D.A.R Bomber'].setVisible(False)
+            self.zed_pane_buttons['Alpha Scrake'].setVisible(False)
+            self.zed_pane_buttons['Alpha Fleshpound'].setVisible(False)
+            self.zed_pane_buttons['Alpha Fleshpound (Enraged)'].setVisible(False)
+            self.zed_pane_buttons['Alpha Scrake'].setVisible(False)
+            self.zed_pane_buttons['Dr. Hans Volter'].setVisible(False)
+            self.zed_pane_buttons['Patriarch'].setVisible(False)
+            self.zed_pane_buttons['Abomination'].setVisible(False)
+            self.zed_pane_buttons['Matriarch'].setVisible(False)
+            self.zed_pane_buttons['Abomination Spawn'].setVisible(False)
+
+            # Hide Omega ZEDs
+            self.zed_pane_buttons['Slasher Omega'].setVisible(False)
+            self.zed_pane_buttons['Gorefast Omega'].setVisible(False)
+            self.zed_pane_buttons['Stalker Omega'].setVisible(False)
+            self.zed_pane_buttons['Tiny Crawler'].setVisible(False)
+            self.zed_pane_buttons['Medium Crawler'].setVisible(False)
+            self.zed_pane_buttons['Big Crawler'].setVisible(False)
+            self.zed_pane_buttons['Huge Crawler'].setVisible(False)
+            self.zed_pane_buttons['Ultra Crawler'].setVisible(False)
+            self.zed_pane_buttons['Siren Omega'].setVisible(False)
+            self.zed_pane_buttons['Husk Omega'].setVisible(False)
+            self.zed_pane_buttons['Tiny Husk'].setVisible(False)
+            self.zed_pane_buttons['Scrake Omega'].setVisible(False)
+            self.zed_pane_buttons['Scrake Emperor'].setVisible(False)
+            self.zed_pane_buttons['Tiny Scrake'].setVisible(False)
+            self.zed_pane_buttons['Fleshpound Omega'].setVisible(False)
+
+            # Show default ZEDs
+            self.zed_pane_buttons['Cyst'].setVisible(True)
+            self.zed_pane_buttons['Slasher'].setVisible(True)
+            self.zed_pane_buttons['Alpha Clot'].setVisible(True)
+            self.zed_pane_buttons['Rioter'].setVisible(True)
+            self.zed_pane_buttons['Gorefast'].setVisible(True)
+            self.zed_pane_buttons['Gorefiend'].setVisible(True)
+            self.zed_pane_buttons['Crawler'].setVisible(True)
+            self.zed_pane_buttons['Elite Crawler'].setVisible(True)
+            self.zed_pane_buttons['Stalker'].setVisible(True)
+            self.zed_pane_buttons['Bloat'].setVisible(True)
+            self.zed_pane_buttons['Husk'].setVisible(True)
+            self.zed_pane_buttons['Siren'].setVisible(True)
+            self.zed_pane_buttons['Quarter Pound'].setVisible(True)
+            self.zed_pane_buttons['Quarter Pound (Enraged)'].setVisible(True)
+            self.zed_pane_buttons['Fleshpound'].setVisible(True)
+            self.zed_pane_buttons['Fleshpound (Enraged)'].setVisible(True)
+            self.zed_pane_buttons['Scrake'].setVisible(True)
+            self.zed_pane_buttons['King Fleshpound'].setVisible(True)
+            self.zed_pane_buttons['Abomination Spawn'].setVisible(True)
+
+            # Hide/show labels
+            self.labels['Omega Trash'].setVisible(False)
+            self.labels['Omega Medium'].setVisible(False)
+            self.labels['Omega Large'].setVisible(False)
+            self.labels['Trash ZEDs'].setVisible(True)
+            self.labels['Medium ZEDs'].setVisible(True)
+            self.labels['Large ZEDs'].setVisible(True)
+            self.labels['Bosses'].setVisible(True)
+
+            for button in self.zed_pane_buttons.values():
+                button.setIconSize(QtCore.QSize(48, 48));
+
+            # Update button
+            self.buttons['Switch ZEDs'].setText(' Default')
             self.zed_mode = 'Default'
             #self.refresh_wavedefs()
-        else:
+
+        else: # Default zeds
             global has_swapped_modes
             if should_warn:
                 if not has_swapped_modes:
                     diag_title = 'WARNING'
-                    diag_text = '\nThe Custom ZED set is NOT supported by most Controlled Difficulty builds.\nUsing these ZEDs may break your SpawnCycle on those builds.\n\nUse at your own risk!\n'
+                    diag_text = '\nThe Custom and Omega ZED sets are NOT supported by most Controlled Difficulty builds.\nUsing these ZEDs may break your SpawnCycle on those builds.\n\nUse at your own risk!\n'
                     x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
                     y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
                     diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
                     diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+
                     diag.exec_() # Show a dialog to tell user to check messages
                     has_swapped_modes = True # Never show this message again
             else:
@@ -152,9 +290,7 @@ class Ui_MainWindow(object):
                 button.setIconSize(QtCore.QSize(34, 34));
 
             # Update button
-            self.buttons['Switch ZEDs'].setText(' Default')
-            self.default_replace_menu.menuAction().setVisible(False)
-            self.custom_replace_menu.menuAction().setVisible(True)
+            self.buttons['Switch ZEDs'].setText(' Custom')            
             self.zed_mode = 'Custom'
             #self.refresh_wavedefs()
 
@@ -305,12 +441,21 @@ class Ui_MainWindow(object):
 
         # Create a frame for the ZED and its count
         zed_frame, zed_frame_children = self.create_zed_frame(squad_frame, zed_button, wave_id, squad_id, zed_id)
+        
+        # Set colors
         if raged:
-            zed_frame_children['Label'].setText(str(count) + '!')
             zed_frame_children['Label'].setStyleSheet("color: rgb(255, 55, 55);")
             zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid red;}")
+        elif zed_id in omega_zeds:
+            zed_frame_children['Label'].setStyleSheet("color: rgb(173, 98, 252);")
+            zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid purple;}")
         else:
             zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid white;}")
+            
+        # Set label
+        if raged:
+            zed_frame_children['Label'].setText(str(count) + '!')
+        else:
             zed_frame_children['Label'].setText(str(count))
 
         # Add the widgets
@@ -390,12 +535,20 @@ class Ui_MainWindow(object):
         else: # Zed isn't in the squad yet
             zed_frame, zed_frame_children = self.create_zed_frame(this_squad['Frame'], zed_button, wave_id, squad_id, zed_id)
 
-            if raged: # Mark spawn raged FP
+            # Set colors
+            if raged: 
                 zed_frame_children['Label'].setStyleSheet("color: rgb(255, 55, 55);")
                 zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid red;}")
-                zed_frame_children['Label'].setText(str(count) + '!')
+            elif zed_id in omega_zeds:
+                zed_frame_children['Label'].setStyleSheet("color: rgb(173, 98, 252);")
+                zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid purple;}")
             else:
                 zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid white;}")
+
+            # Set Label
+            if raged:
+                zed_frame_children['Label'].setText(str(count) + '!')
+            else:
                 zed_frame_children['Label'].setText(str(count))
 
             this_squad['ZEDs'][zed_id] = {'Count': count, 'Raged': raged, 'Frame': zed_frame, 'Children': zed_frame_children}
@@ -740,10 +893,8 @@ class Ui_MainWindow(object):
         self.options_pane.addWidget(button_batch)
         self.buttons.update({'Batch' : button_batch})
 
-        batch_menu, default_replace_menu, custom_replace_menu = self.init_batch_menu()
-        self.default_replace_menu = default_replace_menu
-        self.custom_replace_menu = custom_replace_menu
-        button_batch.setMenu(batch_menu)
+        # Populate the Batch Menu
+        self.init_batch_menu()
         
         # Analyze Spawncycle
         button_analyze = widget_helpers.create_button(self.central_widget, self.app, 'Analyze', text=' Analyze ', tooltip='Display SpawnCycle statistics', target=self.open_analyze_dialog, style=ss, icon_path='img/icon_analyze.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
@@ -793,52 +944,44 @@ class Ui_MainWindow(object):
         batch_menu.setStyleSheet(ss_menu)
         batch_menu.addAction('Reverse Waves', self.reverse_wavedefs)
         
-        default_replace_menu = QtWidgets.QMenu('Replace ZEDs ..', batch_menu)
-        custom_replace_menu = QtWidgets.QMenu('Replace ZEDs ..', batch_menu)
-        custom_zeds = ['E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Alpha Scrake', 'Alpha Fleshpound',
-                       'Alpha Fleshpound (Enraged)', 'Dr. Hans Volter', 'Patriarch', 'Abomination', 'Matriarch']
+        replace_menu = QtWidgets.QMenu('Replace ZEDs ..', batch_menu)
 
-        # Init Default replace menu
-        for zed in zed_ids.keys():
-            if zed in custom_zeds:
-                continue
-
-            local_zeds = deepcopy(list(zed_ids.keys()))
-            local_zeds.remove(zed) # Remove this ZED so it doesn't appear in the menu
-            local_menu = QtWidgets.QMenu(zed, default_replace_menu)
-            local_menu.setStyleSheet("color: rgb(255, 255, 255); background-color: rgb(50, 50, 50)")
-
-            # Add the rest of the ZEDs to the menu
-            for z in local_zeds:
-                if z in custom_zeds: # Except for this specific ZED. Can't replace self with self!
-                    continue
-                action = QtWidgets.QAction(z, local_menu)
-                local_menu.addAction(action)
-                action.triggered.connect(partial(self.replace_zeds, 'all', 'all', [zed], [z]))
-            default_replace_menu.addMenu(local_menu)
-
-        # Init Custom replace menu
+        # Init replace menu
         for zed in zed_ids.keys():
             local_zeds = deepcopy(list(zed_ids.keys()))
             local_zeds.remove(zed) # Remove this ZED so it doesn't appear in the menu
-            local_menu = QtWidgets.QMenu(zed, custom_replace_menu)
+            local_menu = QtWidgets.QMenu(zed, replace_menu)
             local_menu.setStyleSheet("color: rgb(255, 255, 255); background-color: rgb(50, 50, 50)")
 
             # Add the rest of the ZEDs to the menu
             for z in local_zeds:
                 action = QtWidgets.QAction(z, local_menu)
                 local_menu.addAction(action)
-                action.triggered.connect(partial(self.replace_zeds, 'all', 'all', [zed], [z]))
+                if z in custom_zeds or z in omega_zeds:
+                    action.triggered.connect(partial(self.replace_zeds, 'all', 'all', [zed], [z], True))
+                else:
+                    action.triggered.connect(partial(self.replace_zeds, 'all', 'all', [zed], [z]))
+            replace_menu.addMenu(local_menu)
 
-            custom_replace_menu.addMenu(local_menu)
-
-        batch_menu.addMenu(default_replace_menu)
-        batch_menu.addMenu(custom_replace_menu)
-
-        return batch_menu, default_replace_menu, custom_replace_menu
+        batch_menu.addMenu(replace_menu)
+        self.buttons['Batch'].setMenu(batch_menu)
 
     # Given the wave ID, squad ID, and a list of zeds, replaces all zeds in squads with the chosen replacement(s)
-    def replace_zeds(self, wave_id, squad_id, zeds_to_replace, replacements):        
+    def replace_zeds(self, wave_id, squad_id, zeds_to_replace, replacements, should_warn=False):
+        global has_swapped_modes
+        if should_warn:
+            if not has_swapped_modes:
+                diag_title = 'WARNING'
+                diag_text = '\nThe Custom and Omega ZED sets are NOT supported by most Controlled Difficulty builds.\nUsing these ZEDs may break your SpawnCycle on those builds.\n\nUse at your own risk!\n'
+                x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
+                y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
+                diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
+                diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+                diag.exec_() # Show a dialog to tell user to check messages
+                has_swapped_modes = True # Never show this message again
+        else:
+            has_swapped_modes = True
+
         # Figure out which waves and squads we're looping over
         wave_ids = [wave_id] if wave_id != 'all' else [i for i in range(len(self.wavedefs))]
         squad_ids = [[squad_id] for i in range(len(self.wavedefs))] if squad_id != 'all' else [[j for j in range(len(self.wavedefs[i]['Squads']))] for i in range(len(self.wavedefs))]
@@ -978,6 +1121,7 @@ class Ui_MainWindow(object):
         self.buttons.update({'Switch ZEDs' : button_switch})
         self.zed_pane.addWidget(button_switch)
 
+
         # Setup Trash ZEDs area
         label_trashzeds = widget_helpers.create_label(self.zed_grid_contents, text='Trash ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
         self.labels.update({'Trash ZEDs' : label_trashzeds})
@@ -1024,6 +1168,7 @@ class Ui_MainWindow(object):
 
         self.gridLayout_2.addLayout(self.grid_trashzeds, 1, 0, 1, 1)
 
+
         # Setup Medium ZEDs area
         label_mediumzeds = widget_helpers.create_label(self.zed_grid_contents, text='Medium ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
         self.labels.update({'Medium ZEDs' : label_mediumzeds})
@@ -1057,6 +1202,7 @@ class Ui_MainWindow(object):
         self.zed_pane_buttons.update({'E.D.A.R Bomber' : button_edar_rocket})
 
         self.gridLayout_2.addLayout(self.grid_mediumzeds, 3, 0, 1, 1)
+
 
         # Setup Large ZEDs area
         label_largezeds = widget_helpers.create_label(self.zed_grid_contents, text='Large ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
@@ -1100,6 +1246,7 @@ class Ui_MainWindow(object):
         
         self.gridLayout_2.addLayout(self.grid_largezeds, 5, 0, 1, 1)
 
+
         # Setup Bosses area
         label_bosses = widget_helpers.create_label(self.zed_grid_contents, text='Bosses', style=ss_label, font=font_label, size_policy=sp_label)
         self.labels.update({'Bosses' : label_bosses})
@@ -1133,6 +1280,117 @@ class Ui_MainWindow(object):
         self.zed_pane_buttons.update({'Matriarch' : button_matriarch})
 
         self.gridLayout_2.addLayout(self.grid_bosses, 7, 0, 1, 1)
+
+
+        # Setup Omega Trash area
+        label_omega_trash = widget_helpers.create_label(self.zed_grid_contents, text='Trash ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
+        self.labels.update({'Omega Trash' : label_omega_trash})
+        self.gridLayout_2.addWidget(label_omega_trash, 8, 0, 1, 1)
+        widget_helpers.set_plain_border(label_omega_trash, color=QtGui.QColor(255, 255, 255), width=2)
+        self.grid_omega_trash = QtWidgets.QGridLayout()
+        self.grid_omega_trash.setObjectName("grid_omega_trash")
+
+        button_slasher_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Slasher Omega', tooltip='Slasher Omega', style=ss_button, icon_path='img/icon_slasher_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_slasher_omega, 0, 0, 1, 1)
+        self.zed_pane_buttons.update({'Slasher Omega' : button_slasher_omega})
+
+        button_gorefast_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefast Omega', tooltip='Gorefast Omega', style=ss_button, icon_path='img/icon_gorefast_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_gorefast_omega, 0, 1, 1, 1)
+        self.zed_pane_buttons.update({'Gorefast Omega' : button_gorefast_omega})
+
+        button_stalker_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Stalker Omega', tooltip='Stalker Omega', style=ss_button, icon_path='img/icon_stalker_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_stalker_omega, 1, 0, 1, 1)
+        self.zed_pane_buttons.update({'Stalker Omega' : button_stalker_omega})
+
+        button_crawler_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Crawler', tooltip='Tiny Crawler', style=ss_button, icon_path='img/icon_crawler_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_crawler_tiny, 1, 1, 1, 1)
+        self.zed_pane_buttons.update({'Tiny Crawler' : button_crawler_tiny})
+
+        button_crawler_medium = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Medium Crawler', tooltip='Medium Crawler', style=ss_button, icon_path='img/icon_crawler_medium.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_crawler_medium, 2, 0, 1, 1)
+        self.zed_pane_buttons.update({'Medium Crawler' : button_crawler_medium})
+
+        button_crawler_big = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Big Crawler', tooltip='Big Crawler', style=ss_button, icon_path='img/icon_crawler_big.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_crawler_big, 2, 1, 1, 1)
+        self.zed_pane_buttons.update({'Big Crawler' : button_crawler_big})
+
+        button_crawler_huge = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Huge Crawler', tooltip='Huge Crawler', style=ss_button, icon_path='img/icon_crawler_huge.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_crawler_huge, 3, 0, 1, 1)
+        self.zed_pane_buttons.update({'Huge Crawler' : button_crawler_huge})
+
+        button_crawler_ultra = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Ultra Crawler', tooltip='Ultra Crawler', style=ss_button, icon_path='img/icon_crawler_ultra.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_trash.addWidget(button_crawler_ultra, 3, 1, 1, 1)
+        self.zed_pane_buttons.update({'Ultra Crawler' : button_crawler_ultra})
+        
+        self.gridLayout_2.addLayout(self.grid_omega_trash, 9, 0, 1, 1)
+
+
+        # Setup Omega Medium area
+        label_omega_medium = widget_helpers.create_label(self.zed_grid_contents, text='Medium ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
+        self.labels.update({'Omega Medium' : label_omega_medium})
+        self.gridLayout_2.addWidget(label_omega_medium, 10, 0, 1, 1)
+        widget_helpers.set_plain_border(label_omega_medium, color=QtGui.QColor(255, 255, 255), width=2)
+        self.grid_omega_medium = QtWidgets.QGridLayout()
+        self.grid_omega_medium.setObjectName("grid_omega_medium")
+
+        button_siren_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Siren Omega', tooltip='Siren Omega', style=ss_button, icon_path='img/icon_siren_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_medium.addWidget(button_siren_omega, 0, 0, 1, 1)
+        self.zed_pane_buttons.update({'Siren Omega' : button_siren_omega})
+
+        button_husk_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Husk Omega', tooltip='Husk Omega', style=ss_button, icon_path='img/icon_husk_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_medium.addWidget(button_husk_omega, 0, 1, 1, 1)
+        self.zed_pane_buttons.update({'Husk Omega' : button_husk_omega})
+
+        button_husk_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Husk', tooltip='Tiny Husk', style=ss_button, icon_path='img/icon_husk_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_medium.addWidget(button_husk_tiny, 1, 0, 1, 1)
+        self.zed_pane_buttons.update({'Tiny Husk' : button_husk_tiny})
+
+        self.gridLayout_2.addLayout(self.grid_omega_medium, 11, 0, 1, 1)
+
+
+        # Setup Omega Large area
+        label_omega_large = widget_helpers.create_label(self.zed_grid_contents, text='Large ZEDs', style=ss_label, font=font_label, size_policy=sp_label)
+        self.labels.update({'Omega Large' : label_omega_large})
+        self.gridLayout_2.addWidget(label_omega_large, 12, 0, 1, 1)
+        widget_helpers.set_plain_border(label_omega_large, color=QtGui.QColor(255, 255, 255), width=2)
+        self.grid_omega_large = QtWidgets.QGridLayout()
+        self.grid_omega_large.setObjectName("grid_omega_large")
+
+        button_scrake_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake Omega', tooltip='Scrake Omega', style=ss_button, icon_path='img/icon_scrake_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_large.addWidget(button_scrake_omega, 0, 0, 1, 1)
+        self.zed_pane_buttons.update({'Scrake Omega' : button_scrake_omega})
+
+        button_scrake_emperor = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake Emperor', tooltip='Scrake Emperor', style=ss_button, icon_path='img/icon_scrake_emperor.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_large.addWidget(button_scrake_emperor, 0, 1, 1, 1)
+        self.zed_pane_buttons.update({'Scrake Emperor' : button_scrake_emperor})
+
+        button_scrake_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Scrake', tooltip='Tiny Scrake', style=ss_button, icon_path='img/icon_scrake_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_large.addWidget(button_scrake_tiny, 1, 0, 1, 1)
+        self.zed_pane_buttons.update({'Tiny Scrake' : button_scrake_tiny})
+
+        button_fleshpound_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound Omega', tooltip='Fleshpound Omega', style=ss_button, icon_path='img/icon_fleshpound_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        self.grid_omega_large.addWidget(button_fleshpound_omega, 1, 1, 1, 1)
+        self.zed_pane_buttons.update({'Fleshpound Omega' : button_fleshpound_omega})
+
+        self.gridLayout_2.addLayout(self.grid_omega_large, 13, 0, 1, 1)
+
+
+        # Highlight omega buttons
+        button_slasher_omega.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_gorefast_omega.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_stalker_omega.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_fleshpound_omega.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_husk_omega.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_husk_tiny.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_siren_omega.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_scrake_omega.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_scrake_tiny.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_scrake_emperor.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_crawler_tiny.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_crawler_medium.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_crawler_big.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_crawler_huge.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
+        button_crawler_ultra.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid purple;}")
 
         # Highlight raged buttons
         button_quarterpound_raged.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid red;}")
@@ -1320,17 +1578,23 @@ class Ui_MainWindow(object):
         num_bosses_generated = 0
         num_albino_generated = 0
         num_spawnrage_generated = 0
+        num_omega_generated = 0
 
         # Setup weights and zed arrays
         sd = slider_data
         types = ['Trash', 'Medium', 'Large', 'Boss']
         type_weights = [sd['Trash Density'], sd['Medium Density'], sd['Large Density'], sd['Boss Density']]
-        trash_zeds = ['Cyst', 'Slasher', 'Alpha Clot', 'Gorefast', 'Crawler', 'Stalker']
-        trash_weights = [sd['Cyst Density'], sd['Slasher Density'], sd['Alpha Clot Density'], sd['Gorefast Density'], sd['Crawler Density'], sd['Stalker Density']]
-        medium_zeds = ['Bloat', 'Husk', 'Siren', 'E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber']
-        medium_weights = [sd['Bloat Density'], sd['Husk Density'], sd['Siren Density'], sd['E.D.A.R Trapper Density'], sd['E.D.A.R Blaster Density'], sd['E.D.A.R Bomber Density']]
-        large_zeds = ['Scrake', 'Quarter Pound', 'Fleshpound']
-        large_weights = [sd['Scrake Density'], sd['Quarter Pound Density'], sd['Fleshpound Density']]
+        trash_zeds = ['Cyst', 'Slasher', 'Alpha Clot', 'Gorefast', 'Crawler', 'Stalker',
+                      'Slasher Omega', 'Gorefast Omega', 'Tiny Crawler', 'Medium Crawler',
+                      'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Stalker Omega']
+        trash_weights = [sd['Cyst Density'], sd['Slasher Density'], sd['Alpha Clot Density'], sd['Gorefast Density'], sd['Crawler Density'], sd['Stalker Density'],
+                         sd['Slasher Omega Density'], sd['Gorefast Omega Density'], sd['Tiny Crawler Density'], sd['Medium Crawler Density'], sd['Big Crawler Density'],
+                         sd['Huge Crawler Density'], sd['Ultra Crawler Density'], sd['Stalker Omega Density']]
+        medium_zeds = ['Bloat', 'Husk', 'Siren', 'E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Husk Omega', 'Tiny Husk', 'Siren Omega']
+        medium_weights = [sd['Bloat Density'], sd['Husk Density'], sd['Siren Density'], sd['E.D.A.R Trapper Density'], sd['E.D.A.R Blaster Density'], sd['E.D.A.R Bomber Density'],
+                          sd['Husk Omega Density'], sd['Tiny Husk Density'], sd['Siren Omega Density']]
+        large_zeds = ['Scrake', 'Quarter Pound', 'Fleshpound', 'Scrake Omega', 'Scrake Emperor', 'Tiny Scrake', 'Fleshpound Omega']
+        large_weights = [sd['Scrake Density'], sd['Quarter Pound Density'], sd['Fleshpound Density'], sd['Scrake Omega Density'], sd['Scrake Emperor Density'], sd['Tiny Scrake Density'], sd['Fleshpound Omega Density']]
         bosses = ['Dr. Hans Volter', 'Patriarch', 'King Fleshpound', 'Abomination', 'Matriarch', 'Abomination Spawn'] 
         boss_weights = [sd['Hans Density'], sd['Patriarch Density'], sd['King Fleshpound Density'], sd['Abomination Density'], sd['Matriarch Density'], sd['Abomination Spawn Density']]
 
@@ -1426,6 +1690,10 @@ class Ui_MainWindow(object):
                         zed_id = random.choices(bosses, weights=boss_weights, k=1)[0] # Choose a ZED
                         num_bosses_generated += 1
 
+                    # Check for omega
+                    if zed_id in omega_zeds:
+                        num_omega_generated += 1
+
                     if zed_id in new_squad and new_squad[zed_id]['Raged'] == spawnrage: # Already in the squad and same spawnrage status
                         new_squad.update({zed_id: {'Count': new_squad[zed_id]['Count'] + 1, 'Raged': spawnrage}})
                     else:
@@ -1461,14 +1729,13 @@ class Ui_MainWindow(object):
                    f"{num_squads_generated} Squads generated\n" +
                    f"{num_zeds_generated} ZEDs generated ({num_trash_generated} Trash, {num_medium_generated} Mediums, {num_larges_generated} Larges, {num_bosses_generated} Bosses)\n" +
                    f"{num_albino_generated} Albino ZEDs generated\n" +
+                   f"{num_omega_generated} Omega ZEDs generated\n" +
                    f"{num_spawnrage_generated} SpawnRaged ZEDs generated")
         self.add_message(gen_str)
 
     # Initializes the wavedefs table from a list of lines
     def populate_waves(self, waves):
         num_waves = num_squads = num_zeds = 0
-        custom_zeds = ['E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Dr. Hans Volter', 
-                       'Patriarch', 'Abomination', 'Matriarch', 'Alpha Scrake', 'Alpha Fleshpound']
 
         # Add waves
         custom_zeds_found = False
@@ -1488,7 +1755,7 @@ class Ui_MainWindow(object):
                 squad_items = list(squad.items())
                 for k in range(len(squad_items)):
                     (zed_id, zed_data) = squad_items[k]
-                    if zed_id in custom_zeds:
+                    if zed_id in custom_zeds or zed_id in omega_zeds:
                         custom_zeds_found = True
                     zed_count = zed_data['Count'] # Unpack ZED data
                     num_zeds += zed_count
@@ -1500,10 +1767,14 @@ class Ui_MainWindow(object):
                         self.add_zed_to_squad(wave_id, squad_id, zed_id, count=zed_count, raged=sr)
 
         # Swap to the appropriate mode depending on the SpawnCycle
-        if custom_zeds_found and self.zed_mode == 'Default':
+        if not custom_zeds_found and self.zed_mode == 'Custom': # Swap to vanilla if no custom zeds are found
             self.switch_zed_mode(should_warn=False)
-        elif not custom_zeds_found and self.zed_mode == 'Custom':
             self.switch_zed_mode(should_warn=False)
+        elif not custom_zeds_found and self.zed_mode == 'Omega': # Swap to vanilla if no custom zeds are found
+            self.switch_zed_mode(should_warn=False)
+        elif custom_zeds_found:
+            global has_swapped_modes # Set the flag so it doesn't warn us
+            has_swapped_modes = True
 
         return num_waves, num_squads, num_zeds
 
@@ -1701,6 +1972,7 @@ class Ui_MainWindow(object):
             line = line.replace(' ', '').replace('SpawnCycleDefs=', '').replace('\n', '')
             squads = [parse.format_squad(squad) for squad in line.split(',')] # Convert squads to dict format
             waves.append(squads)
+
         num_waves, num_squads, num_zeds = self.populate_waves(waves) # Load up the waves!
         self.dirty = False # Not dirty after freshly loading a file
         self.add_message(f"Successfully loaded {len(self.wavedefs)} waves, {num_squads:,d} squads, {num_zeds:,d} zeds from file '{filename}'.") # Post a message
@@ -2107,7 +2379,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle('SpawnCycler (Untitled)')
         MainWindow.setWindowIcon(QtGui.QIcon('img/logo.png'))
-        self.switch_zed_mode()
+        self.switch_zed_mode() # Swap it to normal mode
 
 
 # Custom MainWindow that calls an event when closed

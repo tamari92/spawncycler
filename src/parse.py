@@ -52,7 +52,22 @@ zed_tokens = {'Cyst': ['cy', 'cys', 'cyst', 'cc', 'clotc'],
               'Matriarch': ['matriarch', 'mat', 'mt'],
               'King Fleshpound': ['ki', 'kin', 'king', 'kingf', 'kingfl', 'kingfle', 'kingfles', 'kingflesh', 'kingfleshp', 'kingfleshpo', 'kingfleshpou', 'kingfleshpoun', 'kingfleshpound', 'kf', 'kfp'],
               'Abomination': ['abomination', 'abm', 'ab'], 
-              'Abomination Spawn': ['as']} # Figure out the rest
+              'Abomination Spawn': ['as'],
+              'Slasher Omega': ['osl', 'omegasl', 'omegasla', 'omegaslas', 'omegaslas', 'omegaslash', 'omegaslasher'],
+              'Stalker Omega': ['ost', 'omegast', 'omegasta', 'omegastal', 'omegastalk', 'omegastalke', 'omegastalker'],
+              'Siren Omega': ['os', 'omegas', 'omegasi', 'omegasir', 'omegasire', 'omegasiren'],
+              'Fleshpound Omega': ['ofp', 'omegafp', 'omegaf', 'omegafl', 'omegafle', 'omegafles', 'omegaflesh', 'omegafleshp', 'omegafleshpo', 'omegafleshpou', 'omegafleshpoun', 'omegafleshpound'],
+              'Gorefast Omega': ['ogf', 'omegagf', 'omegag', 'omegago', 'omegagor', 'omegagorf', 'omegagorefa', 'omegagorefas', 'omegagorefast'],
+              'Husk Omega': ['ohs', 'omegahs', 'omegah', 'omegahu', 'omegahus', 'omegahusk'],
+              'Tiny Husk': ['mhs', 'minihs', 'minih', 'minihu', 'minihus', 'minihusk'],
+              'Scrake Emperor': ['esc', 'empsc', 'e', 'em', 'emp', 'empe', 'emper', 'empero', 'emperor', 'emperors', 'emperorsc', 'emperorscr', 'emperorscra', 'emperorscrak', 'emperorscrake'],
+              'Scrake Omega': ['osc', 'omegasc', 'omegascr', 'omegascra', 'omegascrak', 'omegascrake'],
+              'Tiny Scrake': ['tsc', 'tinysc', 'tinys', 'tinysc', 'tinyscr', 'tinyscra', 'tinyscrak', 'tinyscrake'],
+              'Tiny Crawler': ['crm', 'crawm', 'minic', 'minicr', 'minicra', 'minicraw', 'minicrawl', 'minicrawle', 'minicrawler'],
+              'Medium Crawler': ['mcr', 'crawlermed', 'mediumc', 'mediumcr', 'mediumcra', 'mediumcraw', 'mediumcrawl', 'mediumcrawle', 'mediumcrawler'],
+              'Big Crawler': ['bcr', 'crawlerbig', 'bigc', 'bigcr', 'bigcra', 'bigcraw', 'bigcrawl', 'bigcrawle', 'bigcrawler'],
+              'Huge Crawler': ['hcr', 'crawlerhuge', 'hugec', 'hugecr', 'hugecraw', 'hugecrawl', 'hugecrawle', 'hugecrawler'],
+              'Ultra Crawler': ['ucr', 'crawlerult', 'ultrac', 'ultracr', 'ultracra', 'ultracraw', 'ultracrawl' 'ultracrawle', 'ultracrawler']}
 
 
 def format_zed_id(id, albino=False, raged=False):
@@ -105,8 +120,37 @@ def format_zed_id(id, albino=False, raged=False):
         return 'E.D.A.R Blaster'
     elif id in ['edarbomber', 'edarrocket', 'edarbo', 'edarr' 'ebo', 'er', 'dr']:
         return 'E.D.A.R Bomber'
+    elif id in ['osl', 'omegasl', 'omegasla', 'omegaslas', 'omegaslas', 'omegaslash', 'omegaslasher']:
+        return 'Slasher Omega'
+    elif id in ['ost', 'omegast', 'omegasta', 'omegastal', 'omegastalk', 'omegastalke', 'omegastalker']:
+        return 'Stalker Omega'
+    elif id in ['os', 'omegas', 'omegasi', 'omegasir', 'omegasire', 'omegasiren']:
+        return 'Siren Omega'
+    elif id in ['ofp', 'omegafp', 'omegaf', 'omegafl', 'omegafle', 'omegafles', 'omegaflesh', 'omegafleshp', 'omegafleshpo', 'omegafleshpou', 'omegafleshpoun', 'omegafleshpound']:
+        return 'Fleshpound Omega'
+    elif id in ['ogf', 'omegagf', 'omegag', 'omegago', 'omegagor', 'omegagorf', 'omegagorefa', 'omegagorefas', 'omegagorefast']:
+        return 'Gorefast Omega'
+    elif id in ['ohs', 'omegahs', 'omegah', 'omegahu', 'omegahus', 'omegahusk']:
+        return 'Husk Omega'
+    elif id in ['mhs', 'minihs', 'minih', 'minihu', 'minihus', 'minihusk']:
+        return 'Tiny Husk'
+    elif id in ['esc', 'empsc', 'e', 'em', 'emp', 'empe', 'emper', 'empero', 'emperor', 'emperors', 'emperorsc', 'emperorscr', 'emperorscra', 'emperorscrak', 'emperorscrake']:
+        return 'Scrake Emperor'
+    elif id in ['osc', 'omegasc', 'omegascr', 'omegascra', 'omegascrak', 'omegascrake']:
+        return 'Scrake Omega'
+    elif id in ['tsc', 'tinysc', 'tinys', 'tinysc', 'tinyscr', 'tinyscra', 'tinyscrak', 'tinyscrake']:
+        return 'Tiny Scrake'
+    elif id in ['crm', 'crawm', 'minic', 'minicr', 'minicra', 'minicraw', 'minicrawl', 'minicrawle', 'minicrawler']:
+        return 'Tiny Crawler'
+    elif id in ['mcr', 'crawlermed', 'mediumc', 'mediumcr', 'mediumcra', 'mediumcraw', 'mediumcrawl', 'mediumcrawle', 'mediumcrawler']:
+        return 'Medium Crawler'
+    elif id in ['bcr', 'crawlerbig', 'bigc', 'bigcr', 'bigcra', 'bigcraw', 'bigcrawl', 'bigcrawle', 'bigcrawler']:
+        return 'Big Crawler'
+    elif id in ['hcr', 'crawlerhuge', 'hugec', 'hugecr', 'hugecraw', 'hugecrawl', 'hugecrawle', 'hugecrawler']:
+        return 'Huge Crawler'
+    elif id in ['ucr', 'crawlerult', 'ultrac', 'ultracr', 'ultracra', 'ultracraw', 'ultracrawl' 'ultracrawle', 'ultracrawler']:
+        return 'Ultra Crawler'
     else:
-        print(f'{id} returned None')
         return None
 
 

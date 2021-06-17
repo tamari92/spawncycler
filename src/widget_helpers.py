@@ -60,7 +60,22 @@ icon_mapping = {'Cyst' : 'img/icon_cyst.png',
                 'King Fleshpound' : 'img/icon_kingfleshpound.png',
                 'Abomination' : 'img/icon_abomination.png',
                 'Matriarch' : 'img/icon_matriarch.png',
-                'Abomination Spawn' : 'img/icon_abomspawn.png'}
+                'Abomination Spawn' : 'img/icon_abomspawn.png',
+                'Slasher Omega': 'img/icon_slasher_omega.png',
+                'Fleshpound Omega': 'img/icon_fleshpound_omega.png',
+                'Gorefast Omega': 'img/icon_gorefast_omega.png',
+                'Husk Omega': 'img/icon_husk_omega.png',
+                'Tiny Husk': 'img/icon_husk_tiny.png',
+                'Scrake Emperor': 'img/icon_scrake_emperor.png',
+                'Scrake Omega': 'img/icon_scrake_omega.png',
+                'Tiny Scrake': 'img/icon_scrake_tiny.png',
+                'Siren Omega': 'img/icon_siren_omega.png',
+                'Stalker Omega': 'img/icon_stalker_omega.png',
+                'Big Crawler': 'img/icon_crawler_big.png',
+                'Huge Crawler': 'img/icon_crawler_huge.png',
+                'Medium Crawler': 'img/icon_crawler_medium.png',
+                'Tiny Crawler': 'img/icon_crawler_tiny.png',
+                'Ultra Crawler': 'img/icon_crawler_ultra.png'}
 
 used_ids = []
 
@@ -733,7 +748,6 @@ def create_simple_dialog(parent, title, text, x, y, button=True, button_target=N
     font = QtGui.QFont()
     font.setPointSize(8)
     font.setBold(True)
-    dialog_label.setObjectName('dialog_label')
     dialog_label.setFont(font)
     dialog_label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
     dialog_label.setStyleSheet("color: rgb(255, 255, 255);")
@@ -743,7 +757,6 @@ def create_simple_dialog(parent, title, text, x, y, button=True, button_target=N
     if button:
         ok_button = QtWidgets.QPushButton('OK')
         ok_button.setStyleSheet("color: rgb(255, 255, 255);")
-        ok_button.setObjectName('ok_button')
         
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp.setHorizontalStretch(0)
@@ -758,9 +771,7 @@ def create_simple_dialog(parent, title, text, x, y, button=True, button_target=N
 
     # Set layout
     vbox = QtWidgets.QVBoxLayout()
-    vbox.setObjectName('vbox')
     hbox = QtWidgets.QHBoxLayout()
-    hbox.setObjectName('hbox')
     if button:
         hbox.addWidget(ok_button)
     vbox.addWidget(dialog_label)
