@@ -1130,39 +1130,39 @@ class Ui_MainWindow(object):
         self.grid_trashzeds = QtWidgets.QGridLayout()
         self.grid_trashzeds.setObjectName("grid_trashzeds")
 
-        button_cyst = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Cyst', tooltip='Cyst', style=ss_button, icon_path='img/icon_cyst.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_cyst = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Cyst', tooltip='Cyst', style=ss_button, icon_path='img/icon_cyst.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_cyst, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Cyst' : button_cyst})
 
-        button_slasher = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Slasher', tooltip='Slasher', style=ss_button, icon_path='img/icon_slasher.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_slasher = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Slasher', tooltip='Slasher', style=ss_button, icon_path='img/icon_slasher.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_slasher, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Slasher' : button_slasher})
 
-        button_alphaclot = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Clot', tooltip='Alpha Clot', style=ss_button, icon_path='img/icon_alphaclot.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphaclot = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Clot', tooltip='Alpha Clot', style=ss_button, icon_path='img/icon_alphaclot.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_alphaclot, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Alpha Clot' : button_alphaclot})
 
-        button_rioter = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Rioter', tooltip='Rioter', style=ss_button, icon_path='img/icon_rioter.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_rioter = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Rioter', tooltip='Rioter', style=ss_button, icon_path='img/icon_rioter.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_rioter, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Rioter' : button_rioter})
 
-        button_gorefast = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefast', tooltip='Gorefast', style=ss_button, icon_path='img/icon_gorefast.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_gorefast = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefast', tooltip='Gorefast', style=ss_button, icon_path='img/icon_gorefast.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_gorefast, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'Gorefast' : button_gorefast})
 
-        button_gorefiend = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefiend', tooltip='Gorefiend', style=ss_button, icon_path='img/icon_gorefiend.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_gorefiend = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefiend', tooltip='Gorefiend', style=ss_button, icon_path='img/icon_gorefiend.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_gorefiend, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'Gorefiend' : button_gorefiend})
         
-        button_crawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Crawler', tooltip='Crawler', style=ss_button, icon_path='img/icon_crawler.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_crawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Crawler', tooltip='Crawler', style=ss_button, icon_path='img/icon_crawler.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_crawler, 3, 0, 1, 1)
         self.zed_pane_buttons.update({'Crawler' : button_crawler})
 
-        button_elitecrawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Elite Crawler', tooltip='Elite Crawler', style=ss_button, icon_path='img/icon_elitecrawler.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_elitecrawler = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Elite Crawler', tooltip='Elite Crawler', style=ss_button, icon_path='img/icon_elitecrawler.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_elitecrawler, 3, 1, 1, 1)
         self.zed_pane_buttons.update({'Elite Crawler' : button_elitecrawler})
 
-        button_stalker = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Stalker', tooltip='Stalker', style=ss_button, icon_path='img/icon_stalker.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_stalker = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Stalker', tooltip='Stalker', style=ss_button, icon_path='img/icon_stalker.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_trashzeds.addWidget(button_stalker, 4, 0, 1, 1)
         self.zed_pane_buttons.update({'Stalker' : button_stalker})
 
@@ -1177,27 +1177,27 @@ class Ui_MainWindow(object):
         self.grid_mediumzeds = QtWidgets.QGridLayout()
         self.grid_mediumzeds.setObjectName("grid_mediumzeds")
 
-        button_bloat = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Bloat', tooltip='Bloat', style=ss_button, icon_path='img/icon_bloat.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_bloat = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Bloat', tooltip='Bloat', style=ss_button, icon_path='img/icon_bloat.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_mediumzeds.addWidget(button_bloat, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Bloat' : button_bloat})
 
-        button_husk = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Husk', tooltip='Husk', style=ss_button, icon_path='img/icon_husk.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_husk = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Husk', tooltip='Husk', style=ss_button, icon_path='img/icon_husk.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_mediumzeds.addWidget(button_husk, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Husk' : button_husk})
 
-        button_siren = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Siren', tooltip='Siren', style=ss_button, icon_path='img/icon_siren.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_siren = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Siren', tooltip='Siren', style=ss_button, icon_path='img/icon_siren.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_mediumzeds.addWidget(button_siren, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Siren' : button_siren})
 
-        button_edar_emp = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Trapper', tooltip='E.D.A.R Trapper', style=ss_button, icon_path='img/icon_edar_emp.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_edar_emp = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Trapper', tooltip='E.D.A.R Trapper', style=ss_button, icon_path='img/icon_edar_emp.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_mediumzeds.addWidget(button_edar_emp, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'E.D.A.R Trapper' : button_edar_emp})
 
-        button_edar_laser = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Blaster', tooltip='E.D.A.R Blaster', style=ss_button, icon_path='img/icon_edar_laser.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_edar_laser = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Blaster', tooltip='E.D.A.R Blaster', style=ss_button, icon_path='img/icon_edar_laser.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_mediumzeds.addWidget(button_edar_laser, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'E.D.A.R Blaster' : button_edar_laser})
 
-        button_edar_rocket = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Bomber', tooltip='E.D.A.R Bomber', style=ss_button, icon_path='img/icon_edar_rocket.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_edar_rocket = widget_helpers.create_button(self.zed_grid_contents, self.app, 'E.D.A.R Bomber', tooltip='E.D.A.R Bomber', style=ss_button, icon_path='img/icon_edar_rocket.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_mediumzeds.addWidget(button_edar_rocket, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'E.D.A.R Bomber' : button_edar_rocket})
 
@@ -1212,35 +1212,35 @@ class Ui_MainWindow(object):
         self.grid_largezeds = QtWidgets.QGridLayout()
         self.grid_largezeds.setObjectName("grid_largezeds")
 
-        button_quarterpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound', tooltip='Quarter Pound', style=ss_button, icon_path='img/icon_quarterpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_quarterpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound', tooltip='Quarter Pound', style=ss_button, icon_path='img/icon_quarterpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_quarterpound, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Quarter Pound' : button_quarterpound})
 
-        button_quarterpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound (Enraged)', tooltip='Quarter Pound (Enraged)', style=ss_button, icon_path='img/icon_quarterpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_quarterpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Quarter Pound (Enraged)', tooltip='Quarter Pound (Enraged)', style=ss_button, icon_path='img/icon_quarterpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_quarterpound_raged, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Quarter Pound (Enraged)' : button_quarterpound_raged})
 
-        button_fleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound', tooltip='Fleshpound', style=ss_button, icon_path='img/icon_fleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_fleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound', tooltip='Fleshpound', style=ss_button, icon_path='img/icon_fleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_fleshpound, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Fleshpound' : button_fleshpound})
 
-        button_fleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound (Enraged)', tooltip='Fleshpound (Enraged)', style=ss_button, icon_path='img/icon_fleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_fleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound (Enraged)', tooltip='Fleshpound (Enraged)', style=ss_button, icon_path='img/icon_fleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_fleshpound_raged, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Fleshpound (Enraged)' : button_fleshpound_raged})
 
-        button_scrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake', tooltip='Scrake', style=ss_button, icon_path='img/icon_scrake.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_scrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake', tooltip='Scrake', style=ss_button, icon_path='img/icon_scrake.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_scrake, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'Scrake' : button_scrake})
 
-        button_alphascrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Scrake', tooltip='Alpha Scrake', style=ss_button, icon_path='img/icon_alphascrake.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphascrake = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Scrake', tooltip='Alpha Scrake', style=ss_button, icon_path='img/icon_alphascrake.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_alphascrake, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'Alpha Scrake' : button_alphascrake})
 
-        button_alphafleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound', tooltip='Alpha Fleshpound', style=ss_button, icon_path='img/icon_alphafleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphafleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound', tooltip='Alpha Fleshpound', style=ss_button, icon_path='img/icon_alphafleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_alphafleshpound, 3, 0, 1, 1)
         self.zed_pane_buttons.update({'Alpha Fleshpound' : button_alphafleshpound})
 
-        button_alphafleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound (Enraged)', tooltip='Alpha Fleshpound (Enraged)', style=ss_button, icon_path='img/icon_alphafleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_alphafleshpound_raged = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Alpha Fleshpound (Enraged)', tooltip='Alpha Fleshpound (Enraged)', style=ss_button, icon_path='img/icon_alphafleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_largezeds.addWidget(button_alphafleshpound_raged, 3, 1, 1, 1)
         self.zed_pane_buttons.update({'Alpha Fleshpound (Enraged)' : button_alphafleshpound_raged})
         
@@ -1255,27 +1255,27 @@ class Ui_MainWindow(object):
         self.grid_bosses = QtWidgets.QGridLayout()
         self.grid_bosses.setObjectName("grid_bosses")
 
-        button_abomination_spawn = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination Spawn', tooltip='Abomination Spawn', style=ss_button, icon_path='img/icon_abomspawn.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_abomination_spawn = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination Spawn', tooltip='Abomination Spawn', style=ss_button, icon_path='img/icon_abomspawn.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_bosses.addWidget(button_abomination_spawn, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Abomination Spawn' : button_abomination_spawn})
 
-        button_kingfleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'King Fleshpound', tooltip='King Fleshpound', style=ss_button, icon_path='img/icon_kingfleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_kingfleshpound = widget_helpers.create_button(self.zed_grid_contents, self.app, 'King Fleshpound', tooltip='King Fleshpound', style=ss_button, icon_path='img/icon_kingfleshpound.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_bosses.addWidget(button_kingfleshpound, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'King Fleshpound' : button_kingfleshpound})
 
-        button_hans = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Dr. Hans Volter', tooltip='Dr. Hans Volter', style=ss_button, icon_path='img/icon_hans.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_hans = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Dr. Hans Volter', tooltip='Dr. Hans Volter', style=ss_button, icon_path='img/icon_hans.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_bosses.addWidget(button_hans, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Dr. Hans Volter' : button_hans})
 
-        button_patriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Patriarch', tooltip='Patriarch', style=ss_button, icon_path='img/icon_patriarch.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_patriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Patriarch', tooltip='Patriarch', style=ss_button, icon_path='img/icon_patriarch.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_bosses.addWidget(button_patriarch, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Patriarch' : button_patriarch})
 
-        button_abomination = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination', tooltip='Abomination', style=ss_button, icon_path='img/icon_abomination.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_abomination = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Abomination', tooltip='Abomination', style=ss_button, icon_path='img/icon_abomination.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_bosses.addWidget(button_abomination, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'Abomination' : button_abomination})
 
-        button_matriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Matriarch', tooltip='Matriarch', style=ss_button, icon_path='img/icon_matriarch.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_matriarch = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Matriarch', tooltip='Matriarch', style=ss_button, icon_path='img/icon_matriarch.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_bosses.addWidget(button_matriarch, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'Matriarch' : button_matriarch})
 
@@ -1290,35 +1290,35 @@ class Ui_MainWindow(object):
         self.grid_omega_trash = QtWidgets.QGridLayout()
         self.grid_omega_trash.setObjectName("grid_omega_trash")
 
-        button_slasher_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Slasher Omega', tooltip='Slasher Omega', style=ss_button, icon_path='img/icon_slasher_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_slasher_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Slasher Omega', tooltip='Slasher Omega', style=ss_button, icon_path='img/icon_slasher_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_slasher_omega, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Slasher Omega' : button_slasher_omega})
 
-        button_gorefast_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefast Omega', tooltip='Gorefast Omega', style=ss_button, icon_path='img/icon_gorefast_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_gorefast_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Gorefast Omega', tooltip='Gorefast Omega', style=ss_button, icon_path='img/icon_gorefast_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_gorefast_omega, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Gorefast Omega' : button_gorefast_omega})
 
-        button_stalker_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Stalker Omega', tooltip='Stalker Omega', style=ss_button, icon_path='img/icon_stalker_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_stalker_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Stalker Omega', tooltip='Stalker Omega', style=ss_button, icon_path='img/icon_stalker_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_stalker_omega, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Stalker Omega' : button_stalker_omega})
 
-        button_crawler_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Crawler', tooltip='Tiny Crawler', style=ss_button, icon_path='img/icon_crawler_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_crawler_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Crawler', tooltip='Tiny Crawler', style=ss_button, icon_path='img/icon_crawler_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_crawler_tiny, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Tiny Crawler' : button_crawler_tiny})
 
-        button_crawler_medium = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Medium Crawler', tooltip='Medium Crawler', style=ss_button, icon_path='img/icon_crawler_medium.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_crawler_medium = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Medium Crawler', tooltip='Medium Crawler', style=ss_button, icon_path='img/icon_crawler_medium.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_crawler_medium, 2, 0, 1, 1)
         self.zed_pane_buttons.update({'Medium Crawler' : button_crawler_medium})
 
-        button_crawler_big = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Big Crawler', tooltip='Big Crawler', style=ss_button, icon_path='img/icon_crawler_big.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_crawler_big = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Big Crawler', tooltip='Big Crawler', style=ss_button, icon_path='img/icon_crawler_big.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_crawler_big, 2, 1, 1, 1)
         self.zed_pane_buttons.update({'Big Crawler' : button_crawler_big})
 
-        button_crawler_huge = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Huge Crawler', tooltip='Huge Crawler', style=ss_button, icon_path='img/icon_crawler_huge.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_crawler_huge = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Huge Crawler', tooltip='Huge Crawler', style=ss_button, icon_path='img/icon_crawler_huge.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_crawler_huge, 3, 0, 1, 1)
         self.zed_pane_buttons.update({'Huge Crawler' : button_crawler_huge})
 
-        button_crawler_ultra = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Ultra Crawler', tooltip='Ultra Crawler', style=ss_button, icon_path='img/icon_crawler_ultra.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_crawler_ultra = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Ultra Crawler', tooltip='Ultra Crawler', style=ss_button, icon_path='img/icon_crawler_ultra.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_trash.addWidget(button_crawler_ultra, 3, 1, 1, 1)
         self.zed_pane_buttons.update({'Ultra Crawler' : button_crawler_ultra})
         
@@ -1333,15 +1333,15 @@ class Ui_MainWindow(object):
         self.grid_omega_medium = QtWidgets.QGridLayout()
         self.grid_omega_medium.setObjectName("grid_omega_medium")
 
-        button_siren_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Siren Omega', tooltip='Siren Omega', style=ss_button, icon_path='img/icon_siren_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_siren_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Siren Omega', tooltip='Siren Omega', style=ss_button, icon_path='img/icon_siren_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_medium.addWidget(button_siren_omega, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Siren Omega' : button_siren_omega})
 
-        button_husk_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Husk Omega', tooltip='Husk Omega', style=ss_button, icon_path='img/icon_husk_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_husk_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Husk Omega', tooltip='Husk Omega', style=ss_button, icon_path='img/icon_husk_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_medium.addWidget(button_husk_omega, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Husk Omega' : button_husk_omega})
 
-        button_husk_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Husk', tooltip='Tiny Husk', style=ss_button, icon_path='img/icon_husk_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_husk_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Husk', tooltip='Tiny Husk', style=ss_button, icon_path='img/icon_husk_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_medium.addWidget(button_husk_tiny, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Tiny Husk' : button_husk_tiny})
 
@@ -1356,19 +1356,19 @@ class Ui_MainWindow(object):
         self.grid_omega_large = QtWidgets.QGridLayout()
         self.grid_omega_large.setObjectName("grid_omega_large")
 
-        button_scrake_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake Omega', tooltip='Scrake Omega', style=ss_button, icon_path='img/icon_scrake_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_scrake_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake Omega', tooltip='Scrake Omega', style=ss_button, icon_path='img/icon_scrake_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_large.addWidget(button_scrake_omega, 0, 0, 1, 1)
         self.zed_pane_buttons.update({'Scrake Omega' : button_scrake_omega})
 
-        button_scrake_emperor = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake Emperor', tooltip='Scrake Emperor', style=ss_button, icon_path='img/icon_scrake_emperor.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_scrake_emperor = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Scrake Emperor', tooltip='Scrake Emperor', style=ss_button, icon_path='img/icon_scrake_emperor.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_large.addWidget(button_scrake_emperor, 0, 1, 1, 1)
         self.zed_pane_buttons.update({'Scrake Emperor' : button_scrake_emperor})
 
-        button_scrake_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Scrake', tooltip='Tiny Scrake', style=ss_button, icon_path='img/icon_scrake_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_scrake_tiny = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Tiny Scrake', tooltip='Tiny Scrake', style=ss_button, icon_path='img/icon_scrake_tiny.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_large.addWidget(button_scrake_tiny, 1, 0, 1, 1)
         self.zed_pane_buttons.update({'Tiny Scrake' : button_scrake_tiny})
 
-        button_fleshpound_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound Omega', tooltip='Fleshpound Omega', style=ss_button, icon_path='img/icon_fleshpound_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button)
+        button_fleshpound_omega = widget_helpers.create_button(self.zed_grid_contents, self.app, 'Fleshpound Omega', tooltip='Fleshpound Omega', style=ss_button, icon_path='img/icon_fleshpound_omega.png', icon_w=icon_w, icon_h=icon_h, size_policy=sp_button, draggable=True)
         self.grid_omega_large.addWidget(button_fleshpound_omega, 1, 1, 1, 1)
         self.zed_pane_buttons.update({'Fleshpound Omega' : button_fleshpound_omega})
 

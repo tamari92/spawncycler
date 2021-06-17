@@ -163,11 +163,14 @@ class QSquadButton(QtWidgets.QPushButton):
         replace_menu = QtWidgets.QMenu('Replace ZED with..', self)
         replace_menu.setStyleSheet("color: rgb(255, 255, 255); background-color: rgb(50, 50, 50)")
 
-        custom_zeds = ['E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Alpha Scrake', 'Alpha Fleshpound',
-                       'Alpha Fleshpound (Enraged)', 'Dr. Hans Volter', 'Patriarch', 'Abomination', 'Matriarch']
+        cz = ['E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Alpha Scrake', 'Alpha Fleshpound',
+              'Alpha Fleshpound (Enraged)', 'Dr. Hans Volter', 'Patriarch', 'Abomination', 'Matriarch',
+              'Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler', 'Medium Crawler',
+              'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
+              'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
         
         for z in zeds:
-            if self.zed_mode == 'Default' and z in custom_zeds:
+            if self.zed_mode == 'Default' and z in cz:
                 continue
             action = QtWidgets.QAction(z, self)
             replace_menu.addAction(action)
