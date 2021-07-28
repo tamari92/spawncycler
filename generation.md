@@ -120,6 +120,7 @@ The Generator tool supports several `Presets`, including:
 - `Boss Only` (only Bosses spawn)
 - `Large-less` (no Large ZEDs or Bosses at all)
 - `Custom Craziness` (predominantly Custom ZEDs)
+- `Omega Onslaught` (predominantly Omega ZEDs)
 - `Boss Rush` (predominantly Bosses)
 
 ## Reference Documentation
