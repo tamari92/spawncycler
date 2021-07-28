@@ -185,7 +185,7 @@ This is essentially information about each ZED in the above Categories.
 This table shows summary data for the number of ZEDs spawned of each individual **Group**.
 A ZED Group contains several different types of associated ZEDs.
 
-There are **nine** main Groups of ZEDs:
+There are **ten** main Groups of ZEDs:
 - **Clots** (Alpha Clot, Cyst, Slasher)
 - **Gorefasts** (Gorefast, Gorefiend)
 - **Crawlers / Stalkers**
@@ -193,6 +193,7 @@ There are **nine** main Groups of ZEDs:
 - **Scrakes** (Scrake, Alpha Scrake)
 - **Fleshpounds** (Quarter Pound, Fleshpound, Alpha Fleshpound)
 - **Albino** (Rioter, Gorefiend, Elite Crawler, Alpha Scrake, Alpha Fleshpound)
+- **Omega** (all Omega ZEDs)
 - **SpawnRage** (SpawnRaged QP/FP/AFP)
 - **Other** (anything not falling into the above categories)
 
