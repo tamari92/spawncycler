@@ -57,7 +57,7 @@ This software is licensed under GNU General Public License v3.0 (GPLv3):
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
-© Nathan Ybanez, 2020-2021
+© Tamari 2020-2021
 
 All rights reserved.
 
