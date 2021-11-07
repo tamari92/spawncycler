@@ -30,7 +30,7 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 
 ## Binaries
 #### Windows
-v1.2: https://github.com/nybanez/spawncycler/releases/tag/v1.2
+v1.2: https://github.com/tamari92/spawncycler/releases/tag/v1.2
 
 ## Credits
 - UI Design + General Programming: **Tamari**
@@ -62,7 +62,7 @@ This software is licensed under GNU General Public License v3.0 (GPLv3):
 All rights reserved.
 
 ## Reference Documentation
-- [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
-- [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
-- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
-- [Converting SpawnCycles](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
+- [Creating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/creation.md)
+- [Generating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/generation.md)
+- [Analyzing a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
+- [Converting SpawnCycles](https://github.com/tamari92/spawncycler/blob/main/conversion.md)
