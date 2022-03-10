@@ -124,6 +124,6 @@ The Generator tool supports several `Presets`, including:
 - `Boss Rush` (predominantly Bosses)
 
 ## Reference Documentation
-- [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
-- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
-- [Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
+- [Creating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/creation.md)
+- [Analyzing a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
+- [Converting a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/conversion.md)

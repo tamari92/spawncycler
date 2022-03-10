@@ -24,8 +24,8 @@ This tool allows the user to format multiple variants of their SpawnCycle with e
 **Figure 1** - SpawnCycle Converter
 
 ## Getting Started
-To get started, simply set a Name, Author, and Creation Date.
-Then, select up to **three** SpawnCycles to include in the package.
+To get started, simply set a `Name`, `Author`, and `Creation Date`.
+Then, select up to **three** `SpawnCycles` to include in the package.
 
 Note that at least **one** SpawnCycle is required.
 
@@ -34,6 +34,6 @@ Selected SpawnCycles are **parsed** for syntax and must meet the length requirem
 After everything is set, the **Convert** button can be pressed, after which a **JSON-formatted** SpawnCycle is produced.
 
 ## Reference Documentation
-- [Creating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/creation.md)
-- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
-- [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
+- [Creating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/creation.md)
+- [Analyzing a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
+- [Generating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/generation.md)

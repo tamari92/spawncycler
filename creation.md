@@ -77,6 +77,6 @@ ZEDs can be replaced in two ways:
 The key difference is that replacing a ZED through the contextual right-click menu affects that ZED's Squad, while using the Batch menu replaces that ZED anywhere it appears in the *entire SpawnCycle*.
 
 ## Reference Documentation
-- [Generating a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/generation.md)
-- [Analyzing a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/analysis.md)
-- [Converting a SpawnCycle](https://github.com/nybanez/spawncycler/blob/main/conversion.md)
+- [Generating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/generation.md)
+- [Analyzing a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
+- [Converting a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/conversion.md)
