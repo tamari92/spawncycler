@@ -1,7 +1,7 @@
 #
 #  analyze.py
 #
-#  Author: Tamari (Nathan P. Ybanez)
+#  Author: Tamari
 #  Date of creation: 11/27/2020
 #
 #  UI code for the 'Analyze' functionality
@@ -24,20 +24,69 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020-2021
+##  © Tamari 2020-2022
 ##  All rights reserved.
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from functools import partial
 import widget_helpers
+import meta
 
 _DEF_FONT_FAMILY = 'Consolas'
-_WAVESIZE_MIN = 0
-_WAVESIZE_MAX = 128
-_WAVESIZE_DELTA = 0.211718 # The percentage each wave increases by for every +1 WSF
+_WAVESIZE_MIN = 1
+_WAVESIZE_MAX = 255
+_WAVESIZE_DELTA = 0.2115384615384615 # The percentage each wave increases by for every +1 WSF
 _MAXMONSTERS_MIN = 1
-_MAXMONSTERS_MAX = 256
+_MAXMONSTERS_MAX = 512
+_WINDOWSIZE_ANALYZE_W = 750
+_WINDOWSIZE_ANALYZE_H = 1000
+
+
+zed_weights = {'Cyst': 300,
+               'Alpha Clot': 335,
+               'Rioter': 450,
+               'Slasher': 320,
+               'Slasher Omega': 335,
+               'Gorefast': 350,
+               'Gorefast Omega': 375,
+               'Gorefiend': 400,
+               'Crawler': 350,
+               'Tiny Crawler': 325,
+               'Medium Crawler': 350,
+               'Big Crawler': 375,
+               'Huge Crawler': 400,
+               'Ultra Crawler': 450,
+               'Elite Crawler': 400,
+               'Stalker': 375,
+               'Stalker Omega': 425,
+               'Bloat': 700,
+               'Husk': 1000,
+               'Husk Omega': 1100,
+               'Tiny Husk': 700,
+               'E.D.A.R Trapper': 1100,
+               'E.D.A.R Blaster': 1200,
+               'E.D.A.R Bomber': 1100,
+               'Siren': 900,
+               'Siren Omega': 1000,
+               'Quarter Pound': 3000,
+               'Quarter Pound (Enraged)': 4000,
+               'Scrake': 3000,
+               'Scrake Omega': 3500,
+               'Scrake Emperor': 4000,
+               'Tiny Scrake': 2500,
+               'Alpha Scrake': 4000,
+               'Fleshpound': 4000,
+               'Fleshpound (Enraged)': 5000,
+               'Fleshpound Omega': 5000,
+               'Alpha Fleshpound': 3000,
+               'Alpha Fleshpound (Enraged)': 4000,
+               'Dr. Hans Volter': 8000,
+               'Patriarch': 7000,
+               'King Fleshpound': 8000,
+               'Abomination': 8000,
+               'Abomination Spawn': 200,
+               'Matriarch': 10000}
 
 # Colors
 dark_colors = {'Trash': QtGui.QColor(85, 107, 43),
@@ -74,12 +123,18 @@ light_colors = {'Header': QtGui.QColor(100, 100, 100),
 
 
 class AnalyzeDialog(object):
+    def __init__(self, parent):
+        self.parent = parent
+        self.buttons = {'WaveButtons': {}}
+        self.active_wave = 'merged'
+        self.params = {} # All of the current analysis params are stored here
+
     # Returns the WaveSizeMultiplier based on the current WSF
     def get_wavesize_multiplier(self, wsf):
-        multis = [1.0, 1.0, 2.0, 2.75, 3.5, 4.0, 4.5]
         if wsf <= 6:
+            multis = [1.00, 1.00, 2.00, 2.75, 3.50, 4.00, 4.50]
             return multis[wsf]
-        return 4.5 + ((wsf-6) * _WAVESIZE_DELTA) # WSF > 6
+        return 4.50 + ((wsf-6) * _WAVESIZE_DELTA) # WSF > 6
 
     # Returns the BaseNumZEDs based on the current wave and gamelength
     def get_base_num_zeds(self, wave_id, gamelength):
@@ -90,11 +145,15 @@ class AnalyzeDialog(object):
 
     # Returns the DifficultyMod
     def get_difficulty_mod(self, difficulty):
-        multis = [0.85, 1.0, 1.3, 1.7]
+        multis = [0.85, 1.00, 1.30, 1.70]
         return multis[difficulty]
 
     # Returns analysis data for the given wave
     def sample_wave(self, wave_id):
+        # Wave is empty!
+        if len(self.parent.wavedefs[wave_id]['Squads']) == 0:
+            return None, [(0.0, 0.0)]
+
         # Params
         base_num_zeds = self.get_base_num_zeds(wave_id, self.params['GameLength'])
         diffmod = self.get_difficulty_mod(self.params['Difficulty'])
@@ -102,6 +161,20 @@ class AnalyzeDialog(object):
 
         # The number of ZEDs that will be in this wave
         wave_num_zeds = int((base_num_zeds * diffmod * wavesize_multi) // 1)
+
+        # Expand this wave's squads
+        expanded_squads = self.expand_squads(self.parent.wavedefs[wave_id])
+        
+        # Simulate the wave!
+        wave_stats = {'Total': wave_num_zeds,
+                      'Category': {'Trash': 0, 'Medium': 0, 'Large': 0, 'Boss': 0, 'Total': 0}, 
+                      'Name': {'Cyst': 0, 'Alpha Clot': 0, 'Slasher': 0, 'Slasher Omega': 0,  'Rioter': 0, 'Gorefast': 0, 'Gorefast Omega': 0, 'Gorefiend': 0, 'Crawler': 0, 'Elite Crawler': 0, 'Tiny Crawler': 0, 'Medium Crawler': 0, 'Big Crawler': 0,
+                               'Huge Crawler': 0, 'Ultra Crawler': 0, 'Stalker': 0, 'Stalker Omega': 0, 'Abomination Spawn': 0, 'Bloat': 0, 'Husk': 0, 'Husk Omega': 0, 'Tiny Husk': 0, 'Siren': 0,
+                               'Siren Omega': 0, 'E.D.A.R Trapper': 0, 'E.D.A.R Blaster': 0, 'E.D.A.R Bomber': 0, 'Quarter Pound': 0, 'Scrake': 0, 'Scrake Omega': 0, 'Tiny Scrake': 0,
+                               'Scrake Emperor': 0, 'Alpha Scrake': 0, 'Fleshpound': 0, 'Fleshpound Omega': 0, 'Alpha Fleshpound': 0, 'King Fleshpound': 0, 'Dr. Hans Volter': 0,
+                               'Patriarch': 0, 'Abomination': 0, 'Matriarch': 0, 'Total': 0},
+                      'Group': {'Clots': 0, 'Gorefasts': 0, 'Crawlers / Stalkers': 0, 'Robots': 0, 'Scrakes': 0, 'Fleshpounds': 0, 'Albino': 0, 'Omega': 0, 'SpawnRage': 0, 'Total': 0},
+                      'SpawnRage': {'Quarter Pound': 0, 'Fleshpound': 0, 'Alpha Fleshpound': 0, 'Total': 0}}
 
         trash_zeds = ['Cyst', 'Alpha Clot', 'Slasher', 'Rioter', 'Gorefast', 'Gorefiend',
                       'Crawler', 'Elite Crawler', 'Stalker', 'Slasher Omega', 'Gorefast Omega', 'Abomination Spawn',
@@ -114,23 +187,8 @@ class AnalyzeDialog(object):
         omega = ['Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler', 'Medium Crawler',
                  'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
                  'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
-
-        # Expand this wave's squads
-        expanded_squads = self.expand_squads(self.wavedefs[wave_id])
         j = 0
 
-        # Simulate the wave!
-        wave_stats = {'Total': wave_num_zeds,
-                      'Category': {'Trash': 0, 'Medium': 0, 'Large': 0, 'Boss': 0, 'Total': 0}, 
-                      'Name': {'Cyst': 0, 'Alpha Clot': 0, 'Slasher': 0, 'Slasher Omega': 0,  'Rioter': 0, 'Gorefast': 0, 'Gorefast Omega': 0, 'Gorefiend': 0, 'Crawler': 0, 'Elite Crawler': 0, 'Tiny Crawler': 0, 'Medium Crawler': 0, 'Big Crawler': 0,
-                               'Huge Crawler': 0, 'Ultra Crawler': 0, 'Stalker': 0, 'Stalker Omega': 0, 'Abomination Spawn': 0, 'Bloat': 0, 'Husk': 0, 'Husk Omega': 0, 'Tiny Husk': 0, 'Siren': 0,
-                               'Siren Omega': 0, 'E.D.A.R Trapper': 0, 'E.D.A.R Blaster': 0, 'E.D.A.R Bomber': 0, 'Quarter Pound': 0, 'Scrake': 0, 'Scrake Omega': 0, 'Tiny Scrake': 0,
-                               'Scrake Emperor': 0, 'Alpha Scrake': 0, 'Fleshpound': 0, 'Fleshpound Omega': 0, 'Alpha Fleshpound': 0, 'King Fleshpound': 0, 'Dr. Hans Volter': 0,
-                               'Patriarch': 0, 'Abomination': 0, 'Matriarch': 0, 'Total': 0},
-                      'Group': {'Clots': 0, 'Gorefasts': 0, 'Crawlers / Stalkers': 0, 'Robots': 0, 'Scrakes': 0, 'Fleshpounds': 0, 'Albino': 0, 'Omega': 0, 'SpawnRage': 0, 'Total': 0},
-                      'SpawnRage': {'Quarter Pound': 0, 'Fleshpound': 0, 'Alpha Fleshpound': 0, 'Total': 0}}
-
-        # Count up the ZEDs
         for i in range(wave_num_zeds):
             next_zed = expanded_squads[j] # Get the next ZED to be spawned
             j = (j+1) % len(expanded_squads) # Roll back to the start of the array
@@ -177,7 +235,6 @@ class AnalyzeDialog(object):
 
                 if next_zed in albino: # Check for albinos
                     wave_stats['Group']['Albino'] += 1
-
                 if next_zed in omega: # Check for omegas
                     wave_stats['Group']['Omega'] += 1
 
@@ -214,16 +271,13 @@ class AnalyzeDialog(object):
                 currently_spawned_zeds.pop(0) # Remove the first ZED
 
             # Get the difficulty score at this point
-            # ZED count modifier: ZEDs have varying weights
-            zed_weights = {'Trash': 500, 'Medium': 1500, 'Large': 3000, 'Boss': 7500}
-            num_trash = sum([1 if z in trash_zeds else 0 for z in currently_spawned_zeds])
-            num_medium = sum([1 if z in medium_zeds else 0 for z in currently_spawned_zeds])
-            num_large = sum([1 if z in large_zeds else 0 for z in currently_spawned_zeds])
-            num_bosses = sum([1 if z in bosses else 0 for z in currently_spawned_zeds])
-            zed_count_mod = ((num_trash * zed_weights['Trash']) + (num_medium * zed_weights['Medium']) +
-                             (num_large * zed_weights['Large']) + (num_bosses * zed_weights['Boss']))
-            zed_diff_mod = 1.0 + (0.5 * self.params['Difficulty']) # ZED difficulty modifier: (harder difficulty = stronger attacks / more damage dealt)
-            zed_score_mod = zed_diff_mod * zed_count_mod
+            # ZED composition modifier: ZEDs have varying weights
+            transcribe = {'Fleshpound': 'Fleshpound (Enraged)',
+                          'Quarter Pound': 'Quarter Pound (Enraged)',
+                          'Alpha Fleshpound': 'Alpha Fleshpound (Enraged)'}
+            zed_count = sum([zed_weights[(z if not isinstance(z, dict) else transcribe[z['Raged']])] for z in currently_spawned_zeds])
+            zed_diff_mod = 1.00 + (0.50 * self.params['Difficulty']) # ZED difficulty modifier: (harder difficulty = stronger attacks / more damage dealt)
+            zed_comp_mod = zed_diff_mod * zed_count
 
             # Wave modifier, based on how far into the game this is.
             # Earlier waves tend to be harder due to less money/economy
@@ -233,14 +287,14 @@ class AnalyzeDialog(object):
             wave_score_mod = doshmod[self.params['Difficulty']] + (float(wave_id+1) / float(max_wave[self.params['GameLength']]))
             
             # Longer waves tend to be harder due to resources (ammo, etc) having to be further spread out 
-            wsf_mod = 1.5 + (float(self.params['WaveSizeFakes']) / 128.0)
+            wsf_mod = 1.50 + (float(self.params['WaveSizeFakes']) / 128.0)
 
             # Calculate the final score
-            difficulty_score = wsf_mod * wave_score_mod * zed_score_mod
-
+            difficulty_score = wsf_mod * wave_score_mod * zed_comp_mod
             if difficulty_score > 750000.0: # Cap Difficulty Score at 750K
                 difficulty_score = 750000.0
             percent_thru_wave = (float(i+1) / float(wave_num_zeds)) * 100 # How far into the wave this is
+            
             difficulty_data.append((percent_thru_wave, float(difficulty_score)))
 
         return wave_stats, difficulty_data
@@ -423,7 +477,7 @@ class AnalyzeDialog(object):
                 frame_layout.addWidget(chart_zed_group)
         else:
             label_zed_group = widget_helpers.create_label(None, text='\nZEDs by Group', tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
-            label_nodata = widget_helpers.create_label(None, text='\nNo Group Data to Show!', tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
+            label_nodata = widget_helpers.create_label(None, text='\nNo Group Data to show!', tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignLeft)
             frame_layout.addWidget(label_zed_group)
             frame_layout.addWidget(label_nodata)
         
@@ -521,8 +575,40 @@ class AnalyzeDialog(object):
                         widget_helpers.format_cell(table, row, j, bg_color=bg_color, fg_color=fg_color, font=font, alignment=QtCore.Qt.AlignHCenter)
                 row += 1
 
+    # Checks if its possible to analyze
+    def check_state(self):
+        errors = []
+
+        # Check for SpawnCycle length
+        all_empty = True
+        for wave in self.parent.wavedefs:
+            if len(wave['Squads']) > 0:
+                all_empty = False
+                break
+        if all_empty or len(self.parent.wavedefs) < 1:
+            errors.append(f"- Cannot analyze an empty SpawnCycle. Must have at least one wave with ZEDs within!")
+        
+        # Check GameLength
+        if ((len(self.parent.wavedefs) > 4) and (self.analysis_widgets['GameLength'].currentIndex() == 0)) or ((len(self.parent.wavedefs) > 7) and (self.analysis_widgets['GameLength'].currentIndex() in [0, 1])):
+            errors.append(f"- Game Length setting is shorter than the currently defined set of waves!")
+
+        return errors
+
     # Publishes analysis data for the SpawnCycle
     def analyze_wavedefs(self):
+        # Check for errors first
+        errors = self.check_state()
+        if len(errors) > 0: # Print errors
+            diag_title = 'WARNING'
+            diag_text = 'The following error(s) were encountered while attempting to Analyze:\n\n'
+            diag_text += '\n'.join(errors)
+            x = self.scrollarea.mapToGlobal(self.scrollarea.rect().center()).x() - 200 # Anchor dialog to center of window
+            y = self.scrollarea.mapToGlobal(self.scrollarea.rect().center()).y()
+            diag = widget_helpers.create_simple_dialog(self.scrollarea, diag_title, diag_text, x, y, button=True)
+            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+            diag.exec_() # Show a dialog to tell user to check messages
+            return
+
         self.clear_scrollarea() # First clear out any prev data
 
         # Show "Loading" dialog
@@ -537,24 +623,24 @@ class AnalyzeDialog(object):
         # Get analysis data for each wave
         wave_stats = []
         difficulty_data = []
-        for i in range(len(self.wavedefs)):
+        for i in range(len(self.parent.wavedefs)):
             wave_sample, diff_sample = self.sample_wave(i)
             wave_stats.append(wave_sample)
             difficulty_data.append(diff_sample)
 
-        # Add missing data for empty waves
-        if len(self.wavedefs) not in [4, 7, 10]:
-            if len(self.wavedefs) < 4:
+        # Add missing data for missing waves
+        if len(self.parent.wavedefs) not in [4, 7, 10]:
+            if len(self.parent.wavedefs) < 4:
                 next_interval = 4
-            elif len(self.wavedefs) < 7:
+            elif len(self.parent.wavedefs) < 7:
                 next_interval = 7
             else:
                 next_interval = 10
 
-            num_to_add = next_interval - len(self.wavedefs)
+            num_to_add = next_interval - len(self.parent.wavedefs)
             wave_stats += [None for j in range(num_to_add)]
             difficulty_data += [[(0.0, 0.0)] for k in range(num_to_add)]
-
+        
         # Combine wave stats
         merged = {'Total': 0,
                   'Category': {'Trash': 0, 'Medium': 0, 'Large': 0, 'Boss': 0, 'Total': 0}, 
@@ -585,9 +671,8 @@ class AnalyzeDialog(object):
         font_label.setWeight(75)
 
         # Display params
-        stripped_fname = self.filename.replace('.json', '').replace('.txt', '')
-        title_label = widget_helpers.create_label(None, text=f"SPAWNCYCLE ANALYSIS " + (f":: {stripped_fname}" if self.filename != 'Untitled' else ''), tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
-        params_label = widget_helpers.create_label(None, text=f"\n\nPARAMETERS", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
+        stripped_fname = self.parent.filename.replace('.json', '').replace('.txt', '')
+        params_label = widget_helpers.create_label(None, text=f"PARAMETERS", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
         params_frame = QtWidgets.QFrame()
         params_frame_layout = QtWidgets.QVBoxLayout(params_frame)
         params_frame.setStyleSheet(f"color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);")
@@ -621,17 +706,19 @@ class AnalyzeDialog(object):
         dc_label = widget_helpers.create_label(None, text=f"Display Charts:       {dc_str}", tooltip=None, style=ss_params, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
         params_frame_layout.addWidget(dc_label)
 
-        self.scrollarea_contents_layout.addWidget(title_label)
+        # Add parameters stuff
         self.scrollarea_contents_layout.addWidget(params_label)
         self.scrollarea_contents_layout.addWidget(params_frame)
+        self.analysis_widgets.update({'ParamsLabel': params_label, 'ParamsFrame': params_frame}) # Saving these so we can get to them later
 
         # Display combined stats
         avg_difficulty_data = [(0, 0.0)] + [(i+1, float(sum([y for _, y in difficulty_data[i]])) / float(len(difficulty_data[i]))) for i in range(0, len(difficulty_data))]
-        axis_data = {'X': {'Title': '\nWave', 'Labels': [str(i) for i in range(1, len(difficulty_data)+1)], 'Min': 0, 'Max': len(self.wavedefs)}, 'Y': {'Title': 'Average Difficulty\n', 'Tick': 10, 'Min': 0, 'Max': 755000}}
+        axis_data = {'X': {'Title': '\nWave', 'Labels': [str(i) for i in range(1, len(difficulty_data)+1)], 'Min': 0, 'Max': len(self.parent.wavedefs)}, 'Y': {'Title': 'Average Difficulty\n', 'Tick': 10, 'Min': 0, 'Max': 755000}}
         merged_label = widget_helpers.create_label(None, text=f"\n\nALL WAVES", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
         merged_frame, merged_frame_children = self.create_waveframe(merged, merged=True, difficulty_data=avg_difficulty_data, axis_data=axis_data) # Create table
-        self.scrollarea_contents_layout.addWidget(merged_label)
-        self.scrollarea_contents_layout.addWidget(merged_frame)
+
+        # Create dict of compiled data
+        self.compiled_data = {'merged': (merged_label, merged_frame)}
 
         # Display stats per-wave
         if not self.params['Overview Only']:
@@ -641,13 +728,37 @@ class AnalyzeDialog(object):
                     axis_data = {'X': {'Title': '\nWave Progress (%)', 'Labels': ['10%', '20%', '30%', '40%', '50%', '60%', '70%', '80%', '90%', '100%'], 'Min': 0, 'Max': x_max}, 'Y': {'Title': 'Difficulty\n', 'Tick': 10, 'Min': 0, 'Max': 755000}}
                     wave_label = widget_helpers.create_label(None, text=f"\n\nWAVE {i+1}", tooltip=None, style=ss_label, font=font_label, size_policy=sp_fixed, alignment=QtCore.Qt.AlignCenter)
                     wave_frame, wave_frame_children = self.create_waveframe(wave_stats[i], merged=False, difficulty_data=difficulty_data[i], axis_data=axis_data) # Create table
-                    self.scrollarea_contents_layout.addWidget(wave_label)
-                    self.scrollarea_contents_layout.addWidget(wave_frame)
-            
+                    self.compiled_data.update({str(i): (wave_label, wave_frame)})
+
+        # Set the first wave shown. This will either be the summary or the most recently viewed wave
+        if not self.params['Overview Only']:
+            if self.active_wave not in self.compiled_data: # This wave might not be available anymore!
+                self.active_wave = 'merged' # Set it back to 'All' because that one's always available
+            (wave_label, wave_frame) = self.compiled_data[self.active_wave]
+        else: # Was on a numbered wave before and we might have turned the overview only flag on. Need to update accordingly
+            (wave_label, wave_frame) = self.compiled_data['merged'] # Show only summary data
+            self.active_wave = 'merged'
+
+        self.scrollarea_contents_layout.addWidget(wave_label)
+        self.scrollarea_contents_layout.addWidget(wave_frame)
+
+        # Hide all previous wave buttons
+        for button in self.buttons['WaveButtons'].values():
+            button.setVisible(False)
+
+        # Unhide the wave tab buttons we need
+        for (wnum, data) in self.compiled_data.items():
+            if data is not None:
+                border_color = 'orange' if wnum == self.active_wave else 'white'
+                wbutton = self.buttons['WaveButtons'][wnum]
+                wbutton.setStyleSheet(f"color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);\nborder: 2px solid {border_color};") # Set initial border
+                wbutton.setVisible(True) # Unhide the button
+
         # Reset scrollbar to top
         #self.scrollarea.verticalScrollBar().setValue(0);
 
         loading_diag.close()
+        self.parent.last_analyze_preset = self.params
 
         # Show a dialog indicating completion
         diag_title = 'SpawnCycler'
@@ -657,6 +768,47 @@ class AnalyzeDialog(object):
         diag = widget_helpers.create_simple_dialog(self.scrollarea, diag_title, diag_text, x, y, button=True)
         diag.setWindowIcon(QtGui.QIcon('img/icon_check.png'))
         diag.exec_() # Show a dialog to tell user to check messages
+
+    # Sets up the per wave tabs
+    def setup_wave_buttons(self):
+        # Fonts and stuff
+        sp_button = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        font_button = QtGui.QFont()
+        font_button.setFamily(_DEF_FONT_FAMILY)
+        font_button.setPointSize(10)
+        font_button.setWeight(75)
+
+        wnums = ['merged', '0', '1', '2', '3', '4', '5', '6', '7', '8', '9']
+        for wnum in wnums:
+            button_title = 'All' if wnum == 'merged' else f"Wave {int(wnum)+1}"
+            wave_button = widget_helpers.create_button(None, None, None, text=button_title, size_policy=sp_button, font=font_button, options=False, squad=False, draggable=False)
+            wave_button.setMinimumSize(QtCore.QSize(64, 32))
+            wave_button.clicked.connect(partial(self.load_wave, wnum))
+            self.buttons['WaveButtons'].update({wnum: wave_button}) # Add this so we can get to it easily later
+            self.wave_button_layout.addWidget(wave_button)
+            wave_button.setVisible(False)
+
+    # Loads a wave into the analyzer's scroll area
+    def load_wave(self, wave):
+        # First clear the rest of the waves
+        for i in reversed(range(self.scrollarea_contents_layout.count())): 
+            self.scrollarea_contents_layout.itemAt(i).widget().setParent(None)
+
+        # Set all wave buttons to white border
+        for (wnum, wdata) in self.compiled_data.items():
+            if wnum != wave:
+                self.buttons['WaveButtons'][wnum].setStyleSheet(f"color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);\nborder: 2px solid white;")
+        self.buttons['WaveButtons'][wave].setStyleSheet(f"color: rgb(255, 255, 255);\nbackground-color: rgb(40, 40, 40);\nborder: 2px solid orange;") # Set the button for this wave
+
+        # Load up the new wave
+        (wave_label, wave_frame) = self.compiled_data[wave]
+        self.scrollarea_contents_layout.addWidget(self.analysis_widgets['ParamsLabel'])
+        self.scrollarea_contents_layout.addWidget(self.analysis_widgets['ParamsFrame'])
+        self.scrollarea_contents_layout.addWidget(wave_label)
+        self.scrollarea_contents_layout.addWidget(wave_frame)
+
+        # Set the active wave in case we re-analyze without closing the window
+        self.active_wave = wave
 
     # Merges dict B into A and returns a new dict C
     # Assumes all integer values
@@ -711,6 +863,7 @@ class AnalyzeDialog(object):
         # Style stuff
         ss = 'color: rgb(255, 255, 255);' # Stylesheet
         ss_cbox = 'QToolTip {color: rgb(0, 0, 0);} QComboBox {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}' # Stylesheet
+        ss_label = "QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};"
         sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
         sp.setHorizontalStretch(0)
         sp.setVerticalStretch(0)
@@ -733,36 +886,54 @@ class AnalyzeDialog(object):
 
         # Set up GameLength area
         gamelength_label = widget_helpers.create_label(None, text='Game Length       ', tooltip="The Length of the game.\nDifferent Game Lengths affect the way the waves are sampled.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        gamelength_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
+        gamelength_label.setStyleSheet(ss_label)
         gamelength_cbox = widget_helpers.create_combobox(None, options=['Short (4 Waves)', 'Medium (7 Waves)', 'Long (10 Waves)'], style=ss_cbox, size_policy=sp)
         gamelength_cbox.setToolTip(f"The Length of the game.\nDifferent Game Lengths affect the way the waves are sampled.")
+        gamelength_cbox.setStyleSheet("QComboBox {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);} QToolTip {color: rgb(0, 0, 0)};")
+        gamelength_cbox.activated.connect(partial(self.update_param, 'GameLength', gamelength_cbox))
         gamelength_frame = QtWidgets.QFrame()
-        gamelength_cbox.setStyleSheet("QComboBox {color: rgb(175, 175, 175); background-color: rgb(60, 60, 60);} QToolTip {color: rgb(0, 0, 0)};")
         gamelength_frame_layout = QtWidgets.QHBoxLayout(gamelength_frame)
         gamelength_frame_layout.addWidget(gamelength_label)
         gamelength_frame_layout.addWidget(gamelength_cbox)
         gamelength_frame_layout.setAlignment(QtCore.Qt.AlignLeft)
-        gamelength_cbox.setEnabled(False)
+        #gamelength_cbox.setEnabled(False)
 
         # Set up GameLength
-        if len(self.wavedefs) == 4:
+        preferred_length = meta.get_keyvalue('analyze_default_length')
+        numwaves = {0: 4, 1: 7, 2: 10} # Last used
+        if preferred_length == 0 and self.parent.last_analyze_preset is not None and len(self.parent.wavedefs) <= numwaves[self.parent.last_analyze_preset['GameLength']]:
+            gamelength_cbox.setCurrentIndex(self.parent.last_analyze_preset['GameLength'])
+            self.params.update({'GameLength': self.parent.last_analyze_preset['GameLength']})
+        elif preferred_length == 2 and len(self.parent.wavedefs) <= 4: # Preferred Short
             gamelength_cbox.setCurrentIndex(0)
             self.params.update({'GameLength': 0})
-        elif len(self.wavedefs) == 7:
+        elif preferred_length == 3 and len(self.parent.wavedefs) <= 7: # Preferred Medium
             gamelength_cbox.setCurrentIndex(1)
             self.params.update({'GameLength': 1})
-        else:
+        elif (preferred_length == 0 and self.parent.last_analyze_preset is None) or preferred_length == 4: # Preferred Long or last used where we don't have a last used yet
             gamelength_cbox.setCurrentIndex(2)
             self.params.update({'GameLength': 2})
 
+        # Adaptive. Pick the closest gamelength
+        else:
+            if len(self.parent.wavedefs) <= 4:
+                gamelength_cbox.setCurrentIndex(0)
+                self.params.update({'GameLength': 0})
+            elif len(self.parent.wavedefs) <= 7:
+                gamelength_cbox.setCurrentIndex(1)
+                self.params.update({'GameLength': 1})
+            else:
+                gamelength_cbox.setCurrentIndex(2)
+                self.params.update({'GameLength': 2})
+
         # Set up Difficulty area
         difficulty_label = widget_helpers.create_label(None, text='Difficulty        ', tooltip="The Difficulty of the game to sample from.\nHarder difficulties make the waves larger.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        difficulty_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
+        difficulty_label.setStyleSheet(ss_label)
         difficulty_cbox = widget_helpers.create_combobox(None, options=['Normal', 'Hard', 'Suicidal', 'Hell on Earth'], style=ss_cbox, size_policy=sp)
         difficulty_cbox.setCurrentIndex(3) # HoE is default
         difficulty_cbox.setToolTip("The Difficulty of the game to sample from.\nHarder difficulties make the waves larger.")
         difficulty_cbox.setStyleSheet("QComboBox {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);} QToolTip {color: rgb(0, 0, 0)};")
-        difficulty_cbox.activated.connect(self.update_difficulty)
+        difficulty_cbox.activated.connect(partial(self.update_param, 'Difficulty', difficulty_cbox))
         self.params.update({'Difficulty': 3})
         difficulty_frame = QtWidgets.QFrame()
         difficulty_frame_layout = QtWidgets.QHBoxLayout(difficulty_frame)
@@ -772,21 +943,20 @@ class AnalyzeDialog(object):
 
         # Set up WSF area
         wavesize_label = widget_helpers.create_label(None, text='Wave Size Fakes   ', tooltip="The number of players to sample the waves from.\nHigher values make the waves larger.\nAssumes the 'Ignore Humans' Fakes Mode setting.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        wavesize_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
+        wavesize_label.setStyleSheet(ss_label)
         font = QtGui.QFont()
         font.setFamily(_DEF_FONT_FAMILY)
         font.setPointSize(10)
         font.setWeight(75)
-        wavesize_textarea = QtWidgets.QLineEdit()
-        wavesize_textarea.setStyleSheet(ss)
-        wavesize_textarea.setSizePolicy(sp)
-        wavesize_textarea.setMaximumSize(QtCore.QSize(48, 28))
-        wavesize_textarea.setFont(font)
-        wavesize_textarea.setText('12')
-        wavesize_textarea.setAlignment(QtCore.Qt.AlignCenter)
+        wavesize_textarea = widget_helpers.create_textfield('12', font, sp, ss, 48, 28)
         wavesize_textarea.setToolTip("The number of players to sample the waves from.\nHigher values make the waves larger.\nAssumes the 'Ignore Humans' Fakes Mode setting.")
-        wavesize_textarea.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
-        wavesize_textarea.textChanged.connect(self.update_wavesize)
+        wavesize_textarea.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50); border: 2px solid white;};")
+        
+        # Set up signals
+        wavesize_textarea.textChanged.connect(partial(self.edit_textbox, wavesize_textarea))
+        wavesize_textarea.editingFinished.connect(partial(self.commit_textbox, wavesize_textarea, 'WaveSizeFakes', _WAVESIZE_MIN, _WAVESIZE_MAX))
+
+        # Initialize internal value
         self.params.update({'WaveSizeFakes': 12})
         wavesize_frame = QtWidgets.QFrame()
         wavesize_frame_layout = QtWidgets.QHBoxLayout(wavesize_frame)
@@ -799,9 +969,9 @@ class AnalyzeDialog(object):
         iz_checkbox.setChecked(True)
         iz_checkbox.setToolTip("Don't display fields with zero value.")
         iz_checkbox.setStyleSheet("QToolTip {color: rgb(0, 0, 0)};")
-        iz_checkbox.toggled.connect(self.update_ignore_zeroes)
+        iz_checkbox.toggled.connect(partial(self.update_param, 'Ignore Zeroes', iz_checkbox))
         iz_label = widget_helpers.create_label(None, text='Ignore Zeroes          ', tooltip="Don't display fields with zero value.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        iz_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
+        iz_label.setStyleSheet(ss_label)
         self.params.update({'Ignore Zeroes': iz_checkbox.isChecked()})
         iz_frame = QtWidgets.QFrame()
         iz_frame_layout = QtWidgets.QHBoxLayout(iz_frame)
@@ -816,7 +986,7 @@ class AnalyzeDialog(object):
         analyze_difficulty_checkbox.setStyleSheet("QToolTip {color: rgb(0, 0, 0)};")
         analyze_difficulty_checkbox.toggled.connect(self.update_analyze_difficulty)
         analyze_difficulty_label = widget_helpers.create_label(None, text='Analyze Difficulty     ', tooltip="Produce a chart showing the (relative) difficulty curve of the wave.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        analyze_difficulty_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
+        analyze_difficulty_label.setStyleSheet(ss_label)
         self.params.update({'Analyze Difficulty': analyze_difficulty_checkbox.isChecked()})
         analyze_difficulty_frame = QtWidgets.QFrame()
         analyze_difficulty_frame_layout = QtWidgets.QHBoxLayout(analyze_difficulty_frame)
@@ -829,9 +999,9 @@ class AnalyzeDialog(object):
         display_charts_checkbox.setChecked(True)
         display_charts_checkbox.setToolTip("Show graphical charts related to Analysis data.")
         display_charts_checkbox.setStyleSheet("QToolTip {color: rgb(0, 0, 0)};")
-        display_charts_checkbox.toggled.connect(self.update_display_charts)
+        display_charts_checkbox.toggled.connect(partial(self.update_param, 'Display Charts', display_charts_checkbox))
         display_charts_label = widget_helpers.create_label(None, text='Display Charts         ', tooltip="Show graphical charts related to Analysis data.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        display_charts_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
+        display_charts_label.setStyleSheet(ss_label)
         self.params.update({'Display Charts': display_charts_checkbox.isChecked()})
         display_charts_frame = QtWidgets.QFrame()
         display_charts_frame_layout = QtWidgets.QHBoxLayout(display_charts_frame)
@@ -844,9 +1014,9 @@ class AnalyzeDialog(object):
         overview_only_checkbox.setChecked(False)
         overview_only_checkbox.setToolTip("Exclude individual wave statistics from the Analysis Results.")
         overview_only_checkbox.setStyleSheet("QToolTip {color: rgb(0, 0, 0)};")
-        overview_only_checkbox.toggled.connect(self.update_overview_only)
-        overview_only_label = widget_helpers.create_label(None, text='Overview Only     ', tooltip="Exclude individual wave statistics from the Analysis Results.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        overview_only_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
+        overview_only_checkbox.toggled.connect(partial(self.update_param, 'Overview Only', overview_only_checkbox))
+        overview_only_label = widget_helpers.create_label(None, text='Overview Only     ', tooltip="Legacy feature: Exclude individual wave statistics from the Analysis Results. Speeds up analysis time.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
+        overview_only_label.setStyleSheet(ss_label)
         self.params.update({'Overview Only': overview_only_checkbox.isChecked()})
         overview_only_frame = QtWidgets.QFrame()
         overview_only_frame_layout = QtWidgets.QHBoxLayout(overview_only_frame)
@@ -856,17 +1026,16 @@ class AnalyzeDialog(object):
 
         # Set up MaxMonsters area
         maxmonsters_label = widget_helpers.create_label(None, text='Max Monsters           ', tooltip="The maximum number of ZEDs that can be alive at once.\nHigher values make the waves more difficult.\nOnly used if the 'Analyze Difficulty' setting is TRUE.", style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignLeft)
-        maxmonsters_label.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLabel {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
-        maxmonsters_textarea = QtWidgets.QLineEdit()
-        maxmonsters_textarea.setStyleSheet(ss)
-        maxmonsters_textarea.setSizePolicy(sp)
-        maxmonsters_textarea.setMaximumSize(QtCore.QSize(48, 28))
-        maxmonsters_textarea.setFont(font)
-        maxmonsters_textarea.setText('32')
-        maxmonsters_textarea.setAlignment(QtCore.Qt.AlignCenter)
+        maxmonsters_label.setStyleSheet(ss_label)
+        maxmonsters_textarea = widget_helpers.create_textfield('32', font, sp, ss, 48, 28)
         maxmonsters_textarea.setToolTip("The maximum number of ZEDs that can be alive at once.\nHigher values make the waves more difficult.\nOnly used if the 'Analyze Difficulty' setting is TRUE.")
-        maxmonsters_textarea.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
-        maxmonsters_textarea.textChanged.connect(self.update_maxmonsters)
+        maxmonsters_textarea.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50); border: 2px solid white;};")
+
+        # Set up signals
+        maxmonsters_textarea.textChanged.connect(partial(self.edit_textbox, maxmonsters_textarea))
+        maxmonsters_textarea.editingFinished.connect(partial(self.commit_textbox, maxmonsters_textarea, 'MaxMonsters', _MAXMONSTERS_MIN, _MAXMONSTERS_MAX))
+
+        # Initialize internal value
         self.params.update({'MaxMonsters': 32})
         maxmonsters_frame = QtWidgets.QFrame()
         maxmonsters_frame_layout = QtWidgets.QHBoxLayout(maxmonsters_frame)
@@ -908,48 +1077,51 @@ class AnalyzeDialog(object):
                                  'Ignore Zeroes': iz_checkbox, 'Analyze Difficulty': analyze_difficulty_checkbox, 'MaxMonsters': maxmonsters_textarea,
                                  'Overview Only': overview_only_checkbox, 'Display Charts': display_charts_checkbox}
 
-    # Called when the WaveSizeFakes field is changed
-    def update_wavesize(self):
-        # Force an int
-        wsf_widget = self.analysis_widgets['WaveSizeFakes']
-        if not wsf_widget.text().isnumeric():
-            wsf_widget.setText(str(_WAVESIZE_MIN)) # Just set it to min if they provide a non-number
-            self.params.update({'WaveSizeFakes': _WAVESIZE_MIN})
+    # Called when a textbox is edited
+    def edit_textbox(self, textbox):
+        if not textbox.text().isnumeric(): # NaN somehow (for example the field is empty)
             return
 
         # Remove any leading zeroes
-        wsf = int(wsf_widget.text()) # Conv to an int will remove the zeroes on its own. Guaranteed to be numeric at this point
-        if wsf == 0:
-            if wsf_widget.text().count('0') > 1: # Special case for zero, just replace it. Stripping won't work here
-                self.analysis_widgets['WaveSizeFakes'].setText('0')
+        val = int(textbox.text()) # Conv to an int will remove the zeroes on its own. Guaranteed to be numeric at this point
+        if val == 0:
+            if textbox.text().count('0') > 1: # Special case for zero, just replace it. Stripping won't work here
+                textbox.setText('0')
         else:
-            self.analysis_widgets['WaveSizeFakes'].setText(wsf_widget.text().lstrip('0'))
-        
-        # Constrain range
-        if wsf < _WAVESIZE_MIN: # Default WSF min is 0
-            self.analysis_widgets['WaveSizeFakes'].setText(str(_WAVESIZE_MIN))
-            wsf = _WAVESIZE_MIN
-        elif wsf > _WAVESIZE_MAX: # Default WSF max is 128
-            self.analysis_widgets['WaveSizeFakes'].setText(str(_WAVESIZE_MAX))
-            wsf = _WAVESIZE_MAX
+            textbox.setText(textbox.text().lstrip('0'))
 
-        self.params.update({'WaveSizeFakes': wsf})
+    # Called when the WaveSizeFakes field is changed
+    def commit_textbox(self, textbox, key, min_value, max_value):
+        if not textbox.text().isnumeric():
+            textbox.setText(str(self.params[key]))
+            return
 
-    # Called when the Ignore Zeroes field is changed
-    def update_ignore_zeroes(self):
-        self.params.update({'Ignore Zeroes': self.analysis_widgets['Ignore Zeroes'].isChecked()})
+        # Same value as we already have set. Do nothing
+        if int(textbox.text()) == self.params[key]:
+            return
 
-    # Called when the Overview Only field is changed
-    def update_overview_only(self):
-        self.params.update({'Overview Only': self.analysis_widgets['Overview Only'].isChecked()})
+        # Set the value of the textfield
+        val = int(textbox.text())
+        if val < min_value: # Too low
+            textbox.setText(str(min_value))
+        elif val > max_value: # Too high
+            textbox.setText(str(max_value))
 
-    # Called when the Display Charts field is changed
-    def update_display_charts(self):
-        self.params.update({'Display Charts': self.analysis_widgets['Display Charts'].isChecked()})
+        # Update the param
+        self.update_param(key, textbox)
+
+    # Updates a specific parameter
+    def update_param(self, key, widget):
+        if isinstance(widget, QtWidgets.QCheckBox):
+            self.params.update({key: widget.isChecked()})
+        elif isinstance(widget, QtWidgets.QComboBox):
+            self.params.update({key: widget.currentIndex()})
+        elif isinstance(widget, QtWidgets.QLineEdit):
+            self.params.update({key: int(widget.text())})
 
     # Called when the Analyze Difficulty field is changed
     def update_analyze_difficulty(self):
-        self.params.update({'Analyze Difficulty': self.analysis_widgets['Analyze Difficulty'].isChecked()})
+        self.update_param('Analyze Difficulty', self.analysis_widgets['Analyze Difficulty'])
 
         mm_widget = self.analysis_widgets['MaxMonsters']
         if not self.analysis_widgets['Analyze Difficulty'].isChecked(): # Disable MaxMonsters
@@ -959,36 +1131,10 @@ class AnalyzeDialog(object):
             mm_widget.setEnabled(True)
             mm_widget.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}; QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50);};")
 
-    # Called when the Difficulty field is changed
-    def update_difficulty(self):
-        self.params.update({'Difficulty': self.analysis_widgets['Difficulty'].currentIndex()})
-
-    # Called when the MaxMonsters field is changed
-    def update_maxmonsters(self):
-        # Force an int
-        mm_widget = self.analysis_widgets['MaxMonsters']
-        if not mm_widget.text().isnumeric():
-            mm_widget.setText('1') # Just set it to default if they provide a non-number
-            self.params.update({'MaxMonsters': 1})
-            return
-
-        # Remove any leading zeroes
-        mm = int(mm_widget.text()) # Conv to an int will remove the zeroes on its own. Guaranteed to be numeric at this point
-        self.analysis_widgets['MaxMonsters'].setText(mm_widget.text().lstrip('0'))
-
-        # Constrain the range
-        if mm < _MAXMONSTERS_MIN: # Default MM min is 1
-            self.analysis_widgets['MaxMonsters'].setText(str(_MAXMONSTERS_MIN))
-            mm = _MAXMONSTERS_MIN
-        elif mm > _MAXMONSTERS_MAX: # Default MM max is 256
-            self.analysis_widgets['MaxMonsters'].setText(str(_MAXMONSTERS_MAX))
-            mm = _MAXMONSTERS_MAX
-
-        self.params.update({'MaxMonsters': mm})
-
     # Called when this dialog is closed
     def teardown(self):
-        self.save_preset(self.params)
+        self.parent.analyze_dialog = None
+        self.parent.last_analyze_preset = self.params
 
     # Called when this dialog is opened (if a preset was given)
     def load_preset(self, preset):
@@ -1004,16 +1150,19 @@ class AnalyzeDialog(object):
         # Finally, override the params
         preset['GameLength'] = self.params['GameLength'] # Except for gamelength, cause this depends on the number of waves
         self.params = preset
-        
-    def setupUi(self, Dialog, wavedefs, filename, save_preset=None, last_preset=None):
-        self.Dialog = Dialog
-        self.buttons = {}
-        self.filename = filename
-        self.wavedefs = wavedefs # The wave data passed into the dialog
-        self.save_preset = save_preset # Function called to save the parameters upon closing of the dialog
-        self.params = {} # All of the current analysis params are stored here
 
-        Dialog.setFixedSize(750, 1000)
+    # Completely clears all analysis data
+    def reset_state(self):
+        self.results_label.setText('Analysis Results') # Reset title label
+        self.clear_scrollarea() # Clear out any prev data
+
+        # Clear all the wave buttons and clear any analysis data
+        for wave_button in self.buttons['WaveButtons'].values():
+            wave_button.setVisible(False)
+        self.compiled_data = {}
+        
+    def setupUi(self, Dialog):
+        Dialog.setFixedSize(_WINDOWSIZE_ANALYZE_W, _WINDOWSIZE_ANALYZE_H)
         Dialog.setStyleSheet("background-color: rgb(50, 50, 50);")
 
         # Style stuff
@@ -1026,22 +1175,35 @@ class AnalyzeDialog(object):
         font.setPointSize(12)
         font.setWeight(75)
 
+        # Set up main layout
         self.main_layout = QtWidgets.QVBoxLayout(Dialog)
         self.setup_scrollarea(Dialog) # Set up main window stuff
         self.setup_options_pane(Dialog) # Set up the options buttons at the bottom
+
+        # Set up wave button frame
+        self.wave_button_frame = QtWidgets.QFrame()
+        self.wave_button_layout = QtWidgets.QHBoxLayout(self.wave_button_frame)
+        self.wave_button_layout.setAlignment(QtCore.Qt.AlignLeft)
+        self.wave_button_layout.setSpacing(0)
+
+        # Set up the wave buttons
+        self.setup_wave_buttons()
         
         # Put everything in
         self.params_label = widget_helpers.create_label(None, text='\nAnalysis Parameters', tooltip=None, style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignCenter)
-        self.results_label = widget_helpers.create_label(None, text='Analysis Results', tooltip=None, style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignCenter)
+        file_ext = self.parent.get_file_ext(self.parent.filename)
+        trunc = self.parent.truncate_filename(self.parent.filename)
+        self.results_label = widget_helpers.create_label(None, text=f"Analysis Results{'' if file_ext is None else (' (' + trunc.replace(file_ext, '') + ')')}", tooltip=None, style=ss, font=font, size_policy=sp, alignment=QtCore.Qt.AlignCenter)
         self.main_layout.addWidget(self.results_label)
+        self.main_layout.addWidget(self.wave_button_frame)
         self.main_layout.addWidget(self.scrollarea)
         self.main_layout.addWidget(self.params_label)
         self.main_layout.addWidget(self.options_pane)
         self.main_layout.setAlignment(QtCore.Qt.AlignCenter)
 
         # Load the last used preset (if one is given)
-        if last_preset is not None:
-            self.load_preset(last_preset)
+        if self.parent.last_analyze_preset is not None:
+            self.load_preset(self.parent.last_analyze_preset)
 
         self.retranslateUi(Dialog)
         QtCore.QMetaObject.connectSlotsByName(Dialog)
