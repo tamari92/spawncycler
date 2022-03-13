@@ -2222,7 +2222,7 @@ class Ui_MainWindow(object):
         y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
 
         fname = f" ('{self.filename}')" if self.filename != 'Untitled' else ''
-        self.add_message(f"Attempting to parse file{fname}..") # Post a message
+        self.add_message(f"Attempting to parse file{fname.replace('(','').replace(')','')}..") # Post a message
 
         # Parse the file to check for errors
         errors = parse.parse_syntax_export(self.filename, self.wavedefs)
