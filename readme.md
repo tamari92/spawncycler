@@ -1,3 +1,5 @@
+![alternate_text](https://i.imgur.com/J0nDtav.png)
+
 # SpawnCycler
 by Tamari
 
@@ -28,6 +30,19 @@ Quality-of-life features such as a built-in parser and "drag-and-drop" UI elemen
 - The ability to Simulate and Analyze a SpawnCycle based on pre-determined criteria, in order to obtain summary info such as Number of ZEDs Spawned and Difficulty Estimates on a per-wave basis
 - The ability to perform Batch operations on a SpawnCycle, such as reversing the wave order or replacing all of one ZED type
 
+## Planned Features
+- Allow for directly dragging a file into the main window to load it
+- Batch Converter to quickly convert multiple SpawnCycles between the available filetypes and also run a string of commands on a series of cycles
+- Scrollable Wave bars
+- The ability to compare two SpawnCycles using the Analysis Tool
+- Individual tabs for each Wave of the SpawnCycle
+- The ability to reorganize ZEDs within Squads via dragging
+- The ability to drag entire Squads to move them around and/or reorder them
+- The ability to drag Waves to reorder them instead of using buttons
+- The ability to drag a ZED out of a Squad and insert it between two other Squads
+- The ability to clone Squads and ZEDs onto the cursor and drag them elsewhere
+- The ability to collapse a Squad for easier viewing
+
 ## Binaries
 #### Windows
 v1.2: https://github.com/tamari92/spawncycler/releases/tag/12
@@ -57,12 +72,12 @@ This software is licensed under GNU General Public License v3.0 (GPLv3):
     along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ```
 
-© Tamari 2020-2021
+© Tamari 2020-2022
 
 All rights reserved.
 
 ## Reference Documentation
-- [Creating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/creation.md)
-- [Generating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/generation.md)
-- [Analyzing a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
-- [Converting SpawnCycles](https://github.com/tamari92/spawncycler/blob/main/conversion.md)
+- [SpawnCycle Creation](https://github.com/tamari92/spawncycler/blob/main/creation.md)
+- [SpawnCycle Generation](https://github.com/tamari92/spawncycler/blob/main/generation.md)
+- [SpawnCycle Analysis](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
+- [SpawnCycle Conversion](https://github.com/tamari92/spawncycler/blob/main/conversion.md)
