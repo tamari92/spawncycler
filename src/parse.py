@@ -1,7 +1,7 @@
 #
 #  parse.py
 #
-#  Author: Tamari (Nathan P. Ybanez)
+#  Author: Tamari
 #  Date of creation: 11/26/2020
 #
 #  Contains helper functions used to parse the input file
@@ -24,7 +24,7 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020-2021
+##  © Tamari 2020-2022
 ##  All rights reserved.
 
 
@@ -70,85 +70,86 @@ zed_tokens = {'Cyst': ['cy', 'cys', 'cyst', 'cc', 'clotc'],
               'Ultra Crawler': ['ucr', 'crawlerult', 'ultrac', 'ultracr', 'ultracra', 'ultracraw', 'ultracrawl' 'ultracrawle', 'ultracrawler']}
 
 
+# Returns a formatted zed name
 def format_zed_id(id, albino=False, raged=False):
-    if id in ['al', 'alp', 'alph', 'alpha', 'ca', 'clota']:
+    if id in zed_tokens['Alpha Clot']:
         return 'Alpha Clot' if not albino else 'Rioter'
-    elif id in ['cy', 'cys', 'cyst', 'cc', 'clotc']:
+    elif id in zed_tokens['Cyst']:
         return 'Cyst'
-    elif id in ['b', 'bl', 'blo', 'bloa', 'bloat']:
+    elif id in zed_tokens['Bloat']:
         return 'Bloat'
-    elif id in ['cr', 'cra', 'craw', 'crawl', 'crawle', 'crawler']:
+    elif id in zed_tokens['Crawler']:
         return 'Crawler' if not albino else 'Elite Crawler'
-    elif id in ['f', 'fl', 'fle', 'fles', 'flesh', 'fleshp', 'fleshpo', 'fleshpou', 'fleshpoun', 'fleshpound', 'fp']:
+    elif id in zed_tokens['Fleshpound']:
         if albino:
             return 'Alpha Fleshpound' if not raged else 'Alpha Fleshpound (Enraged)'
         else:
             return 'Fleshpound' if not raged else 'Fleshpound (Enraged)'
-    elif id in ['g', 'go', 'gor', 'gore', 'goref', 'gorefa', 'gorefas', 'gorefast', 'gf']:
+    elif id in zed_tokens['Gorefast']:
         return 'Gorefast' if not albino else 'Gorefiend'
-    elif id in ['h', 'hu', 'hus', 'husk']:
+    elif id in zed_tokens['Husk']:
         return 'Husk'
-    elif id in ['mi', 'min', 'mini', 'minif', 'minifl', 'minifle', 'minifles', 'miniflesh', 'minifleshp', 'minifleshpo', 'minifleshpou', 'minifleshpoun', 'minifleshpound', 'mf', 'mfp']:
+    elif id in zed_tokens['Quarter Pound']:
         return 'Quarter Pound' if not raged else 'Quarter Pound (Enraged)'
-    elif id in ['sc', 'scr', 'scra', 'scrak', 'scrake']:
+    elif id in zed_tokens['Scrake']:
         return 'Scrake' if not albino else 'Alpha Scrake'
-    elif id in ['si', 'sir', 'sire', 'siren']:
+    elif id in zed_tokens['Siren']:
         return 'Siren'
-    elif id in ['sl', 'sla', 'slas', 'slash', 'slashe', 'slasher', 'cs', 'clots']:
+    elif id in zed_tokens['Slasher']:
         return 'Slasher'
-    elif id in ['st', 'sta', 'stal', 'stalk', 'stalke', 'stalker']:
+    elif id in zed_tokens['Stalker']:
         return 'Stalker'
-    elif id in ['as']:
+    elif id in zed_tokens['Abomination Spawn']:
         return 'Abomination Spawn'
-    elif id in ['hansvolter', 'hansv', 'hv']:
+    elif id in zed_tokens['Dr. Hans Volter']:
         return 'Dr. Hans. Volter'
-    elif id in ['patriarch', 'pat', 'pt']:
+    elif id in zed_tokens['Patriarch']:
         return 'Patriarch'
-    elif id in ['ki', 'kin', 'king', 'kingf', 'kingfl', 'kingfle', 'kingfles', 'kingflesh', 'kingfleshp', 'kingfleshpo', 'kingfleshpou', 'kingfleshpoun', 'kingfleshpound', 'kf', 'kfp']:
+    elif id in zed_tokens['King Fleshpound']:
         return 'King Fleshpound'
-    elif id in ['abomination', 'abm', 'ab']: # Figure out the rest
+    elif id in zed_tokens['Abomination']:
         return 'Abomination'
-    elif id in ['matriarch', 'mat', 'mt']:
+    elif id in zed_tokens['Matriarch']:
         return 'Matriarch'
-    elif id in ['alphasc', 'asc']:
+    elif id in zed_tokens['Alpha Scrake']:
         return 'Alpha Scrake'
-    elif id in ['alphafp', 'afp', 'af']:
+    elif id in zed_tokens['Alpha Fleshpound']:
         return 'Alpha Fleshpound'
-    elif id in ['edartrapper', 'edaremp', 'edartr', 'edare', 'etr', 'ee', 'de']:
+    elif id in zed_tokens['E.D.A.R Trapper']:
         return 'E.D.A.R Trapper'
-    elif id in ['edarblaster', 'edarlaser', 'edarbl', 'edarl', 'ebl', 'el', 'dl']:
+    elif id in zed_tokens['E.D.A.R Blaster']:
         return 'E.D.A.R Blaster'
-    elif id in ['edarbomber', 'edarrocket', 'edarbo', 'edarr' 'ebo', 'er', 'dr']:
+    elif id in zed_tokens['E.D.A.R Bomber']:
         return 'E.D.A.R Bomber'
-    elif id in ['osl', 'omegasl', 'omegasla', 'omegaslas', 'omegaslas', 'omegaslash', 'omegaslasher']:
+    elif id in zed_tokens['Slasher Omega']:
         return 'Slasher Omega'
-    elif id in ['ost', 'omegast', 'omegasta', 'omegastal', 'omegastalk', 'omegastalke', 'omegastalker']:
+    elif id in zed_tokens['Stalker Omega']:
         return 'Stalker Omega'
-    elif id in ['os', 'omegas', 'omegasi', 'omegasir', 'omegasire', 'omegasiren']:
+    elif id in zed_tokens['Siren Omega']:
         return 'Siren Omega'
-    elif id in ['ofp', 'omegafp', 'omegaf', 'omegafl', 'omegafle', 'omegafles', 'omegaflesh', 'omegafleshp', 'omegafleshpo', 'omegafleshpou', 'omegafleshpoun', 'omegafleshpound']:
+    elif id in zed_tokens['Fleshpound Omega']:
         return 'Fleshpound Omega'
-    elif id in ['ogf', 'omegagf', 'omegag', 'omegago', 'omegagor', 'omegagorf', 'omegagorefa', 'omegagorefas', 'omegagorefast']:
+    elif id in zed_tokens['Gorefast Omega']:
         return 'Gorefast Omega'
-    elif id in ['ohs', 'omegahs', 'omegah', 'omegahu', 'omegahus', 'omegahusk']:
+    elif id in zed_tokens['Husk Omega']:
         return 'Husk Omega'
-    elif id in ['mhs', 'minihs', 'minih', 'minihu', 'minihus', 'minihusk']:
+    elif id in zed_tokens['Tiny Husk']:
         return 'Tiny Husk'
-    elif id in ['esc', 'empsc', 'e', 'em', 'emp', 'empe', 'emper', 'empero', 'emperor', 'emperors', 'emperorsc', 'emperorscr', 'emperorscra', 'emperorscrak', 'emperorscrake']:
+    elif id in zed_tokens['Scrake Emperor']:
         return 'Scrake Emperor'
-    elif id in ['osc', 'omegasc', 'omegascr', 'omegascra', 'omegascrak', 'omegascrake']:
+    elif id in zed_tokens['Scrake Omega']:
         return 'Scrake Omega'
-    elif id in ['tsc', 'tinysc', 'tinys', 'tinysc', 'tinyscr', 'tinyscra', 'tinyscrak', 'tinyscrake']:
+    elif id in zed_tokens['Tiny Scrake']:
         return 'Tiny Scrake'
-    elif id in ['crm', 'crawm', 'minic', 'minicr', 'minicra', 'minicraw', 'minicrawl', 'minicrawle', 'minicrawler']:
+    elif id in zed_tokens['Tiny Crawler']:
         return 'Tiny Crawler'
-    elif id in ['mcr', 'crawlermed', 'mediumc', 'mediumcr', 'mediumcra', 'mediumcraw', 'mediumcrawl', 'mediumcrawle', 'mediumcrawler']:
+    elif id in zed_tokens['Medium Crawler']:
         return 'Medium Crawler'
-    elif id in ['bcr', 'crawlerbig', 'bigc', 'bigcr', 'bigcra', 'bigcraw', 'bigcrawl', 'bigcrawle', 'bigcrawler']:
+    elif id in zed_tokens['Big Crawler']:
         return 'Big Crawler'
-    elif id in ['hcr', 'crawlerhuge', 'hugec', 'hugecr', 'hugecraw', 'hugecrawl', 'hugecrawle', 'hugecrawler']:
+    elif id in zed_tokens['Huge Crawler']:
         return 'Huge Crawler'
-    elif id in ['ucr', 'crawlerult', 'ultrac', 'ultracr', 'ultracra', 'ultracraw', 'ultracrawl' 'ultracrawle', 'ultracrawler']:
+    elif id in zed_tokens['Ultra Crawler']:
         return 'Ultra Crawler'
     else:
         return None
@@ -223,8 +224,8 @@ def parse_syntax_export(filename, wavedefs):
     fname = f" ('{filename}')" if filename != 'Untitled' else ''
     parse_prefix = f"Parse errors{fname}:\n\n"
 
-    if len(wavedefs) not in [4, 7, 10]: # File must be 4, 7, or 10 lines (waves) long
-        errors.append(f"{parse_prefix}{len(wavedefs):,d} wave(s) found in SpawnCycle.\nSpawnCycle length must be 4, 7, or 10 waves!\n")
+    if len(wavedefs) == 0: # Cannot save empty file
+        errors.append(f"{parse_prefix} Cannot save an empty SpawnCycle! Define some waves first.")
 
     for i in range(len(wavedefs)):
         wave = wavedefs[i]
@@ -247,9 +248,9 @@ def parse_syntax_import(filename, lines):
 
     errors = []
 
-    if len(waves) not in [4, 7, 10]: # File must be 4, 7, or 10 lines (waves) long
-        errors.append(f"{parse_prefix}{len(waves):,d} lines found in file '{filename}'.\nFile length must be 4, 7, or 10 lines!")
-        return errors # Just leave after this error because it's likely there will be hundreds of syntax errors
+    #if len(waves) not in [4, 7, 10]: # File must be 4, 7, or 10 lines (waves) long
+    #    errors.append(f"{parse_prefix}{len(waves):,d} lines found in file '{filename}'.\nFile length must be 4, 7, or 10 lines!")
+    #    return errors # Just leave after this error because it's likely there will be hundreds of syntax errors
 
     # Check for invalid characters or identifiers
     for i in range(len(waves)):
