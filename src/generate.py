@@ -1,7 +1,7 @@
 #
 #  generate.py
 #
-#  Author: Tamari (Nathan P. Ybanez)
+#  Author: Tamari
 #  Date of creation: 11/21/2020
 #
 #  UI code for the 'Generate' functionality
@@ -24,22 +24,36 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020-2021
+##  © Tamari 2020-2022
 ##  All rights reserved.
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 from functools import partial
 import widget_helpers
+import meta
 
 _DEF_FONT_FAMILY = 'Consolas'
 has_swapped_modes_generate = False
 
+_WINDOWSIZE_GENERATE_W = 800
+_WINDOWSIZE_GENERATE_H = 1000
+
 omega_zeds = ['Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler', 'Medium Crawler',
-                  'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
-                  'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
+              'Big Crawler', 'Huge Crawler', 'Ultra Crawler', 'Siren Omega', 'Husk Omega', 'Tiny Husk',
+              'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
 
 class GenerateDialog(object):
+    def __init__(self, parent, Dialog):
+        self.cancelled = False
+        self.params = {}
+        self.param_widgets = {}
+        self.slider_panes = {}
+        self.buttons = {}
+        self.zed_mode = 'Custom' # Start in custom mode to populate everything
+        self.Dialog = Dialog
+        self.parent = parent
+
     # Creates a button with the ZED icon in it
     def create_zed_button(self, zed_id):
         icon_path = widget_helpers.get_icon_path(zed_id)
@@ -55,22 +69,44 @@ class GenerateDialog(object):
 
         return button
 
-    # Updates the given slider with the value of the textbox
-    def update_slider(self, textbox, slider):
-        plaintxt = textbox.text()
-        # Truncate input that's too long
-        slider_maxlen = len(str(slider.maximum()))
-        if len(plaintxt) > slider_maxlen:
-            # Only allow as many chars as the max value's num chars
-            textbox.setText(plaintxt[:slider_maxlen])
-            textbox.setAlignment(QtCore.Qt.AlignCenter)
-            plaintxt = plaintxt[:slider_maxlen]
-
-        if not plaintxt.isnumeric(): # Ignore non-numbers
+    # Called when a generator textbox is edited
+    def edit_textbox(self, textbox, slider):
+        if not textbox.text().isnumeric(): # NaN somehow (for example the field is empty)
             return
 
-        val = int(plaintxt) if int(plaintxt) >= 0 else 0
+        # Remove any leading zeroes
+        val = int(textbox.text()) # Conv to an int will remove the zeroes on its own. Guaranteed to be numeric at this point
+        if val == 0:
+            if textbox.text().count('0') > 1: # Special case for zero, just replace it. Stripping won't work here
+                textbox.setText('0')
+        else:
+            textbox.setText(textbox.text().lstrip('0'))
+
+    # Updates the given slider with the value of the textbox
+    def commit_textbox(self, textbox, slider):
+        if not textbox.text().isnumeric(): # Ignore non-numbers
+            textbox.setText(str(slider.value()))
+            return
+
+        # Same value as we already have set. Do nothing
+        if int(textbox.text()) == slider.value():
+            return
+
+        val = int(textbox.text())
+
+        # Constrain range
+        # Figure out what the min and max will be
+        min_value = slider.minimum()
+        max_value = slider.maximum()
+
+        # Set the value of the textfield
+        if val < min_value: # Too low
+            val = min_value
+        elif val > max_value: # Too high
+            val = max_value
+
         slider.setValue(val) # Update the slider
+        textbox.setText(str(slider.value()))
 
     # Updates the given slider with the value of the textbox
     def update_slider_gamelength(self, slider, affected):
@@ -108,7 +144,7 @@ class GenerateDialog(object):
         sp.setHorizontalStretch(0)
         sp.setVerticalStretch(0)
         ss_label = 'QLabel {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
-        ss_le = 'QLineEdit {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
+        ss_le = 'QLineEdit {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40); border: 2px solid white;}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
         ss_slider = 'QSlider {color: rgb(255, 255, 255); background-color: rgb(40, 40, 40);}\nQToolTip {color: rgb(0, 0, 0);}' # Stylesheet
 
         # Create components
@@ -124,25 +160,20 @@ class GenerateDialog(object):
 
         # Create text edit
         if text_box:
+            # Style stuff
             ss = 'color: rgb(255, 255, 255);' # Stylesheet
             font = QtGui.QFont()
             font.setFamily(_DEF_FONT_FAMILY)
             font.setPointSize(10)
             font.setWeight(75)
-            text_edit = QtWidgets.QLineEdit()
-            text_edit.setStyleSheet(ss_le)
-            text_edit.setToolTip(tooltip)
-            text_edit.setSizePolicy(sp)
-            text_edit.setMaximumSize(QtCore.QSize(48, 28))
-            text_edit.setFont(font)
 
-            # Set the default value of the textbox
+            # Create textbox
             val = default if default != 'max' else max_value
-            text_edit.setText(str(val))
-            text_edit.setAlignment(QtCore.Qt.AlignCenter)
+            text_edit = widget_helpers.create_textfield(str(val), font, sp, ss_le, 48, 28)
 
-            # Connect the textbox to the slider
-            text_edit.textChanged.connect(partial(self.update_slider, text_edit, slider))
+            # Connect textbox signals
+            text_edit.textChanged.connect(partial(self.edit_textbox, text_edit, slider))
+            text_edit.editingFinished.connect(partial(self.commit_textbox, text_edit, slider))
 
             # Connect the slider to the textbox
             slider.valueChanged.connect(partial(self.update_textbox, text_edit, slider))
@@ -170,14 +201,20 @@ class GenerateDialog(object):
         if self.zed_mode == 'Default': # Swap to Custom
             if not first_time:
                 global has_swapped_modes_generate
-                if not has_swapped_modes_generate:
+                if not has_swapped_modes_generate and meta.get_keyvalue('should_warn_gensettings'):
                     diag_title = 'WARNING'
                     diag_text = '\nThe Custom Settings are NOT supported by most Controlled Difficulty builds.\nUsing these settings may break the generated SpawnCycle on those builds.\n\nUse at your own risk!\n'
                     x = self.Dialog.mapToGlobal(self.Dialog.rect().center()).x()-200 # Anchor dialog to center of window
                     y = self.Dialog.mapToGlobal(self.Dialog.rect().center()).y()
-                    diag = widget_helpers.create_simple_dialog(self.Dialog, diag_title, diag_text, x, y, button=True)
+                    diag = widget_helpers.create_simple_dialog(self.Dialog, diag_title, diag_text, x, y, button=True, checkbox=True)
                     diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
-                    diag.exec_() # Show a dialog to tell user to check messages
+
+                    diag.exec_() # Show the dialog
+
+                    # Check if the user clicked "Don't show this again"
+                    if diag.checkbox.checkState(): # We know this will exist since checkbox=True
+                        meta.set_keyvalue('should_warn_gensettings', False) # Don't ever show the dialog again
+
                     has_swapped_modes_generate = True # Never show this message again
 
             # Show custom stuff
@@ -292,7 +329,7 @@ class GenerateDialog(object):
 
     # Set up main window stuff
     def setup_main_area(self, Dialog):
-        Dialog.setFixedSize(800, 1000)
+        Dialog.setFixedSize(_WINDOWSIZE_GENERATE_W, _WINDOWSIZE_GENERATE_H)
         Dialog.setStyleSheet("background-color: rgb(50, 50, 50);")
         self.main_layout = QtWidgets.QVBoxLayout(Dialog)
         self.scrollarea = QtWidgets.QScrollArea()
@@ -673,8 +710,15 @@ class GenerateDialog(object):
         self.scrollarea_contents_layout.addWidget(matriarch_pane['Frame'])
         self.scrollarea_contents_layout.addWidget(abominationspawn_pane['Frame'])
 
+    # Called when this dialog is closed
+    def teardown(self):
+        last_preset = list(self.get_slider_values().values())
+        last_preset[0] = (1 if last_preset[0] == 4 else (2 if last_preset[0] == 7 else 3))
+        self.parent.last_generate_mode = self.zed_mode
+        self.parent.last_generate_preset = last_preset
+
     # Loads a preset into the generator
-    def load_preset(self, preset, last_used_mode=None):
+    def load_preset(self, preset):
         presets = {'Light': [3, 15, 20, 3, 5, 5, 7, 10, 10,                        100, 50, 15, 0,               100, 100, 0, 100, 5, 100, 5, 0, 100, 5, 0, 0, 0, 0, 0, 100, 0,                      100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 0, 100, 0, 0, 0,                   0, 0, 0, 0, 0, 0],
                    'Moderate': [3, 20, 25, 4, 7, 4, 4, 8, 10,                      75, 60, 35, 0,                100, 100, 0, 100, 10, 100, 10, 0, 100, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 5, 100, 0, 5, 0,                   0, 0, 0, 0, 0, 0],
                    'Heavy': [3, 30, 35, 5, 10, 2, 2, 7, 10,                        60, 50, 40, 0,                100, 100, 0, 100, 15, 100, 15, 0, 100, 15, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 10, 100, 0, 10, 0,                 0, 0, 0, 0, 0, 0],
@@ -698,13 +742,13 @@ class GenerateDialog(object):
                    'Boss Rush': [1, 15, 20, 3, 6, 2, 3, 4, 2,                      10, 10, 10, 100,              100, 100, 0, 10, 100, 100, 100, 0, 10, 10, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 100, 100, 100,             100, 15, 0, 0, 0, 100, 5, 100, 15, 5, 0,                 100, 100, 100, 100, 100, 0],
                    'Omega Onslaught': [3, 8, 15, 3, 7, 3, 4, 10, 10,               100, 100, 100, 0,             100, 100, 75, 100, 10, 100, 10, 75, 100, 10, 20, 20, 20, 5, 5, 100, 75,             100, 100, 75, 15, 100, 75, 0, 0, 0,                100, 0, 15, 5, 15, 100, 0, 100, 0, 0, 60,                0, 0, 0, 0, 0, 0],
                    'Default': [3, 8, 15, 3, 7, 3, 4, 7, 7,                         100, 100, 100, 0,             100, 100, 0, 100, 30, 100, 30, 0, 100, 30, 0, 0, 0, 0, 0, 100, 0,                   100, 100, 0, 0, 100, 0, 0, 0, 0,                   100, 0, 0, 0, 0, 100, 10, 100, 0, 10, 0,                 0, 0, 100, 0, 0, 100]}
-        
+
         if isinstance(preset, list): # This an old preset from last generation
             preset_data = preset
-            if last_used_mode is not None and last_used_mode == 'Custom':
+            if self.parent.last_generate_mode is not None and self.parent.last_generate_mode == 'Custom':
                 self.swap_modes()
                 self.swap_modes()
-            elif last_used_mode is not None and last_used_mode == 'Default':
+            elif self.parent.last_generate_mode is not None and self.parent.last_generate_mode == 'Default':
                 self.swap_modes()
         else: # User selected a preset from the menu
             preset_data = presets[preset]
@@ -729,37 +773,43 @@ class GenerateDialog(object):
                 return False
         return True
 
-    # Compiles all current slider data and passes it back to the main window
-    def accept_preset(self):
-        # Check slider values first to make sure they're okay
-        sv = self.get_slider_values()
+    # Checks if its possible to generate
+    def check_state(self):
+        errors = []
+        sv = self.get_slider_values() 
         trash_vals = [sv['Cyst Density'], sv['Alpha Clot Density'], sv['Slasher Density'], sv['Gorefast Density'], sv['Crawler Density'], sv['Stalker Density']]
         medium_vals = [sv['Bloat Density'], sv['Husk Density'], sv['Siren Density'], sv['E.D.A.R Trapper Density'], sv['E.D.A.R Blaster Density'], sv['E.D.A.R Bomber Density']]
         large_vals = [sv['Scrake Density'], sv['Quarter Pound Density'], sv['Fleshpound Density']]
         boss_vals = [sv['Hans Density'], sv['Patriarch Density'], sv['King Fleshpound Density'], sv['Abomination Density'], sv['Matriarch Density'], sv['Abomination Spawn Density']]
-        errors = []
 
         # Ensure slider values are correct
         if sv['Min Squads'] > sv['Max Squads']:
-            errors.append(f"'Min Squads Per Wave' must be <= 'Max Squads Per Wave'")
+            errors.append(f"- Min Squads Per Wave must be <= Max Squads Per Wave")
         if sv['Squad Min Length'] > sv['Squad Max Length']:
-            errors.append(f"'Min Squad Size' must be <= 'Max Squad Size'")
+            errors.append(f"- Min Squad Size must be <= Max Squad Size")
         if sv['Trash Density'] != 0 and self.all_value(trash_vals, 0):
-            errors.append(f"'Trash Density' found to be non-zero but all ZEDs in category have 0% Density!")
+            errors.append(f"- Trash Density found to be non-zero but all ZEDs in category have 0% Density!")
         if sv['Medium Density'] != 0 and self.all_value(medium_vals, 0):
-            errors.append(f"'Medium Density' found to be non-zero but all ZEDs in category have 0% Density!")
+            errors.append(f"- Medium Density found to be non-zero but all ZEDs in category have 0% Density!")
         if sv['Large Density'] != 0 and self.all_value(large_vals, 0):
-            errors.append(f"'Large Density' found to be non-zero but all ZEDs in category have 0% Density!")
+            errors.append(f"- Large Density found to be non-zero but all ZEDs in category have 0% Density!")
         if sv['Boss Density'] != 0 and self.all_value(boss_vals, 0):
-            errors.append(f"'Boss Density' found to be non-zero but all ZEDs in category have 0% Density!")
+            errors.append(f"- Boss Density found to be non-zero but all ZEDs in category have 0% Density!")
         if sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] == 0 and sv['Boss Density'] == 0:
-            errors.append(f"At least one Global Density must be non-zero!")
+            errors.append(f"- At least one Category Density setting must be non-zero!")
         if sv['Large Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] > 0 and sv['Boss Density'] == 0:
-            errors.append(f"Params suggest Larges Only but 'Large ZED Min Wave' found to be > 1!")
+            errors.append(f"- Params suggest Larges Only but Large ZED Min Wave found to be > 1!")
         if sv['Boss Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] == 0 and sv['Boss Density'] > 0:
-            errors.append(f"Params suggest Bosses Only but 'Boss Min Wave' found to be > 1!")
+            errors.append(f"- Params suggest Bosses Only but Boss Min Wave found to be > 1!")
         if sv['Large Min Wave'] > 1 and sv['Boss Min Wave'] > 1 and sv['Trash Density'] == 0 and sv['Medium Density'] == 0 and sv['Large Density'] > 0 and sv['Boss Density'] > 0:
-            errors.append(f"Params suggest Larges/Bosses Only but 'Large ZED Min Wave' and 'Boss Min Wave' found to be > 1!")
+            errors.append(f"- Params suggest Larges/Bosses Only but Large ZED Min Wave and Boss Min Wave found to be > 1!")
+
+        return errors
+
+    # Compiles all current slider data and passes it back to the main window
+    def accept_preset(self):
+        # Check slider values first to make sure they're okay
+        errors = self.check_state()
 
         if len(errors) > 0: # Errors occurred
             # Show a dialog explaining this
@@ -772,7 +822,7 @@ class GenerateDialog(object):
             diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             diag.exec_() # Show a dialog to tell user to check messages
         else: # No errors. Good to go!
-            self.generate_target(sv, self.Dialog)
+            self.parent.generate_wavedefs(self.get_slider_values())
 
     # Returns the values of all sliders as a neatly formatted dict
     def get_slider_values(self):
@@ -790,30 +840,21 @@ class GenerateDialog(object):
 
         return slider_vals
 
-    def setupUi(self, Dialog, generate_target, last_used_preset=None, last_used_mode=None):
-        self.cancelled = False
-        self.params = {}
-        self.param_widgets = {}
-        self.slider_panes = {}
-        self.buttons = {}
-        self.generate_target = generate_target
-        self.zed_mode = 'Custom' # Start in custom mode to populate everything
-        self.Dialog = Dialog
-
-        self.setup_main_area(Dialog) # Set up main window stuff
-        self.setup_button_pane(Dialog) # Set up the options buttons at the bottom
-        self.setup_scrollarea(Dialog) # Sets up the scrollarea where all of the main options are
+    def setupUi(self):
+        self.setup_main_area(self.Dialog) # Set up main window stuff
+        self.setup_button_pane(self.Dialog) # Set up the options buttons at the bottom
+        self.setup_scrollarea(self.Dialog) # Sets up the scrollarea where all of the main options are
         
         # Put everything in
         self.main_layout.addWidget(self.scrollarea)
         self.main_layout.addWidget(self.button_pane)
 
-        self.retranslateUi(Dialog)
-        QtCore.QMetaObject.connectSlotsByName(Dialog)
+        self.retranslateUi(self.Dialog)
+        QtCore.QMetaObject.connectSlotsByName(self.Dialog)
 
         # Swap back to default mode
-        if last_used_preset is not None:
-            self.load_preset(last_used_preset, last_used_mode=last_used_mode)
+        if self.parent.last_generate_preset is not None:
+            self.load_preset(self.parent.last_generate_preset)
         else:
             self.swap_modes()
 
