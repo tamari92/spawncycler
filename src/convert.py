@@ -1,7 +1,7 @@
 #
 #  convert.py
 #
-#  Author: Tamari (Nathan P. Ybanez)
+#  Author: Tamari
 #  Date of creation: 12/1/2020
 #
 #  Converts a set of standard CD SpawnCycles into a bundled JSON for use 
@@ -25,7 +25,7 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020-2021
+##  © Tamari 2020-2022
 ##  All rights reserved.
 
 
@@ -38,6 +38,8 @@ import parse
 import json
 
 _DEF_FONT_FAMILY = 'Consolas'
+_WINDOWSIZE_CONVERT_W = 800
+_WINDOWSIZE_CONVERT_H = 1000
 
 class ConvertDialog(object):
     # Adds a message to the 'Messages' window
@@ -257,7 +259,7 @@ class ConvertDialog(object):
 
         try:
             with open(fullpath, 'w') as f_out: # Save the file
-                f_out.write(json.dumps(json_dict).replace(' ', ''))
+                f_out.write(json.dumps(json_dict))
             successful = True
         except: # Dir inaccessible somehow (perhaps permission denied)
             successful = False
@@ -280,7 +282,6 @@ class ConvertDialog(object):
     # Checks the Name field for errors. Returns errors if they are found
     def parse_name(self):
         nw_text = self.name_widget.text()
-
         if len(nw_text) == 0: # No name given at all
             return f"Error: No Name given for SpawnCycle!"
         elif nw_text.count(' ') > 0: # No spaces allowed
@@ -297,12 +298,9 @@ class ConvertDialog(object):
             return f"Error: No Author given for SpawnCycle!"
         return None
 
-    # Converts a SpawnCycle from its line format into a JSON-format
-    def spawncycle_to_dict(self, lines):
-        spawncycle_dict = {}
-        for i in range(len(lines)):
-            spawncycle_dict.update({str(i): lines[i].replace('SpawnCycleDefs=', '').replace('\n', '')})
-        return spawncycle_dict
+    # Converts a SpawnCycle from its line format into a list-format
+    def spawncycle_to_list(self, lines):
+        return [line.replace('SpawnCycleDefs=', '').replace('\n', '') for line in lines]
 
     # Checks over each field and makes sure it's set appropriately. Reports an error if not
     def parse_fields(self):
@@ -422,25 +420,25 @@ class ConvertDialog(object):
         # If we reach this point, it's safe to create the JSON
         sdate = self.date_widget.selectedDate()
         sdate_str = f"{sdate.year()}-{sdate.month():02d}-{sdate.day():02d}"
-        json_dict = {'Name': self.name_widget.text().lower(), 'Author': self.author_widget.text(), 'Date': sdate_str, 'ShortSpawnCycle': {}, 'NormalSpawnCycle': {}, 'LongSpawnCycle': {}}
+        json_dict = {'Name': self.name_widget.text().lower(), 'Author': self.author_widget.text(), 'Date': sdate_str, 'ShortSpawnCycle': [], 'NormalSpawnCycle': [], 'LongSpawnCycle': []}
 
         if len(file1_name) > 0:
-            spawncycle1 = self.spawncycle_to_dict(file1_lines)
+            spawncycle1 = self.spawncycle_to_list(file1_lines)
             json_dict.update({'ShortSpawnCycle': spawncycle1})
 
         if len(file2_name) > 0:
-            spawncycle2 = self.spawncycle_to_dict(file2_lines)
+            spawncycle2 = self.spawncycle_to_list(file2_lines)
             json_dict.update({'NormalSpawnCycle': spawncycle2})
 
         if len(file3_name) > 0:
-            spawncycle3 = self.spawncycle_to_dict(file3_lines)
+            spawncycle3 = self.spawncycle_to_list(file3_lines)
             json_dict.update({'LongSpawnCycle': spawncycle3})
 
         return json_dict # Parse success!
 
     def setupUi(self, Dialog):
         # Set up main window
-        Dialog.setFixedSize(800, 1000)
+        Dialog.setFixedSize(_WINDOWSIZE_CONVERT_W, _WINDOWSIZE_CONVERT_H)
         Dialog.setStyleSheet("background-color: rgb(50, 50, 50);")
         self.central_layout = QtWidgets.QVBoxLayout(Dialog)
 
