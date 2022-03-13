@@ -24,14 +24,20 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020-2021
+##  © Nathan Ybanez, 2020-2022
 ##  All rights reserved.
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets, QtChart
 from functools import partial
+import meta
 import random
 
+_DEF_FONT_FAMILY = 'Consolas'
+
+used_ids = []
+
+# Maps ZED names to their icon path
 icon_mapping = {'Cyst' : 'img/icon_cyst.png',
                 'Slasher' : 'img/icon_slasher.png',
                 'Alpha Clot' : 'img/icon_alphaclot.png',
@@ -77,25 +83,16 @@ icon_mapping = {'Cyst' : 'img/icon_cyst.png',
                 'Tiny Crawler': 'img/icon_crawler_tiny.png',
                 'Ultra Crawler': 'img/icon_crawler_ultra.png'}
 
-used_ids = []
-
-
-# Represents a RGB color
-class Color:
-    def __init__(self, r, g, b):
-        self.r = r
-        self.g = g
-        self.b = b
-
-    def __repr__(self):
-        return f"({self.r}, {self.g}, {self.b})"
-
 
 # Custom QDialog that calls an event when closed
 class CustomDialog(QtWidgets.QDialog):
     # This function is called when the user presses the X (close) button
     def closeEvent(self, event):
         self.ui.teardown()
+
+    # Override for closing via ESC
+    def reject(self):
+        self.close()
 
 
 # Custom version of QPushButton that supports Drag & Drop
@@ -170,11 +167,9 @@ class QSquadButton(QtWidgets.QPushButton):
               'Tiny Scrake', 'Scrake Omega', 'Scrake Emperor', 'Fleshpound Omega', 'Stalker Omega']
         
         for z in zeds:
-            if self.zed_mode == 'Default' and z in cz:
-                continue
             action = QtWidgets.QAction(z, self)
             replace_menu.addAction(action)
-            action.triggered.connect(partial(self.replace_zeds, self.wave_id, self.squad_id, [self.zed_id], [z]))
+            action.triggered.connect(partial(self.replace_zeds, self.wave_id, self.squad_id, [self.zed_id], [z], z in cz))
 
         self.menu.addMenu(replace_menu)
 
@@ -333,7 +328,7 @@ class QFrame_Drag(QtWidgets.QFrame):
                 self.setStyleSheet("color: rgb(255, 255, 255); background-color: rgba(50, 50, 50, 255);") # Reset border color
 
             if not self.squad: # This frame represents a wave
-                self.add_squad(self.id, zed_button.id)
+                self.add_squad(self.id, zed_button.id, count=meta.get_keyvalue('new_squad_min_amount'))
             else: # This frame represents a squad
                 self.add_zed_to_squad(self.wave_id, self.id, zed_button.id)
 
@@ -418,6 +413,39 @@ def set_button_icon(button, icon_path, width, height):
 def get_icon_path(zed_id):
     return icon_mapping[zed_id]
 
+
+# Creates and returns a QLineEdit
+def create_textfield(default, font=None, size_policy=None, style=None, w=28, h=28, edit_target=None, commit_target=None):
+    # Setup stuff
+    if font is None:
+        font = QtGui.QFont()
+        font.setFamily(_DEF_FONT_FAMILY)
+        font.setPointSize(12)
+        font.setWeight(75)
+    if size_policy is None:
+        size_policy = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+        size_policy.setHorizontalStretch(0)
+        size_policy.setVerticalStretch(0)
+    if style is None:
+        style = 'color: rgb(255, 255, 255);' # Stylesheet
+
+    # Create the field
+    textfield = QtWidgets.QLineEdit()
+    textfield.setStyleSheet(style)
+    textfield.setSizePolicy(size_policy)
+    textfield.setMaximumSize(QtCore.QSize(w, h))
+    textfield.setFont(font)
+    textfield.setText(default)
+    textfield.setAlignment(QtCore.Qt.AlignCenter)
+
+    # Set up signals
+    if edit_target is not None:
+        textfield.textChanged.connect(edit_target)   
+    if commit_target is not None:
+        textfield.editingFinished.connect(commit_target)
+
+    return textfield
+    
 
 # Creates and returns a chart of the given type, initialized with the given data
 # Code adapted from https://codeloop.org/pyqtchart-how-to-create-piechart-in-pyqt5/
@@ -740,8 +768,8 @@ def create_choice_dialog(parent, title, text, x, y, no=True, cancel_button=False
     return dialog
 
 
-# Creates and returns a simple dialog box with an OK button (if specified)
-def create_simple_dialog(parent, title, text, x, y, button=True, button_target=None):
+# Creates and returns a simple dialog box with an OK button and checkbox (if specified)
+def create_simple_dialog(parent, title, text, x, y, button=True, button_target=None, checkbox=False):
     dialog = QtWidgets.QDialog()
     dialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint) # Disable X and minimize
     hbox_master = QtWidgets.QHBoxLayout(dialog)
@@ -772,14 +800,38 @@ def create_simple_dialog(parent, title, text, x, y, button=True, button_target=N
         else:
             ok_button.clicked.connect(dialog.close)
 
+    # Set up checkbox
+    if checkbox:
+        diag_checkbox = QtWidgets.QCheckBox()
+        diag_checkbox.setChecked(False)
+
+        # Set up checkbox label
+        checkbox_label = QtWidgets.QLabel(dialog)
+        checkbox_label.setFont(font)
+        checkbox_label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+        checkbox_label.setStyleSheet("color: rgb(255, 255, 255);")
+        checkbox_label.setText("Don't show this again")
+
+        # Set up the frame
+        checkbox_frame = QtWidgets.QFrame()
+        checkbox_frame_layout = QtWidgets.QHBoxLayout(checkbox_frame)
+        checkbox_frame_layout.addWidget(checkbox_label)
+        checkbox_frame_layout.addWidget(diag_checkbox)
+        checkbox_frame_layout.setAlignment(QtCore.Qt.AlignCenter)
+
+        dialog.checkbox = diag_checkbox # Save a reference so we can get to it later
+
     # Set layout
-    vbox = QtWidgets.QVBoxLayout()
-    hbox = QtWidgets.QHBoxLayout()
+    vbox_master = QtWidgets.QVBoxLayout()
+    hbox_button = QtWidgets.QHBoxLayout()
+    hbox_button.setAlignment(QtCore.Qt.AlignCenter)
     if button:
-        hbox.addWidget(ok_button)
-    vbox.addWidget(dialog_label)
-    vbox.addLayout(hbox)
-    hbox_master.addLayout(vbox)
+        if checkbox:
+            hbox_button.addWidget(checkbox_frame)
+        hbox_button.addWidget(ok_button)
+    vbox_master.addWidget(dialog_label)
+    vbox_master.addLayout(hbox_button)
+    hbox_master.addLayout(vbox_master)
 
     # Set up window
     dialog.setWindowTitle(title)
