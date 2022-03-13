@@ -1,6 +1,6 @@
 #  about.py
 #
-#  Author: Tamari (Nathan P. Ybanez)
+#  Author: Tamari
 #  Date of creation: 11/20/2020
 #
 #  UI code for the 'About' page
@@ -22,12 +22,15 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020-2021
+##  © Tamari 2020-2022
 ##  All rights reserved.
 
 
 from PyQt5 import QtCore, QtGui, QtWidgets
 import os
+
+_WINDOWSIZE_ABOUT_W = 630
+_WINDOWSIZE_ABOUT_H = 630
 
 class AboutDialog(object):
     def setupUi(self, Dialog):
@@ -39,7 +42,7 @@ class AboutDialog(object):
         font.setWeight(75)
 
         # Main stuff
-        Dialog.resize(630, 630)
+        Dialog.resize(_WINDOWSIZE_ABOUT_W, _WINDOWSIZE_ABOUT_H)
         Dialog.setStyleSheet('background-color: rgb(40, 40, 40);')
 
         # Set up the logo image
@@ -93,5 +96,5 @@ class AboutDialog(object):
                                                     "<p style=\"-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-size:9pt;\"><br /></p>\n"
                                                     "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt;\">If you have any feedback to give me, I can be reached at:</span></p>\n"
                                                     "<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-size:9pt;\"><br /></span><span style=\" font-size:9pt; color:#ffaa00;\">Discord:</span><span style=\" font-size:9pt;\"> Tamari#6292<br /></span><span style=\" font-size:9pt; color:#ffaa00;\">Email:</span><span style=\" font-size:9pt;\"> nate92@gmail.com<br /></span><span style=\" font-size:9pt; color:#ffaa00;\">Steam:</span><span style=\" font-size:9pt;\"> steamcommunity.com/id/tamaritm</span></p></body></html>"))
-        self.author_label.setText(_translate('Dialog', 'SpawnCycler v1.2\nby Tamari'))
+        self.author_label.setText(_translate('Dialog', 'SpawnCycler v1.3\nby Tamari'))
         self.ok_button.setText(_translate('Dialog', 'OK'))
