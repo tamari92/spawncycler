@@ -1,4 +1,4 @@
-![alternate_text](https://i.imgur.com/J0nDtav.png)
+![alternate_text](https://i.imgur.com/EXfOFM3.png)
 
 # SpawnCycler
 by Tamari
