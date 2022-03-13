@@ -1,7 +1,7 @@
 #
 #  SpawnCycler.py
 #
-#  Author: Tamari (Nathan P. Ybanez)
+#  Author: Tamari
 #  Date of creation: 11/14/2020
 #
 #  Main code base for SpawnCycler
@@ -24,7 +24,7 @@
 ##  along with this program.  If not, see <https://www.gnu.org/licenses/>.
 ##  =======================================================================
 ##
-##  © Nathan Ybanez, 2020-2021
+##  © Tamari 2020-2022
 ##  All rights reserved.
 
 
@@ -32,10 +32,13 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from datetime import datetime, date
 from functools import partial
 from copy import deepcopy
-from convert import *
-from about import *
-from analyze import *
-from generate import *
+from convert import ConvertDialog
+from about import AboutDialog
+from analyze import AnalyzeDialog
+from generate import GenerateDialog
+from settings import SettingsDialog
+import sys
+import meta
 import json
 import parse
 import random
@@ -50,9 +53,15 @@ _DEF_FONT_FAMILY = 'Consolas'
 _RECENT_MAX = 8 # Max "Recent Files"
 _WAVE_MAX = 10  # Max number of waves
 _SQUAD_MAX = 10  # Max ZEDs in a squad
+_ZED_MIN = 0 # Min ZEDs in a single definition
+_ZED_MAX = 10 # Max ZEDs in a single definition
+_FIX_TEXTFIELDS_INTERVAL = 10
 has_swapped_modes = False # Has the user swapped ZED modes yet?
+_WINDOWSIZE_MAIN_W = 1000 # Width of the main window
+_WINDOWSIZE_MAIN_H = 1050 # Height of the main window
 
 
+# IDs for all the zeds
 zed_ids = {'Cyst': 'CY',
            'Alpha Clot': 'AL',
            'Slasher': 'SL',
@@ -68,35 +77,35 @@ zed_ids = {'Cyst': 'CY',
            'E.D.A.R Trapper': 'DE',
            'E.D.A.R Blaster': 'DL',
            'E.D.A.R Bomber': 'DR',
-           'Scrake': 'SC',
            'Quarter Pound': 'MF',
            'Quarter Pound (Enraged)': 'MF!',
            'Fleshpound': 'FP',
            'Fleshpound (Enraged)': 'FP!',
+           'Scrake': 'SC',
            'Alpha Scrake': 'SC*',
            'Alpha Fleshpound': 'FP*',
            'Alpha Fleshpound (Enraged)': 'FP*!',
+           'Abomination Spawn': 'AS',
+           'King Fleshpound': 'KF',
            'Dr. Hans Volter': 'HV',
            'Patriarch': 'PT',
-           'Matriarch': 'MT',
-           'King Fleshpound': 'KF',
            'Abomination': 'AB',
-           'Abomination Spawn': 'AS',
+           'Matriarch': 'MT',
            'Slasher Omega': 'OSL',
-           'Fleshpound Omega': 'OFP',
            'Gorefast Omega': 'OGF',
-           'Husk Omega': 'OHS',
-           'Tiny Husk': 'MHS',
-           'Scrake Emperor': 'ESC',
-           'Scrake Omega': 'OSC',
-           'Tiny Scrake': 'TSC',
-           'Siren Omega': 'OS',
            'Stalker Omega': 'OST',
+           'Tiny Crawler': 'CRM',
+           'Medium Crawler': 'MCR',
            'Big Crawler': 'BCR',
            'Huge Crawler': 'HCR',
-           'Medium Crawler': 'MCR',
-           'Tiny Crawler': 'CRM',
-           'Ultra Crawler': 'UCR'}
+           'Ultra Crawler': 'UCR',
+           'Siren Omega': 'OS',
+           'Husk Omega': 'OHS',
+           'Tiny Husk': 'MHS',
+           'Scrake Omega': 'OSC',
+           'Scrake Emperor': 'ESC',
+           'Tiny Scrake': 'TSC',
+           'Fleshpound Omega': 'OFP'}
 
 custom_zeds = ['E.D.A.R Trapper', 'E.D.A.R Blaster', 'E.D.A.R Bomber', 'Alpha Scrake', 'Alpha Fleshpound',
                'Alpha Fleshpound (Enraged)', 'Dr. Hans Volter', 'Patriarch', 'Abomination', 'Matriarch']
@@ -107,14 +116,42 @@ omega_zeds = ['Slasher Omega', 'Gorefast Omega', 'Stalker Omega', 'Tiny Crawler'
 
 class Ui_MainWindow(object):
     def __init__(self, app):
+        # Meta vars
+        self.dirty = False # Whether or not the file needs saving before closing
+        self.filename = 'Untitled'
+        self.MainWindow = MainWindow
+        self.buttons = {}
+        self.zed_pane_buttons = {}
+        self.wavedefs = []
+        self.labels = {}
+        self.message_labels = []
         self.app = app
         self.zed_mode = 'Omega'
         self.active_dialog = None
+        self.analyze_dialog = None
+        self.generate_dialog = None
         self.loaded_json = None
+        self.json_autosave_target = None # The place the autosave goes to for JSON files
         self.last_generate_preset = None # Last preset used in the Generate dialog
         self.last_generate_mode = None # Last used zed mode in the Generate dialog
         self.last_analyze_preset = None # Last preset used in the Analyze dialog
-        
+
+        # Start checking if we can autosave
+        self.autosave_timer = QtCore.QTimer()
+        self.autosave_timer.timeout.connect(partial(self.save_to_file, False, True))
+        self.autosave_timer.start(meta.get_keyvalue('autosave_interval') * 1000.0) # Convert to ms
+
+        # Hack: Start fixing bad textfields
+        self.textfield_timer = QtCore.QTimer()
+        self.textfield_timer.timeout.connect(partial(self.update_zed_textfields))
+        self.textfield_timer.start(_FIX_TEXTFIELDS_INTERVAL)
+
+    def update_zed_textfields(self):
+        for wavedef in self.wavedefs:
+            for squad in wavedef['Squads']:
+                for zed_data in squad['ZEDs'].values():
+                    if (len(zed_data['Children']['Label'].text()) > 0) and (not zed_data['Children']['Label'].text().isnumeric()):
+                        zed_data['Children']['Label'].setText(str(zed_data['Count']))
 
     # Switches from Default to Custom zed set
     def switch_zed_mode(self, should_warn=True):
@@ -260,18 +297,21 @@ class Ui_MainWindow(object):
         else: # Default zeds
             global has_swapped_modes
             if should_warn:
-                if not has_swapped_modes:
+                if not has_swapped_modes and meta.get_keyvalue('should_warn_zedset'):
                     diag_title = 'WARNING'
                     diag_text = '\nThe Custom and Omega ZED sets are NOT supported by most Controlled Difficulty builds.\nUsing these ZEDs may break your SpawnCycle on those builds.\n\nUse at your own risk!\n'
                     x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
                     y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
-                    diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
+                    diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True, checkbox=True)
                     diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
 
-                    diag.exec_() # Show a dialog to tell user to check messages
+                    diag.exec_() # Show the dialog
+
+                    # Check if the user clicked "Don't show this again"
+                    if diag.checkbox.checkState(): # We know this will exist since checkbox=True
+                        meta.set_keyvalue('should_warn_zedset', False) # Don't ever show the dialog again
+
                     has_swapped_modes = True # Never show this message again
-            else:
-                has_swapped_modes = True
 
             # Need to add all the custom zeds to the grid
             self.zed_pane_buttons['E.D.A.R Trapper'].setVisible(True)
@@ -295,7 +335,7 @@ class Ui_MainWindow(object):
             #self.refresh_wavedefs()
 
     # Removes the ZED from the given squad
-    def remove_zed_from_squad(self, wave_id, squad_id, zed_id, count=1):
+    def remove_zed_from_squad(self, wave_id, squad_id, zed_id, count=1, replacement=False):
         this_squad = self.wavedefs[wave_id]['Squads'][squad_id]
         squad_layout = this_squad['Layout'] # Get the layout corresponding to this wave's squad box
 
@@ -306,10 +346,7 @@ class Ui_MainWindow(object):
         if count != 'all' and this_squad['ZEDs'][zed_id]['Count'] > 1:
             num_to_remove = count
             this_squad['ZEDs'][zed_id]['Count'] -= 1
-            if 'Enraged' in zed_id:
-                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']) + '!')
-            else:
-                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']))
+            this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']))
         else: # Last ZED of its type in the squad. Teardown the zed frame
             num_to_remove = this_squad['ZEDs'][zed_id]['Count']
             this_squad['ZEDs'][zed_id]['Children']['Label'].setParent(None)
@@ -340,6 +377,66 @@ class Ui_MainWindow(object):
         if self.filename != 'Untitled': # Change filename to reflect
             self.set_window_title(f'SpawnCycler ({self.truncate_filename(self.filename)}*)') # Only if file is named though
 
+    # Called when a zed's textfield is typed into
+    def edit_textbox(self, textbox, wave_id, squad_id, zed_id):
+        if not textbox.text().isnumeric(): # NaN somehow (for example the field is empty)
+            return
+
+        # Remove any leading zeroes
+        val = int(textbox.text()) # Conv to an int will remove the zeroes on its own. Guaranteed to be numeric at this point
+        if val == 0:
+            if textbox.text().count('0') > 1: # Special case for zero, just replace it. Stripping won't work here
+                textbox.setText('0')
+        else:
+            textbox.setText(textbox.text().lstrip('0'))
+
+    # Called when the user hits ENTER or clicks out of the zed's textfield
+    def commit_textbox(self, textfield, wave_id, squad_id, zed_id):
+        # Hack to get around Qt bug where this function gets called twice
+        # Btw its really dumb this has to be done
+        if textfield.text() != '':
+            textfield.blockSignals(True)
+        this_squad = self.wavedefs[wave_id]['Squads'][squad_id] # Easier to reference later
+
+        # Set the real value of the zed in the squad
+        if not textfield.text().isnumeric(): # NaN somehow (for example the field is empty)
+            textfield.setText(str(this_squad['ZEDs'][zed_id]['Count'])) # Just put the old number back
+            return
+        
+        val = int(textfield.text()) # Guaranteed to be numeric at this point
+
+        # Constrain range
+        # Figure out what the max will be (depends on how many zeds are in the squad)
+        squad_count = sum([y['Count'] for (x, y) in this_squad['ZEDs'].items() if x != zed_id]) # Get total of all zeds in this squad (minus this zed)
+        this_count = this_squad['ZEDs'][zed_id]['Count']
+        max_count = _ZED_MAX - squad_count # The maximum this zed can be set to to not go over the 10 limit
+
+        # Set the value of the textfield
+        if val < _ZED_MIN: # Default min zeds is 0
+            textfield.setText(str(_ZED_MIN))
+            val = _ZED_MIN
+        elif val > max_count: # Default max zeds is 10
+            textfield.setText(str(max_count))
+            val = max_count
+
+        if val == _ZED_MIN: # Special case for zero
+            # Clear out the squad
+            for i in range(this_count):
+                self.remove_zed_from_squad(wave_id, squad_id, zed_id, count=1)
+        elif val < this_squad['ZEDs'][zed_id]['Count']: # Subtracting zeds
+            difference = this_squad['ZEDs'][zed_id]['Count'] - val
+            for i in range(difference):
+                self.remove_zed_from_squad(wave_id, squad_id, zed_id, count=1)
+        elif val > this_squad['ZEDs'][zed_id]['Count']: # Adding zeds
+            difference = val - this_squad['ZEDs'][zed_id]['Count']
+            for i in range(difference):
+                self.add_zed_to_squad(wave_id, squad_id, zed_id, count=1, raged=this_squad['ZEDs'][zed_id]['Raged'])
+
+        # Hack to get around Qt bug where this function gets called twice
+        # Btw its really dumb this has to be done
+        if textfield.text() != '':
+            textfield.blockSignals(False)
+            
     # Creates a new frame for a ZED in a squad (holding the icon and number)
     def create_zed_frame(self, parent, zed_button, wave_id, squad_id, zed_id):
         font_label = QtGui.QFont()
@@ -360,8 +457,15 @@ class Ui_MainWindow(object):
         zed_frame.setStyleSheet("background-color: rgba(0, 0, 0, 0)")
 
         # Create label
-        zed_label = widget_helpers.create_label(zed_frame, text='1', style=ss_label, font=font_label)
-        zed_label.setAlignment(QtCore.Qt.AlignCenter)
+        #zed_label = widget_helpers.create_label(zed_frame, text='1', style=ss_label, font=font_label)
+        #zed_label.setAlignment(QtCore.Qt.AlignCenter)
+
+        # Create zed count text field
+        zed_textfield = widget_helpers.create_textfield('1', font_label, sp, ss_label, 28, 28)
+
+        # Set up signals
+        zed_textfield.editingFinished.connect(partial(self.commit_textbox, zed_textfield, wave_id, squad_id, zed_id))
+        zed_textfield.textChanged.connect(partial(self.edit_textbox, zed_textfield, wave_id, squad_id, zed_id))
 
         # Create button frame
         zed_icon_frame = QtWidgets.QFrame()
@@ -386,7 +490,8 @@ class Ui_MainWindow(object):
 
         # Add the stuff to the button layout
         button_layout.addWidget(sub_button)
-        button_layout.addWidget(zed_label)
+        #button_layout.addWidget(zed_label)
+        button_layout.addWidget(zed_textfield)
         button_layout.addWidget(add_button)
         button_layout.setAlignment(QtCore.Qt.AlignCenter)
         button_layout.setSpacing(1)
@@ -398,7 +503,7 @@ class Ui_MainWindow(object):
         zed_frame_layout.setSpacing(0)
         zed_frame_layout.setAlignment(QtCore.Qt.AlignCenter|QtCore.Qt.AlignTop)
 
-        return zed_frame, {'Button': zed_button, 'Label': zed_label, 'AddButton': add_button, 'SubtractButton': sub_button}
+        return zed_frame, {'Button': zed_button, 'Label': zed_textfield, 'AddButton': add_button, 'SubtractButton': sub_button}
 
     # Adds a squad to the specified wave
     def add_squad(self, wave_id, zed_id, count=1, raged=False):
@@ -444,19 +549,17 @@ class Ui_MainWindow(object):
         
         # Set colors
         if raged:
-            zed_frame_children['Label'].setStyleSheet("color: rgb(255, 55, 55);")
+            zed_frame_children['Label'].setStyleSheet("QLineEdit {color: rgb(255, 55, 55); background-color: rgb(50, 50, 50); border: 2px solid red;}")
             zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid red;}")
         elif zed_id in omega_zeds:
-            zed_frame_children['Label'].setStyleSheet("color: rgb(173, 98, 252);")
+            zed_frame_children['Label'].setStyleSheet("QLineEdit {color: rgb(173, 98, 252); background-color: rgb(50, 50, 50); border: 2px solid purple;}")
             zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid purple;}")
         else:
+            zed_frame_children['Label'].setStyleSheet("QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50); border: 2px solid white;}")
             zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid white;}")
             
         # Set label
-        if raged:
-            zed_frame_children['Label'].setText(str(count) + '!')
-        else:
-            zed_frame_children['Label'].setText(str(count))
+        zed_frame_children['Label'].setText(str(count))
 
         # Add the widgets
         squad_frame_layout.addWidget(zed_frame)
@@ -528,28 +631,23 @@ class Ui_MainWindow(object):
         # Update the internal array and numerical display
         if zed_id in this_squad['ZEDs']:
             this_squad['ZEDs'][zed_id]['Count'] += count
-            if raged:
-                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']) + '!')
-            else:
-                this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']))
+            this_squad['ZEDs'][zed_id]['Children']['Label'].setText(str(this_squad['ZEDs'][zed_id]['Count']))
         else: # Zed isn't in the squad yet
             zed_frame, zed_frame_children = self.create_zed_frame(this_squad['Frame'], zed_button, wave_id, squad_id, zed_id)
 
             # Set colors
-            if raged: 
-                zed_frame_children['Label'].setStyleSheet("color: rgb(255, 55, 55);")
+            if raged:
+                zed_frame_children['Label'].setStyleSheet("QLineEdit {color: rgb(255, 55, 55); background-color: rgb(50, 50, 50); border: 2px solid red;}")
                 zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid red;}")
             elif zed_id in omega_zeds:
-                zed_frame_children['Label'].setStyleSheet("color: rgb(173, 98, 252);")
+                zed_frame_children['Label'].setStyleSheet("QLineEdit {color: rgb(173, 98, 252); background-color: rgb(50, 50, 50); border: 2px solid purple;}")
                 zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid purple;}")
             else:
+                zed_frame_children['Label'].setStyleSheet("QLineEdit {color: rgb(255, 255, 255); background-color: rgb(50, 50, 50); border: 2px solid white;}")
                 zed_frame_children['Button'].setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQSquadButton {border: 2px solid white;}")
 
             # Set Label
-            if raged:
-                zed_frame_children['Label'].setText(str(count) + '!')
-            else:
-                zed_frame_children['Label'].setText(str(count))
+            zed_frame_children['Label'].setText(str(count))
 
             this_squad['ZEDs'][zed_id] = {'Count': count, 'Raged': raged, 'Frame': zed_frame, 'Children': zed_frame_children}
             squad_layout.addWidget(zed_frame)
@@ -591,7 +689,6 @@ class Ui_MainWindow(object):
         wave_range = range(len(self.wavedefs)) if wave_id is None else range(wave_id, wave_id+1)
         for i in wave_range:
             thisdef = self.wavedefs[i]
-            wave_id = i
 
             # Shift indices
             thisdef['ID'] = i
@@ -602,55 +699,62 @@ class Ui_MainWindow(object):
             # Shift option button targets to match the new wave
             shiftup_button = thisdef['OptionsButtons']['Shift Up']
             shiftdn_button = thisdef['OptionsButtons']['Shift Down']
+            clear_button = thisdef['OptionsButtons']['Clear']
             delete_button = thisdef['OptionsButtons']['Delete']
             widget_helpers.button_changetarget(shiftup_button, partial(self.shift_wavedef, thisdef['Frames']['WaveFrame'], 'up'))
             widget_helpers.button_changetarget(shiftdn_button, partial(self.shift_wavedef, thisdef['Frames']['WaveFrame'], 'down'))
+            widget_helpers.button_changetarget(clear_button, partial(self.clear_wavedef, i, True))
             widget_helpers.button_changetarget(delete_button, partial(self.remove_wavedef, i, True))
 
-
+            # Refresh squads
             if squads and len(thisdef['Squads']) > 0:
                 # Shift +/- buttons to match the new wave
                 for j in range(len(thisdef['Squads'])):
-                    squad_id = j
-                    for (zed_id, zed_info) in thisdef['Squads'][j]['ZEDs'].items():
+                    squad = thisdef['Squads'][j]
+                    for (zed_id, zed_info) in squad['ZEDs'].items():
                         raged = '(Enraged)' in zed_id
-                        widget_helpers.button_changetarget(zed_info['Children']['AddButton'], partial(self.add_zed_to_squad, wave_id, squad_id, zed_id, 1, raged, False))
-                        widget_helpers.button_changetarget(zed_info['Children']['SubtractButton'], partial(self.remove_zed_from_squad, wave_id, squad_id, zed_id, 1))
+                        widget_helpers.button_changetarget(zed_info['Children']['AddButton'], partial(self.add_zed_to_squad, i, j, zed_id, 1, raged, False))
+                        widget_helpers.button_changetarget(zed_info['Children']['SubtractButton'], partial(self.remove_zed_from_squad, i, j, zed_id, 1))
 
                 # Refresh squad wave ids
-                for squad in self.wavedefs[i]['Squads']:
+                for j in range(len(thisdef['Squads'])):
+                    squad = thisdef['Squads'][j]
                     squad['Frame'].wave_id = i
-                    for z in squad['ZEDs'].values():
-                        z['Children']['Button'].wave_id = i
+                    for (zname, zdata) in squad['ZEDs'].items():
+                        zdata['Children']['Button'].wave_id = i
+                        # Retarget the signals
+                        zdata['Children']['Label'].editingFinished.disconnect()
+                        zdata['Children']['Label'].textChanged.disconnect()
+                        zdata['Children']['Label'].editingFinished.connect(partial(self.commit_textbox, zdata['Children']['Label'], i, j, zname))
+                        zdata['Children']['Label'].textChanged.connect(partial(self.edit_textbox, zdata['Children']['Label'], i, j, zname))
 
                 # Refresh squad ids
-                j = 0
-                for squad in self.wavedefs[i]['Squads']:
+                for j in range(len(thisdef['Squads'])):
+                    squad = thisdef['Squads'][j]
                     squad['Frame'].id = j
                     for z in squad['ZEDs'].values():
                         z['Children']['Button'].squad_id = j
                         z['Children']['Button'].zed_mode = self.zed_mode
-                    j += 1
 
             # Disable Shift buttons if at the ends of the array
             # Kinda hacky but it'll work
             if i == 0:
                 shiftup_button.setEnabled(False)
                 shiftup_button.setToolTip('')
-                widget_helpers.set_button_icon(shiftup_button, 'img/icon_shiftup_off.png', 24, 24)
+                widget_helpers.set_button_icon(shiftup_button, 'img/icon_shiftup_off.png', 18, 18)
             else:
                 shiftup_button.setEnabled(True)
                 shiftup_button.setToolTip('Shift this wave up by one')
-                widget_helpers.set_button_icon(shiftup_button, 'img/icon_shiftup.png', 24, 24)
+                widget_helpers.set_button_icon(shiftup_button, 'img/icon_shiftup.png', 18, 18)
 
             if i == len(self.wavedefs) - 1:
                 shiftdn_button.setEnabled(False)
                 shiftdn_button.setToolTip('')
-                widget_helpers.set_button_icon(shiftdn_button, 'img/icon_shiftdown_off.png', 24, 24)
+                widget_helpers.set_button_icon(shiftdn_button, 'img/icon_shiftdown_off.png', 18, 18)
             else:
                 shiftdn_button.setEnabled(True)
                 shiftdn_button.setToolTip('Shift this wave down by one')
-                widget_helpers.set_button_icon(shiftdn_button, 'img/icon_shiftdown.png', 24, 24)
+                widget_helpers.set_button_icon(shiftdn_button, 'img/icon_shiftdown.png', 18, 18)
 
     # Moves the wave up or down
     def shift_wavedef(self, frame, dir=None):
@@ -707,11 +811,13 @@ class Ui_MainWindow(object):
 
         self.refresh_wavedefs(squads=True) # Refresh wavedefs state (update buttons, etc)
         if len(self.wavedefs) < 10:
-            self.buttons['Add Wave'].setVisible(True) # We can show the add button again
-
+            self.buttons['Add Wave'].setVisible(True) # We can show the add button again 
+                
         # File has been modified
-        self.dirty = True
-        if self.filename != 'Untitled':
+        if self.filename == 'Untitled':
+            self.dirty = True if len(self.wavedefs) > 0 else False
+        else:
+            self.dirty = True
             self.set_window_title(f'SpawnCycler ({self.truncate_filename(self.filename)}*)')
 
     # Adds a new wave to the list
@@ -744,17 +850,21 @@ class Ui_MainWindow(object):
         wave_options_frame.setSizePolicy(sp_fixed)
         wave_options_layout = QtWidgets.QVBoxLayout(wave_options_frame)
         ss_button = 'QToolTip {color: rgb(0, 0, 0);\nbackground-color: rgb(40, 40, 40);}' # Stylesheet
-        shiftup_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Up', tooltip='Shift this wave upwards by one', style=ss_button, icon_path='img/icon_shiftup.png', icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
-        shiftdn_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Down', tooltip='Shift this wave downwards by one', style=ss_button, icon_path='img/icon_shiftdown.png', icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
-        delete_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Delete', tooltip='Delete this wave', style=ss_button, icon_path='img/icon_delete.png', icon_w=24, icon_h=24, size_policy=sp_fixed, draggable=False)
+        shiftup_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Up', tooltip='Shift this wave upwards by one', style=ss_button, icon_path='img/icon_shiftup.png', icon_w=18, icon_h=18, size_policy=sp_fixed, draggable=False)
+        shiftdn_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Shift Down', tooltip='Shift this wave downwards by one', style=ss_button, icon_path='img/icon_shiftdown.png', icon_w=18, icon_h=18, size_policy=sp_fixed, draggable=False)
+        clear_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Clear', tooltip='Clear this wave of all ZEDs', style=ss_button, icon_path='img/icon_clear.png', icon_w=18, icon_h=18, size_policy=sp_fixed, draggable=False)
+        delete_button = widget_helpers.create_button(self.wavedefs_scrollarea_contents, self.app, 'Delete', tooltip='Remove this wave from the SpawnCycle', style=ss_button, icon_path='img/icon_delete.png', icon_w=18, icon_h=18, size_policy=sp_fixed, draggable=False)
         shiftup_button.clicked.connect(partial(self.shift_wavedef, wavedef_frame, 'up'))
         shiftdn_button.clicked.connect(partial(self.shift_wavedef, wavedef_frame, 'down'))
+        clear_button.clicked.connect(partial(self.clear_wavedef, wavedef_frame.id, True))
         delete_button.clicked.connect(partial(self.remove_wavedef, wavedef_frame.id, True))
         options_buttons = {'Shift Up': shiftup_button,
                            'Shift Down': shiftdn_button,
+                           'Clear': clear_button,
                            'Delete': delete_button}
         wave_options_layout.addWidget(shiftup_button)
         wave_options_layout.addWidget(shiftdn_button)
+        wave_options_layout.addWidget(clear_button)
         wave_options_layout.addWidget(delete_button)
 
         # Create a frame to hold the Wave number and ZED count
@@ -861,25 +971,17 @@ class Ui_MainWindow(object):
         recent_menu = QtWidgets.QMenu('Recent Files')
         import_menu.addMenu(recent_menu)
 
-        try: # Try to load the meta data
-            f = open('meta', 'r')
-        except FileNotFoundError: # No meta found, create one
-            with open('meta', 'w') as f_in:
-                f_in.write(json.dumps({'Recent Files': []}))
-
         # Get the recent files list from the metadata
-        with open('meta', 'r') as f:
-            meta_dict = json.loads(f.readline())
-        self.recent_files = meta_dict['Recent Files']
+        self.recent_files = meta.get_keyvalue('recent_files')
         self.refresh_recent_menu() # Initialize the "Recent" menu
         
         # Save File
-        button_export = widget_helpers.create_button(self.central_widget, self.app, 'Save', text=' Save ', target=partial(self.save_to_file, False), tooltip='Save the current SpawnCycle', style=ss, icon_path='img/icon_save.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_export = widget_helpers.create_button(self.central_widget, self.app, 'Save', text=' Save ', target=partial(self.save_to_file, False, False), tooltip='Save the current SpawnCycle', style=ss, icon_path='img/icon_save.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_export)
         self.buttons.update({'Save' : button_export})
 
         # Save File As
-        button_exportas = widget_helpers.create_button(self.central_widget, self.app, 'Save As', text=' Save As ', target=partial(self.save_to_file, True), tooltip='Save the current SpawnCycle with a designated name', style=ss, icon_path='img/icon_saveas.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_exportas = widget_helpers.create_button(self.central_widget, self.app, 'Save As', text=' Save As ', target=partial(self.save_to_file, True, False), tooltip='Save the current SpawnCycle with a designated name', style=ss, icon_path='img/icon_saveas.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_exportas)
         self.buttons.update({'Save As' : button_exportas})
 
@@ -896,23 +998,28 @@ class Ui_MainWindow(object):
         # Populate the Batch Menu
         self.init_batch_menu()
         
-        # Analyze Spawncycle
-        button_analyze = widget_helpers.create_button(self.central_widget, self.app, 'Analyze', text=' Analyze ', tooltip='Display SpawnCycle statistics', target=self.open_analyze_dialog, style=ss, icon_path='img/icon_analyze.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
+        # Analyze SpawnCycle
+        button_analyze = widget_helpers.create_button(self.central_widget, self.app, 'Analyze', text=' Analyze ', tooltip='Display SpawnCycle statistics', target=partial(self.open_dialog, 'analyze', 'Analyze SpawnCycle'), style=ss, icon_path='img/icon_analyze.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
         self.options_pane.addWidget(button_analyze)
         self.buttons.update({'Analyze' : button_analyze})
 
         # Generate Spawncycle
-        button_generate = widget_helpers.create_button(self.central_widget, self.app, 'Generate', text=' Generate ', tooltip='Generate a SpawnCycle based on pre-determined critera', target=self.open_generate_dialog, style=ss, icon_path='img/icon_generate.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
+        button_generate = widget_helpers.create_button(self.central_widget, self.app, 'Generate', text=' Generate ', tooltip='Generate a SpawnCycle based on pre-determined critera', target=partial(self.open_dialog, 'generate', 'Generate SpawnCycle'), style=ss, icon_path='img/icon_generate.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)   
         self.options_pane.addWidget(button_generate)
         self.buttons.update({'Generate' : button_generate})
 
         # Convert SpawnCycles
-        button_convert = widget_helpers.create_button(self.central_widget, self.app, 'Convert', text=' Convert ', tooltip="Convert SpawnCycles for use with FMX's CD Build", target=self.open_convert_dialog, style=ss, icon_path='img/icon_switch.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        button_convert = widget_helpers.create_button(self.central_widget, self.app, 'Convert', text=' Convert ', tooltip="Convert SpawnCycles for use with FMX's CD Build", target=partial(self.open_dialog, 'convert', 'Convert SpawnCycles'), style=ss, icon_path='img/icon_switch.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_convert)
         self.buttons.update({'Convert' : button_convert})
 
-        # View Help
-        button_about = widget_helpers.create_button(self.central_widget, self.app, 'About', text=' About ', tooltip='Show information about the program', target=self.open_about_dialog, style=ss, icon_path='img/icon_about.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        # Settings
+        button_settings = widget_helpers.create_button(self.central_widget, self.app, 'Settings', text=' Settings ', tooltip='Access and alter program preferences', target=partial(self.open_dialog, 'settings', 'Settings'), style=ss, icon_path='img/icon_settings.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
+        self.options_pane.addWidget(button_settings)
+        self.buttons.update({'Settings' : button_settings})
+
+        # About
+        button_about = widget_helpers.create_button(self.central_widget, self.app, 'About', text=' About ', tooltip='Show information about the program', target=partial(self.open_dialog, 'about', 'About'), style=ss, icon_path='img/icon_about.png', icon_w=icon_w, icon_h=icon_h, font=font, size_policy=sp, draggable=False)
         self.options_pane.addWidget(button_about)
         self.buttons.update({'About' : button_about})
 
@@ -957,10 +1064,8 @@ class Ui_MainWindow(object):
             for z in local_zeds:
                 action = QtWidgets.QAction(z, local_menu)
                 local_menu.addAction(action)
-                if z in custom_zeds or z in omega_zeds:
-                    action.triggered.connect(partial(self.replace_zeds, 'all', 'all', [zed], [z], True))
-                else:
-                    action.triggered.connect(partial(self.replace_zeds, 'all', 'all', [zed], [z]))
+                should_warn = z in custom_zeds or z in omega_zeds
+                action.triggered.connect(partial(self.replace_zeds, 'all', 'all', [zed], [z], should_warn))
             replace_menu.addMenu(local_menu)
 
         batch_menu.addMenu(replace_menu)
@@ -970,17 +1075,21 @@ class Ui_MainWindow(object):
     def replace_zeds(self, wave_id, squad_id, zeds_to_replace, replacements, should_warn=False):
         global has_swapped_modes
         if should_warn:
-            if not has_swapped_modes:
+            if not has_swapped_modes and meta.get_keyvalue('should_warn_zedset'):
                 diag_title = 'WARNING'
                 diag_text = '\nThe Custom and Omega ZED sets are NOT supported by most Controlled Difficulty builds.\nUsing these ZEDs may break your SpawnCycle on those builds.\n\nUse at your own risk!\n'
                 x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
                 y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
-                diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
+                diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True, checkbox=True)
                 diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
-                diag.exec_() # Show a dialog to tell user to check messages
+                
+                diag.exec_() # Show the dialog
+
+                # Check if the user clicked "Don't show this again"
+                if diag.checkbox.checkState(): # We know this will exist since checkbox=True
+                    meta.set_keyvalue('should_warn_zedset', False) # Don't ever show the dialog again
+
                 has_swapped_modes = True # Never show this message again
-        else:
-            has_swapped_modes = True
 
         # Figure out which waves and squads we're looping over
         wave_ids = [wave_id] if wave_id != 'all' else [i for i in range(len(self.wavedefs))]
@@ -1004,7 +1113,7 @@ class Ui_MainWindow(object):
 
                         raged = True if 'Enraged' in new_zid else False
                         self.add_zed_to_squad(wid, sid, new_zid, count=zed_count, raged=raged, ignore_capacity=True) # Add the new one
-                        self.remove_zed_from_squad(wid, sid, zid, count='all') # Remove the old zed after to keep the squad (for squad with len 1)     
+                        self.remove_zed_from_squad(wid, sid, zid, count='all', replacement=True) # Remove the old zed after to keep the squad (for squad with len 1)     
                         
                         replaced = True
                         zeds_replaced += zed_count
@@ -1048,7 +1157,6 @@ class Ui_MainWindow(object):
                 for (zed_id, zed_data) in self.wavedefs[i]['Squads'][j]['ZEDs'].items():
                     zed_count = zed_data['Count']
                     sr = zed_data['Raged']
-
                     if k == 0: # First ZED in the squad starts a new squad
                         self.add_squad(len(self.wavedefs)-1, zed_id, count=zed_count, raged=sr)
                     else:
@@ -1061,6 +1169,20 @@ class Ui_MainWindow(object):
             self.remove_wavedef(0, should_warn=False)
 
         loading_diag.close()
+
+    # Toggles autosave off/on
+    def toggle_autosave(self):
+        autosave_enabled = meta.get_keyvalue('autosave_enabled') # Get autosave status
+
+        # Change the button's icon
+        icon = QtGui.QIcon()
+        icon.addPixmap(QtGui.QPixmap('img/icon_autosave_false.png' if autosave_enabled else 'img/icon_autosave_true.png'), QtGui.QIcon.Normal, QtGui.QIcon.Off)
+        self.buttons['Autosave'].setIcon(icon)
+
+        meta.set_keyvalue('autosave_enabled', not autosave_enabled) # Invert the value
+
+        # Post a message
+        self.add_message(f"Setting 'Autosave Enabled' set to {not autosave_enabled}")
 
     # Setup ZED Pane
     def setup_zed_pane(self):
@@ -1396,10 +1518,16 @@ class Ui_MainWindow(object):
         button_quarterpound_raged.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid red;}")
         button_fleshpound_raged.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid red;}")
         button_alphafleshpound_raged.setStyleSheet("QToolTip {color: rgb(0, 0, 0);}\nQZedPaneButton {border: 2px solid red;}")
+        
+        # Set up autosave button
+        autosave_icon = 'img/icon_autosave_true.png' if meta.get_keyvalue('autosave_enabled') else 'img/icon_autosave_false.png'
+        button_autosave = widget_helpers.create_button(self.central_widget, self.app, 'Autosave', text=' Autosave', tooltip='Toggle Autosave', target=partial(self.toggle_autosave), icon_path=autosave_icon, icon_w=32, icon_h=32, style=ss_toggle, font=font_label, size_policy=sp_toggle, draggable=False)
+        self.buttons.update({'Autosave' : button_autosave})
 
         # Finalize ZED Pane
         self.zed_grid.setWidget(self.zed_grid_contents)
         self.zed_pane.addWidget(self.zed_grid)
+        self.zed_pane.addWidget(button_autosave)
         self.main_area.addLayout(self.zed_pane)
         self.central_layout.addLayout(self.main_area)
 
@@ -1516,6 +1644,37 @@ class Ui_MainWindow(object):
         self.wavedefs_area.addWidget(self.messages_textedit)
         self.main_area.addLayout(self.wavedefs_area)
 
+    # Clears the wave of all zeds
+    def clear_wavedef(self, id, should_warn=True):
+        if should_warn and len(self.wavedefs[id]['Squads']) > 0: # Wave is non-empty. Display dialog!
+            diag_title = 'Clear Wave'
+            diag_text = 'Are you sure you want to clear all data from this wave?\nAll data will be lost!'
+            x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-150 # Anchor dialog to center of window
+            y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
+            choice_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y)
+            choice_dialog.yes_button.clicked.connect(partial(self.dialog_accept, choice_dialog))
+            choice_dialog.no_button.clicked.connect(partial(self.dialog_reject, choice_dialog))
+            choice_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+            choice_dialog.exec_()
+            if choice_dialog.accepted == False: # Didn't accept the dialog (don't delete)
+                choice_dialog.setParent(None) # Remove the dialog
+                return
+            choice_dialog.setParent(None)
+
+        # Remove the widgets
+        for i in reversed(range(self.wavedefs[id]['Layouts']['SquadFrame'].count())): 
+            self.wavedefs[id]['Layouts']['SquadFrame'].itemAt(i).widget().setParent(None)
+        self.wavedefs[id]['Labels']['ZEDCount'].setText('Total ZEDs: 0')
+        self.wavedefs[id]['Squads'] = [] # Reset the internal implementation
+
+        # File has been modified
+        if self.filename == 'Untitled':
+            num_squads = sum([len(wd['Squads']) for wd in self.wavedefs])
+            self.dirty = True if num_squads > 0 else False # If the cycle is empty as a result of this, no need to mark dirty
+        else:
+            self.dirty = True
+            self.set_window_title(f'SpawnCycler ({self.truncate_filename(self.filename)}*)')
+
     # Completely clears the WaveDefs pane of all widgets
     def clear_wavedefs(self):
         for i in reversed(range(self.wavedefs_scrollarea_layout.count())): 
@@ -1535,7 +1694,7 @@ class Ui_MainWindow(object):
         dialog.close()
 
     # Generates wavedefs from the given slider data
-    def generate_wavedefs(self, slider_data, GenerateDialog):
+    def generate_wavedefs(self, slider_data):
         # The current file is 'dirty', needs saving before we populate with the new stuff
         if self.dirty:
             x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x() - 150 # Anchor dialog to center of window
@@ -1552,20 +1711,10 @@ class Ui_MainWindow(object):
                 return
 
         # Close the Generate Window
-        GenerateDialog.close()
+        self.generate_dialog.close()
         self.active_dialog = None
-
-        # Load last used preset
-        self.last_generate_mode = GenerateDialog.ui.zed_mode
-        last_used = list(GenerateDialog.ui.get_slider_values().values())
-        if last_used[0] == 4: # Fix up the wave number
-            last_used[0] = 1
-        elif last_used[0] == 7:
-            last_used[0] = 2
-        else:
-            last_used[0] = 3
-        self.last_generate_preset = last_used
-
+        self.generate_dialog = None
+        
         # First reset the entire window (delete all squads, etc)
         self.reset_state()
 
@@ -1810,9 +1959,29 @@ class Ui_MainWindow(object):
             if file_ext == '.json': # JSON-formatted SpawnCycle
                 with open(filename, 'r') as f_in:
                     json_dict = json.load(f_in)
-                    short_cycle = None if 'ShortSpawnCycle' not in json_dict or json_dict['ShortSpawnCycle'] == {} else json_dict['ShortSpawnCycle']
-                    medium_cycle = None if 'NormalSpawnCycle' not in json_dict or json_dict['NormalSpawnCycle'] == {} else json_dict['NormalSpawnCycle']
-                    long_cycle = None if 'LongSpawnCycle' not in json_dict or json_dict['LongSpawnCycle'] == {} else json_dict['LongSpawnCycle']
+
+                    # Need to check for legacy JSONs and convert them properly
+                    short_cycle = None
+                    medium_cycle = None
+                    long_cycle = None
+                    if 'ShortSpawnCycle' in json_dict:
+                        cycledef = json_dict['ShortSpawnCycle']
+                        if isinstance(cycledef, dict) and cycledef != {}: 
+                            short_cycle = list(json_dict['ShortSpawnCycle'].values())
+                        elif isinstance(cycledef, list) and cycledef != []:
+                            short_cycle = json_dict['ShortSpawnCycle']
+                    if 'NormalSpawnCycle' in json_dict:
+                        cycledef = json_dict['NormalSpawnCycle']
+                        if isinstance(cycledef, dict) and cycledef != {}: 
+                            medium_cycle = list(json_dict['NormalSpawnCycle'].values())
+                        elif isinstance(cycledef, list) and cycledef != []:
+                            medium_cycle = json_dict['NormalSpawnCycle']
+                    if 'LongSpawnCycle' in json_dict:
+                        cycledef = json_dict['LongSpawnCycle']
+                        if isinstance(cycledef, dict) and cycledef != {}: 
+                            long_cycle = list(json_dict['LongSpawnCycle'].values())
+                        elif isinstance(cycledef, list) and cycledef != []:
+                            long_cycle = json_dict['LongSpawnCycle']
                     num_cycles = (1 if short_cycle is not None else 0) + (1 if medium_cycle is not None else 0) + (1 if long_cycle is not None else 0)
                     
                     if num_cycles > 1: # Multiple spawncycles. Need to ask which one to open
@@ -1883,31 +2052,38 @@ class Ui_MainWindow(object):
                         
                         if dialog.accepted: # Short SpawnCycle
                             target = short_cycle
+                            self.json_autosave_target = 0
                         elif dialog.cancelled: # Long SpawnCycle
                             target = long_cycle
+                            self.json_autosave_target = 2
                         else:
                             target = medium_cycle
+                            self.json_autosave_target = 1
                     else: # Only one cycle found.
                         if short_cycle is not None:
                             target = short_cycle
+                            self.json_autosave_target = 0
                         elif medium_cycle is not None:
                             target = medium_cycle
+                            self.json_autosave_target = 1
                         else:
                             target = long_cycle
-
+                            self.json_autosave_target = 2
+                    
                     # Convert the JSON format back to the standard format
                     self.loaded_json = json_dict
-                    lines = [('SpawnCycleDefs=' + wd) for wd in target.values()]     
+                    lines = [f"SpawnCycleDefs={wd}" for wd in target]     
 
             else: # TXT-formatted SpawnCycle
                 self.loaded_json = None
+                self.json_autosave_target = None
                 with open(filename, 'r') as f_in: 
                     lines = f_in.readlines()
 
         # Something went wrong!  
         except:
             # Diplay error
-            diag_text = f"File '{filename}' could not be opened!\nEither the file doesn't exist, or it is inaccessible somehow."
+            diag_text = f"File '{filename}' could not be opened!\nEither the file doesn't exist, is locked, or has improper formatting."
             err_dialog = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
             err_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             err_dialog.exec_()
@@ -1925,7 +2101,7 @@ class Ui_MainWindow(object):
         # The current file is 'dirty', needs saving before we populate with the new stuff
         if self.dirty:
             diag_text = 'Save changes before closing?'
-            save_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y, yes_target=partial(self.save_to_file, False), cancel_button=True)
+            save_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y, yes_target=partial(self.save_to_file, False, False), cancel_button=True)
             save_dialog.cancel_button.clicked.connect(partial(self.dialog_cancel, save_dialog))
             save_dialog.cancelled = False
             self.active_dialog = save_dialog
@@ -1988,6 +2164,13 @@ class Ui_MainWindow(object):
         # Set new window title
         self.set_window_title(f"SpawnCycler ({self.truncate_filename(self.filename)})")
 
+        # Check if analyze window is open and change the label
+        if self.analyze_dialog is not None:
+            truncated = self.truncate_filename(self.filename)
+            file_ext = self.get_file_ext(truncated)
+            self.analyze_dialog.ui.reset_state()
+            self.analyze_dialog.ui.results_label.setText(f"Analysis Results{'' if file_ext is None else (' (' + truncated.replace(file_ext, '') + ')')}")
+
     # Closes the file and resets everything
     def close_file(self):
         # Dialog stuff
@@ -1999,7 +2182,7 @@ class Ui_MainWindow(object):
         # The current file is 'dirty', needs saving before we populate with the new stuff
         if self.dirty:
             diag_text = 'Save changes before closing?'
-            save_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y, yes_target=partial(self.save_to_file, False), cancel_button=True)
+            save_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y, yes_target=partial(self.save_to_file, False, False), cancel_button=True)
             save_dialog.cancel_button.clicked.connect(partial(self.dialog_cancel, save_dialog))
             save_dialog.cancelled = False
             self.active_dialog = save_dialog
@@ -2011,6 +2194,10 @@ class Ui_MainWindow(object):
         self.active_dialog = None
         self.reset_state()
 
+        # Check if analyze window is open and change the label and reset state
+        if self.analyze_dialog is not None:
+            self.analyze_dialog.ui.reset_state()
+
     def handle_dialog_field(self):
         field = self.active_dialog.author_field
         button = self.active_dialog.yes_button
@@ -2020,9 +2207,15 @@ class Ui_MainWindow(object):
         else:
             button.setEnabled(True)
 
-
     # Saves the file to the disk
-    def save_to_file(self, file_browser=True):
+    def save_to_file(self, file_browser=True, autosave=False):
+        # We can only autosave under the following conditions:
+        # 1. Autosaving is enabled
+        # 2. The file has a name
+        # 3. The file is dirty and actually requires saving
+        if autosave and (not meta.get_keyvalue('autosave_enabled') or self.filename == 'Untitled' or not self.dirty):
+            return
+
         # Dialog stuff
         diag_title = 'SpawnCycler'
         x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x() - 150 # Anchor dialog to center of window
@@ -2033,7 +2226,7 @@ class Ui_MainWindow(object):
 
         # Parse the file to check for errors
         errors = parse.parse_syntax_export(self.filename, self.wavedefs)
-        if len(errors) > 0:
+        if not autosave and len(errors) > 0:
             self.add_message(errors[0])
             if len(errors) > 1:
                 self.add_message('\n\n'.join([e.replace(f"Parse errors{fname}:\n\n", '') for e in errors[1:]]), prefix=False)
@@ -2043,9 +2236,32 @@ class Ui_MainWindow(object):
             diag.exec_() # Show a dialog to tell user to check messages
             return
 
+        # Warn the user if they do not have a cycle of the appropriate length (4/7/10) unless they suppress the warning
+        if not autosave and len(self.wavedefs) not in [4, 7, 10] and meta.get_keyvalue('should_warn_cyclelength'):
+            diag_title = 'WARNING'
+            diag_text = f"\nYour SpawnCycle was found to contain {len(self.wavedefs)} wave(s).\nCD mandates that SpawnCycles contain 4, 7, or 10 waves.\n\nIf you continue, your SpawnCycle will not load in-game!\n"
+            x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
+            y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
+            diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True, checkbox=True)
+            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+
+            diag.exec_() # Show the dialog
+
+            # Check if the user clicked "Don't show this again"
+            if diag.checkbox.checkState(): # We know this will exist since checkbox=True
+                meta.set_keyvalue('should_warn_cyclelength', False) # Don't ever show the dialog again
+
         # Ask user for filename to save as
-        filetype = 'Standard SpawnCycle (*.txt);;FMX SpawnCycle (*.json)' if '.json' not in self.filename.lower() else 'FMX SpawnCycle (*.json);;Standard SpawnCycle (*.txt)'
         if file_browser or self.filename == 'Untitled':
+            # Figure out the filetype to show
+            preferred_filetype = meta.get_keyvalue('save_default_filetype')
+            if preferred_filetype == 1: # txt
+                filetype = 'Standard SpawnCycle (*.txt);;FMX SpawnCycle (*.json)'
+            elif preferred_filetype == 2: # json
+                filetype = 'FMX SpawnCycle (*.json);;Standard SpawnCycle (*.txt)'
+            else: # Adaptive (default behavior)
+                filetype = 'Standard SpawnCycle (*.txt);;FMX SpawnCycle (*.json)' if '.json' not in self.filename.lower() else 'FMX SpawnCycle (*.json);;Standard SpawnCycle (*.txt)'
+
             filename, _ = QtWidgets.QFileDialog.getSaveFileName(None, 'Save File As', '', filetype)
             if filename == '': # Leave if the user cancelled
                 self.add_message(f"Save cancelled.") # Post a message
@@ -2053,20 +2269,28 @@ class Ui_MainWindow(object):
         else:
             filename = self.filename
 
-        # Save As a json
-        if file_browser and '.json' in filename.lower():
-            # We need to get the author and title
+        # Show "Autosaving.."" dialog
+        if autosave:
+            x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x() - 90 # Anchor dialog to center of window
+            y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
+            autosave_diag = widget_helpers.create_simple_dialog(self.central_widget, 'Autosaving..', 'Autosaving..', x, y, button=False)
+            autosave_diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+            autosave_diag.show() # Show a dialog to tell user to check messages
+
+        # JSON: Need to get the author if none has been specified before (this is a new file)
+        if not autosave and '.json' in filename.lower() and self.loaded_json is None:
+            # We need to get the author and title, but only if its a manual save
             diag_title = 'SpawnCycler'
             diag_text = 'Please specify an Author for this SpawnCycle:'
             x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x() - 150 # Anchor dialog to center of window
             y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
-            title_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y, no=False, cancel_button=True)
-            title_dialog.yes_button.setText("OK")
-            title_dialog.yes_button.clicked.connect(partial(self.dialog_accept, title_dialog))
-            title_dialog.yes_button.setEnabled(False)
-            title_dialog.cancel_button.clicked.connect(partial(self.dialog_cancel, title_dialog))
-            self.active_dialog = title_dialog
-            title_dialog.cancelled = False
+            author_dialog = widget_helpers.create_choice_dialog(self.central_widget, diag_title, diag_text, x, y, no=False, cancel_button=True)
+            author_dialog.yes_button.setText("OK")
+            author_dialog.yes_button.clicked.connect(partial(self.dialog_accept, author_dialog))
+            author_dialog.yes_button.setEnabled(False)
+            author_dialog.cancel_button.clicked.connect(partial(self.dialog_cancel, author_dialog))
+            self.active_dialog = author_dialog
+            author_dialog.cancelled = False
 
             # Create "Author" Label and Textbox
             ss = 'color: rgb(255, 255, 255);' # Stylesheet
@@ -2078,34 +2302,35 @@ class Ui_MainWindow(object):
             font_textfield.setPointSize(10)
             font_textfield.setWeight(75)
             
-            title_dialog.author_field = QtWidgets.QLineEdit()
-            title_dialog.author_field.setStyleSheet(ss)
-            title_dialog.author_field.setSizePolicy(sp)
-            title_dialog.author_field.setMaximumSize(QtCore.QSize(256, 28))
-            title_dialog.author_field.setFont(font_textfield)
-            title_dialog.author_field.setText('')
-            title_dialog.author_field.setAlignment(QtCore.Qt.AlignLeft)
-            title_dialog.author_field.setStyleSheet('color: rgb(255, 255, 255); background-color: rgb(60, 60, 60);')
-            title_dialog.layout.insertWidget(1, title_dialog.author_field)
+            author_dialog.author_field = QtWidgets.QLineEdit()
+            author_dialog.author_field.setStyleSheet(ss)
+            author_dialog.author_field.setSizePolicy(sp)
+            author_dialog.author_field.setMaximumSize(QtCore.QSize(256, 28))
+            author_dialog.author_field.setFont(font_textfield)
+            author_dialog.author_field.setText('')
+            author_dialog.author_field.setAlignment(QtCore.Qt.AlignLeft)
+            author_dialog.author_field.setStyleSheet('color: rgb(255, 255, 255); background-color: rgb(60, 60, 60);')
+            author_dialog.layout.insertWidget(1, author_dialog.author_field)
 
-            title_dialog.author_field.textChanged.connect(self.handle_dialog_field)
+            author_dialog.author_field.textChanged.connect(self.handle_dialog_field)
             
             # Exec the dialog
-            title_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
-            title_dialog.exec_()
+            author_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+            author_dialog.exec_()
 
-            if title_dialog.cancelled: # User hit 'Cancel'
+            if author_dialog.cancelled: # User hit 'Cancel'
                 self.add_message(f"Save cancelled.") # Post a message
                 return
-            if title_dialog.accepted: # User hit OK
-                self.loaded_json = {"Name": filename.lower().replace('.json', ''), "Author": title_dialog.author_field.text(), "Date": str(date.today()), "ShortSpawnCycle": {}, "NormalSpawnCycle": {}, "LongSpawnCycle": {}} # Set this file up for saving
-                title_dialog.setParent(None) # Remove the dialog
+            if author_dialog.accepted: # User hit OK
+                self.loaded_json = {"Name": filename.lower().replace('.json', ''), "Author": author_dialog.author_field.text(), "Date": str(date.today()), "ShortSpawnCycle": [], "NormalSpawnCycle": [], "LongSpawnCycle": []} # Set this file up for saving
+                author_dialog.close()
                 self.active_dialog = None
                 
-
         if '.json' not in filename.lower():
             self.loaded_json = None
 
+        if autosave:
+            self.add_message(f"Autosave initiated.") # Post a message
         self.add_message(f"Parse successful!") # Post a message
 
         # Save the file
@@ -2123,24 +2348,145 @@ class Ui_MainWindow(object):
 
         else: # Saving JSON
             # Create the SpawnCycle json
-            i = 0
-            cycle_dict = {}
+            cycle_list = []
             for wavedef in self.wavedefs:
                 wave_squads = []
                 for squad in wavedef['Squads']:
                     squad_zeds = [f"{zed_data['Count']}{zed_ids[zed_id]}" for (zed_id, zed_data) in squad['ZEDs'].items()]
                     wave_squads.append('_'.join(squad_zeds))
-                cycle_dict.update({str(i): f"{','.join(wave_squads)}"})
-                i += 1
+                cycle_list.append(f"{','.join(wave_squads)}")
 
             # Now save to the file
             with open(filename.lower(), 'w') as f:
-                if len(self.wavedefs) == 10:
-                    target = 'LongSpawnCycle'
-                elif len(self.wavedefs) == 7:
+                default_target = meta.get_keyvalue('save_json_default_target')
+
+                if autosave: # Specific case for autosave
+                    # Short was the last thing we opened or saved AND we have room
+                    if self.json_autosave_target == 0 and len(self.wavedefs) <= 4:
+                        target = 'ShortSpawnCycle'
+                        self.add_message(f"Autosaving to Short SpawnCycle slot since this slot was last saved to or opened from...")
+
+                    # Medium was the last thing we opened or saved AND we have room
+                    elif self.json_autosave_target == 1 and len(self.wavedefs) <= 7:
+                        target = 'NormalSpawnCycle'
+                        self.add_message(f"Autosaving to Medium SpawnCycle slot since this slot was last saved to or opened from...")
+
+                    # Long was the last thing we opened or saved AND we have room
+                    elif self.json_autosave_target == 2:
+                        target = 'LongSpawnCycle'
+                        self.add_message(f"Autosaving to Long SpawnCycle slot since this slot was last saved to or opened from...")
+
+                    # Our new cycle doesn't fit in the same spot we loaded from or last saved to. Use the adaptive setup
+                    else:
+                        if len(self.wavedefs) in [1, 2, 3, 4]:
+                            target = 'ShortSpawnCycle'
+                            self.json_autosave_target = 0
+                            self.add_message(f"WARNING: Autosave data saved to Short SpawnCycle slot due to the new data not being compatible with the last used location...")
+                        elif len(self.wavedefs) in [5, 6, 7]:
+                            target = 'NormalSpawnCycle'
+                            self.json_autosave_target = 1
+                            self.add_message(f"WARNING: Autosave data saved to Medium SpawnCycle slot due to the new data not being compatible with the last used location...")  
+                        else:
+                            target = 'LongSpawnCycle'
+                            self.json_autosave_target = 2
+                            self.add_message(f"WARNING: Autosave data saved to Long SpawnCycle slot due to the new data not being compatible with the last used location...")
+                        
+                elif default_target == 0: # Always Ask
+                    if len(self.wavedefs) <= 7: # No need to ask if we don't even have multiple targets to begin with
+                        # Create dialog
+                        font = QtGui.QFont()
+                        font.setPointSize(8)
+                        font.setBold(True)
+                        ss = "color: rgb(255, 255, 255);"
+                        sp = QtWidgets.QSizePolicy(QtWidgets.QSizePolicy.Fixed, QtWidgets.QSizePolicy.Fixed)
+                        sp.setHorizontalStretch(0)
+                        sp.setVerticalStretch(0)
+                        dialog = QtWidgets.QDialog()
+                        dialog.setWindowFlags(QtCore.Qt.CustomizeWindowHint|QtCore.Qt.WindowTitleHint) # Disable X and minimize
+                        dialog.cancelled = False
+                        dialog.accepted = False
+                        hbox_master = QtWidgets.QHBoxLayout(dialog)
+
+                        # Set up text label
+                        dialog_label = QtWidgets.QLabel(dialog)
+                        dialog_label.setFont(font)
+                        dialog_label.setAlignment(QtCore.Qt.AlignHCenter|QtCore.Qt.AlignTop)
+                        dialog_label.setStyleSheet(ss)
+                        dialog_label.setText('This SpawnCycle format supports multiple GameLengths.\nPlease select a GameLength to save the data to:\n')
+
+                        # Set layout
+                        vbox = QtWidgets.QVBoxLayout()
+                        hbox = QtWidgets.QHBoxLayout()
+                        
+                        if len(self.wavedefs) <= 4: # Short is only a viable target if the cycle would fit
+                            short_button = QtWidgets.QPushButton('Short (4 Waves)')
+                            short_button.setFont(font)
+                            short_button.setStyleSheet(ss)
+                            short_button.setSizePolicy(sp)
+                            short_button.clicked.connect(partial(self.dialog_accept, dialog))
+                            hbox.addWidget(short_button)
+
+                        # 7 waves is always a viable target
+                        medium_button = QtWidgets.QPushButton('Medium (7 Waves)')
+                        medium_button.setFont(font)
+                        medium_button.setStyleSheet(ss)
+                        medium_button.setSizePolicy(sp)
+                        medium_button.clicked.connect(partial(self.dialog_reject, dialog))
+                        hbox.addWidget(medium_button)
+
+                        # 10 waves is always a viable target
+                        long_button = QtWidgets.QPushButton('Long (10 Waves)')
+                        long_button.setFont(font)
+                        long_button.setStyleSheet(ss)
+                        long_button.setSizePolicy(sp)
+                        long_button.clicked.connect(partial(self.dialog_cancel, dialog))
+                        hbox.addWidget(long_button)
+
+                        # Finalize layout
+                        vbox.addWidget(dialog_label)
+                        vbox.addLayout(hbox)
+                        hbox_master.addLayout(vbox)
+
+                        # Set up window
+                        dialog.setWindowTitle('SpawnCycler')
+                        dialog.setStyleSheet("background-color: rgb(40, 40, 40);")
+
+                        # Move to x, y
+                        dialog.move(x, y)
+                        dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+                        dialog.exec_()                    
+
+                        if dialog.accepted: # Short SpawnCycle
+                            target = 'ShortSpawnCycle'
+                            self.json_autosave_target = 0
+                        elif dialog.cancelled: # Long SpawnCycle
+                            target = 'LongSpawnCycle'
+                            self.json_autosave_target = 2
+                        else:
+                            target = 'NormalSpawnCycle'
+                            self.json_autosave_target = 1
+                    else:
+                        target = 'LongSpawnCycle'
+                        self.json_autosave_target = 2
+
+                elif default_target == 2 and len(self.wavedefs) <= 7: # Preferred Medium
                     target = 'NormalSpawnCycle'
-                else:
-                    target = 'ShortSpawnCycle'
+                    self.json_autosave_target = 1
+
+                elif default_target == 3: # Preferred Long
+                    target = 'LongSpawnCycle'
+                    self.json_autosave_target = 2
+
+                else: # Adaptive. Target the length based on how many waves are defined
+                    if len(self.wavedefs) in [8, 9, 10]:
+                        target = 'LongSpawnCycle'
+                        self.json_autosave_target = 2
+                    elif len(self.wavedefs) in [5, 6, 7]:
+                        target = 'NormalSpawnCycle'
+                        self.json_autosave_target = 1
+                    else:
+                        target = 'ShortSpawnCycle'
+                        self.json_autosave_target = 0
 
                 k = len(filename) - 1
                 json_filename = None
@@ -2154,7 +2500,7 @@ class Ui_MainWindow(object):
                     json_filename = filename
 
                 # Update the json data
-                self.loaded_json.update({target: cycle_dict})
+                self.loaded_json.update({target: cycle_list})
                 self.loaded_json.update({'Date': str(date.today())})
                 self.loaded_json.update({'Name': json_filename.lower().replace('.json', '')})
 
@@ -2179,6 +2525,9 @@ class Ui_MainWindow(object):
 
         if self.active_dialog is not None: # We came from a dialog to get here. Close it
             self.active_dialog.close()
+
+        if autosave: # Close the "Autosaving" dialog
+            autosave_diag.close()
 
     # Resets everything back to normal
     def reset_state(self):
@@ -2213,19 +2562,9 @@ class Ui_MainWindow(object):
         self.set_window_title(f'SpawnCycler (Untitled)') # Only if file is named though
 
     def setupUi(self, MainWindow):
-        # Meta vars
-        self.dirty = False # Whether or not the file needs saving before closing
-        self.filename = 'Untitled'
-        self.MainWindow = MainWindow
-        self.buttons = {}
-        self.zed_pane_buttons = {}
-        self.wavedefs = []
-        self.labels = {}
-        self.message_labels = []
-
         # Set up main window
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1000, 1000)
+        MainWindow.resize(_WINDOWSIZE_MAIN_W, _WINDOWSIZE_MAIN_H)
         MainWindow.setStyleSheet("background-color: rgb(50, 50, 50);")
         self.central_widget = QtWidgets.QWidget(MainWindow)
         self.central_widget.setObjectName("central_widget")
@@ -2271,79 +2610,57 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         self.MainWindow.setWindowTitle(_translate('SpawnCycler', title))
 
-    # Opens the 'About' menu
-    def open_about_dialog(self):
-        dialog = QtWidgets.QDialog()
-        dialog.ui = AboutDialog()
-        dialog.ui.setupUi(dialog)
-        dialog.setWindowTitle('About')
-        dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
-        dialog.exec_()
+    # Opens the specified dialog
+    def open_dialog(self, diag_type, title):
+        # Convert
+        if diag_type == 'convert':
+            dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowCloseButtonHint)
+            dialog.ui = ConvertDialog()
+            dialog.ui.setupUi(dialog)
 
-    # Opens the 'Convert' menu
-    def open_convert_dialog(self):
-        dialog = QtWidgets.QDialog()
-        dialog.ui = ConvertDialog()
-        dialog.ui.setupUi(dialog)
-        dialog.setWindowTitle('Convert SpawnCycles')
-        dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
-        dialog.exec_()
+        # Settings
+        elif diag_type == 'settings':
+            dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowCloseButtonHint)
+            dialog.ui = SettingsDialog(self)
+            dialog.ui.setupUi(dialog)
 
-    # Opens the 'Generate' menu
-    def open_generate_dialog(self):
-        dialog = QtWidgets.QDialog()
-        dialog.ui = GenerateDialog()
-        dialog.ui.setupUi(dialog, self.generate_wavedefs, self.last_generate_preset, self.last_generate_mode)
-        dialog.setWindowTitle('Generate SpawnCycle')
-        dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
-        dialog.exec_()
+        # Generate
+        elif diag_type == 'generate':
+            dialog = widget_helpers.CustomDialog(None, QtCore.Qt.WindowCloseButtonHint)
+            dialog.ui = GenerateDialog(self, dialog)
+            dialog.ui.setupUi()
+            self.generate_dialog = dialog
 
-    # Called by the Analyze GUI to save the last used preset (so it can be restored later)
-    def save_analyze_preset(self, preset):
-        self.last_analyze_preset = preset
+        # Analyze
+        elif diag_type == 'analyze':
+            # Only open an analysis window if one isn't open already
+            if self.analyze_dialog is not None:
+                return
 
-    # Opens the 'Analyze' menu
-    def open_analyze_dialog(self):
-        error_msg = ''
+            # Open the dialog
+            dialog = widget_helpers.CustomDialog(None, QtCore.Qt.WindowCloseButtonHint)
+            dialog.ui = AnalyzeDialog(self)
+            dialog.ui.setupUi(dialog)
+            self.analyze_dialog = dialog
 
-        # Invalid SpawnCycle length
-        if len(self.wavedefs) < 1:
-            error_msg += f"Error: Cannot analyze an empty SpawnCycle. Must have at least one wave with ZEDs within!"
-
-        # Check for empty waves
+        # About
         else:
-            found = False
-            for wave in self.wavedefs:
-                if len(wave['Squads']) == 0: # Found an empty wave
-                    found = True
-                    break
-            if found:
-                error_msg += f"Error: Cannot analyze empty waves. All waves must have at least one ZED!"
-
-        # Print errors
-        if error_msg != '':
-            self.add_message(error_msg)
-            diag_title = 'WARNING'
-            diag_text = 'Errors occurred while attempting to Analyze.\nCheck the Messages box below for more details.'
-            x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
-            y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
-            diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True)
-            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
-            diag.exec_() # Show a dialog to tell user to check messages
-            return
-
-        # Open the dialog
-        dialog = widget_helpers.CustomDialog()
-        dialog.ui = AnalyzeDialog()
-        dialog.ui.setupUi(dialog, self.wavedefs, self.truncate_filename(self.filename), save_preset=self.save_analyze_preset, last_preset=self.last_analyze_preset)
-        dialog.setWindowTitle('Analyze SpawnCycle')
+            dialog = QtWidgets.QDialog(None, QtCore.Qt.WindowCloseButtonHint)
+            dialog.ui = AboutDialog()
+            dialog.ui.setupUi(dialog)
+        
+        dialog.setWindowTitle(title)
         dialog.setWindowIcon(QtGui.QIcon('img/logo.png'))
-        dialog.exec_()
+
+        # For the analysis window we don't want to block access to the rest of the program
+        if diag_type in ['analyze']:
+            dialog.show() # Non-blocking
+        else:
+            dialog.exec_()
 
     # Updates the "Recent Files" menu
     def add_filename_to_recent(self, filename):
-        with open('meta', 'r') as f: # Get the metadata
-            meta_dict = json.loads(f.readline())
+        meta_dict = meta.get_metadict()
 
         if len(self.recent_files) == 0: # Special case: no recents. 
             self.recent_menu.removeAction(self.recent_menu.actions()[0]) # Remove the 'No files found'
@@ -2357,10 +2674,7 @@ class Ui_MainWindow(object):
         self.recent_files.insert(0, filename) # Add it to the "Recent Files" list
         
         # Save metadata
-        with open('meta', 'w') as f:
-            meta_dict['Recent Files'] = self.recent_files
-            f.write(json.dumps(meta_dict))
-
+        meta.set_keyvalue('recent_files', self.recent_files)
         self.refresh_recent_menu() # Refresh the "Recent" menu
 
     def get_zed_mode(self):
@@ -2379,6 +2693,7 @@ class Ui_MainWindow(object):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle('SpawnCycler (Untitled)')
         MainWindow.setWindowIcon(QtGui.QIcon('img/logo.png'))
+
         self.switch_zed_mode() # Swap it to normal mode
 
 
@@ -2391,16 +2706,18 @@ class CustomMainWindow(QtWidgets.QMainWindow):
             diag_text = 'Save changes before closing?'
             x = self.ui.central_widget.mapToGlobal(self.ui.central_widget.rect().center()).x() - 150 # Anchor dialog to center of window
             y = self.ui.central_widget.mapToGlobal(self.ui.central_widget.rect().center()).y()
-            save_dialog = widget_helpers.create_choice_dialog(self.ui.central_widget, diag_title, diag_text, x, y, yes_target=partial(self.ui.save_to_file, False))
+            save_dialog = widget_helpers.create_choice_dialog(self.ui.central_widget, diag_title, diag_text, x, y, yes_target=partial(self.ui.save_to_file, False, False))
             self.ui.active_dialog = save_dialog
             save_dialog.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
             save_dialog.exec_()
 
+        # Close analysis window if open
+        if self.ui.analyze_dialog is not None:
+            self.ui.analyze_dialog.close()
+
 
 if __name__ == '__main__':
-    import sys
     app = QtWidgets.QApplication(sys.argv)
-
     MainWindow = CustomMainWindow()
     ui = Ui_MainWindow(app)
     ui.setupUi(MainWindow)
