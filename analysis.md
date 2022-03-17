@@ -356,6 +356,7 @@ Note that this chart is also created for the entire SpawnCycle, using the averag
 **Figure 2** - Estimated Difficulty Chart
 
 ## Reference Documentation
-- [Creating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/creation.md)
-- [Generating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/generation.md)
-- [Converting a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/conversion.md)
+- [SpawnCycle Creation](https://github.com/tamari92/spawncycler/blob/main/creation.md)
+- [SpawnCycle Generation](https://github.com/tamari92/spawncycler/blob/main/generation.md)
+- [SpawnCycle Conversion](https://github.com/tamari92/spawncycler/blob/main/conversion.md)
+- [Program Settings](https://github.com/tamari92/spawncycler/blob/main/settings.md)

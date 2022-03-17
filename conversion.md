@@ -34,6 +34,7 @@ Selected SpawnCycles are **parsed** for syntax and must meet the length requirem
 After everything is set, the **Convert** button can be pressed, after which a **JSON-formatted** SpawnCycle is produced.
 
 ## Reference Documentation
-- [Creating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/creation.md)
-- [Analyzing a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
-- [Generating a SpawnCycle](https://github.com/tamari92/spawncycler/blob/main/generation.md)
+- [SpawnCycle Creation](https://github.com/tamari92/spawncycler/blob/main/creation.md)
+- [SpawnCycle Analysis](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
+- [SpawnCycle Generation](https://github.com/tamari92/spawncycler/blob/main/generation.md)
+- [Program Settings](https://github.com/tamari92/spawncycler/blob/main/settings.md)
