@@ -81,3 +81,4 @@ All rights reserved.
 - [SpawnCycle Generation](https://github.com/tamari92/spawncycler/blob/main/generation.md)
 - [SpawnCycle Analysis](https://github.com/tamari92/spawncycler/blob/main/analysis.md)
 - [SpawnCycle Conversion](https://github.com/tamari92/spawncycler/blob/main/conversion.md)
+- [Program Settings](https://github.com/tamari92/spawncycler/blob/main/settings.md)
