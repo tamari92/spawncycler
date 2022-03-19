@@ -86,9 +86,7 @@ To remove **all** of a specific ZED from a Squad, simply right click on the ZED'
 
 **Figure 5** - A Basic ZED Squad
 
-When reading a SpawnCycle, CD iterates through the Squads for a given wave and attempts to spawn the ZEDs within in order.
-
-*Typically, ZEDs within the same squad will spawn with one another.*
+When reading a SpawnCycle, CD iterates through the Squads for a given wave and attempts to spawn the ZEDs within in order. *Typically, ZEDs within the same squad will spawn with one another.*
 
 Above a Wave's Frame, the **total number of ZEDs added to the Wave** can be seen (shown in the above image as **1**). This allows you to accurately predict how many ZEDs will spawn before the cycle repeats during a wave. When using the **Analysis** tool, one can determine where to place specific ZEDs so that they spawn at a particular point in the wave (based on the size of the wave).
 
