@@ -3,8 +3,7 @@
 # SpawnCycle Creation
 
 ## Overview
-When opening SpawnCycler, the initial interface you are presented with is the Main interface.
-This is where you can Create and Edit SpawnCycles and where a majority of interaction with the program takes place.
+When opening SpawnCycler, the initial interface you are presented with is the Main interface. This is where you can Create and Edit SpawnCycles and where a majority of interaction with the program takes place.
 
 ![alternate_text](https://i.imgur.com/pWy4ol6.png)
 
@@ -44,13 +43,15 @@ Finally, the **Autosave Toggle** allows you to toggle Autosave functionality off
 ## Managing Waves & Squads
 ### Adding Waves
 When starting from scratch, the **Wave Definitions Pane** will be blank, with an **Add Wave** button at the very top.
+
 Clicking this button creates a new **Wave Frame** and adds a new wave to your SpawnCycle.
 
 ![alternate_text](https://i.imgur.com/eI0yMG5.png)
 **Figure 3** - Wave Frame
 
 ```
-Note that a valid SpawnCycle MUST have either 4, 7, or 10 Waves! SpawnCycler will warn you if you attempt to save a SpawnCycle of invalid length.
+Note that a valid SpawnCycle MUST have either 4, 7, or 10 Waves!
+SpawnCycler will warn you if you attempt to save a SpawnCycle of invalid length.
 ```
 
 #### Wave Options
@@ -61,18 +62,24 @@ Each Wave Frame has a set of Wave Options located to the left of the frame. Thes
 **Figure 4** - Wave Options
 
 To shift a wave up or down, use the up and down arrow buttons.
+
 To remove a wave, click the red "X". All ZED data will be lost!
+
 To clear a wave of all ZEDs, click the eraser button. All ZED data will be lost!
 
 ### Adding & Removing ZEDs
 To add ZEDs to the newly-created wave, simply **click and drag** an icon from the **ZED Pane** and place it into the Wave Frame.
+
 The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are.
+
 This is called a **Squad**. The inner-most box that houses a Squad's ZEDs is called the **Squad Frame**. This is shown as **2** in the below image.
 
 ZEDs can also be added by clicking the **"+"** button to the right of each ZED's counter. The counter itself can also be directly typed into to set an amount.
 
 ```
-Note that Squads have a maximum capacity of 10 ZEDs! After a Squad has reached capacity, it's border will turn red and it will no longer accept new ZEDs.
+Note that Squads have a maximum capacity of 10 ZEDs!
+After a Squad has reached capacity, it's border will turn red and it will no
+longer accept new ZEDs.
 ```
 
 To *remove* ZEDs from a Squad, simply click and drag the ZED's icon out of the Squad. This action removes exactly one ZED. Additionally, the **"-"** button can be clicked, which is found to the left of the ZED's counter. Similarly with adding, ZEDs can also be removed from a squad by typing a lower value than what is present.
@@ -84,12 +91,14 @@ To remove **all** of a specific ZED from a Squad, simply right click on the ZED'
 **Figure 5** - A Basic ZED Squad
 
 When reading a SpawnCycle, CD iterates through the Squads for a given wave and attempts to spawn the ZEDs within in order.
+
 *Typically, ZEDs within the same squad will spawn with one another.*
 
 Above a Wave's Frame, the **total number of ZEDs added to the Wave** can be seen (shown in the above image as **1**). This allows you to accurately predict how many ZEDs will spawn before the cycle repeats during a wave. When using the **Analysis** tool, one can determine where to place specific ZEDs so that they spawn at a particular point in the wave (based on the size of the wave).
 
 ### Reorganizing ZEDs/Squads
 ZEDs can also be dragged *between Squads* and even to other waves to reorganize them.
+
 The placement of the ZED depends on where it was dragged:
 - Dragging the ZED onto another Squad Frame moves the ZED to that Squad
 - Dragging the ZED onto another Wave Frame moves the ZED to that Wave as a new Squad
