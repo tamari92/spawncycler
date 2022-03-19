@@ -4,7 +4,7 @@
 by Tamari
 
 #### Current Version
-1.2
+1.3
 
 #### Contact
 - Discord: Tamari#6292
