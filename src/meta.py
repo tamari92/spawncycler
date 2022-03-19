@@ -37,6 +37,7 @@ def init_metadict():
                  'should_warn_zedset': True,
                  'should_warn_gensettings': True,
                  'should_warn_cyclelength': True,
+                 'should_warn_emptywaves': True,
                  'autosave_enabled': True,
                  'autosave_interval': 600,
                  'save_json_default_target': 0, # 0 always ask, 1 = adaptive (match length), 2 = preferred med, 3 = preferred long

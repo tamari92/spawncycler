@@ -35,12 +35,13 @@ import json
 
 _DEF_FONT_FAMILY = 'Consolas'
 _WINDOWSIZE_SETTINGS_W = 500
-_WINDOWSIZE_SETTINGS_H = 500
+_WINDOWSIZE_SETTINGS_H = 540
 
 # Settings stuff
 setting_tooltips = {'should_warn_zedset': 'Display a warning when changing to a ZED Set that is not officially supported by most CD builds.',
                     'should_warn_gensettings': 'Display a warning when using Generator settings that are not officially supported by most CD builds.',
                     'should_warn_cyclelength': 'Display a warning when saving a SpawnCycle of invalid length.',
+                    'should_warn_emptywaves': 'Display a warning when saving a SpawnCycle that contains empty waves.',
                     'autosave_enabled': 'Toggles Autosave functionality.\n\nAn autosave can only occur if:\n1. Autosave is enabled (see above)\n2. The file has a name (it has been saved before)\n3. The file has unsaved changes',
                     'autosave_interval': 'The interval at which SpawnCycler will autosave your work.\nGiven value is in seconds.\n\nAn autosave can only occur if:\n1. Autosave is enabled (see above)\n2. The file has a name (it has been saved before)\n3. The file has unsaved changes',
                     'save_json_default_target': 'For JSON SpawnCycles only.\nSets the default GameLength that SpawnCycler will save data into when manually saving:\n\nAlways Ask  -  Always ask for confirmation whenever multiple destinations are available.\nAdaptive  -  Assign the SpawnCycle to the closest compatible GameLength.\nPreferred Medium  -  Attempt to assign the SpawnCycle to the Medium GameLength. Defaults to Adaptive if this is not possible for any reason.\nPreferred Long  -  Attempt to assign the SpawnCycle to the Long GameLength. Defaults to Adaptive if this is not possible for any reason.\n\nNote that for Autosaving, SpawnCycler attempts to assign the SpawnCycle to the last opened or saved to slot, and uses the Adaptive setting if this is not possible.',
@@ -51,6 +52,7 @@ setting_tooltips = {'should_warn_zedset': 'Display a warning when changing to a 
 setting_nicenames = {'should_warn_zedset': 'Warn when using custom ZED sets',
                       'should_warn_gensettings': 'Warn when using custom Generator settings',
                       'should_warn_cyclelength': 'Warn when saving invalid length',
+                      'should_warn_emptywaves': 'Warn when saving empty waves',
                       'autosave_enabled': 'Autosave Enabled',
                       'autosave_interval': 'Autosave Interval',
                       'save_json_default_target': 'Default JSON Manual Save Length',
@@ -258,6 +260,10 @@ class SettingsDialog(object):
         should_warn_cyclelength_frame, should_warn_cyclelength_children = self.create_checkbox_field(f"{setting_nicenames['should_warn_cyclelength']}   ", 'should_warn_cyclelength', setting_tooltips['should_warn_cyclelength'])
         should_warn_cyclelength_children['Checkbox'].toggled.connect(partial(self.commit_checkbox, should_warn_cyclelength_children['Checkbox'], 'should_warn_cyclelength'))
 
+        # Set up Empty Wave warning
+        should_warn_emptywaves_frame, should_warn_emptywaves_children = self.create_checkbox_field(f"{setting_nicenames['should_warn_emptywaves']}   ", 'should_warn_emptywaves', setting_tooltips['should_warn_emptywaves'])
+        should_warn_emptywaves_children['Checkbox'].toggled.connect(partial(self.commit_checkbox, should_warn_emptywaves_children['Checkbox'], 'should_warn_emptywaves'))
+
         # Set up Autosave Enabled
         autosave_enabled_frame, autosave_enabled_children = self.create_checkbox_field(f"{setting_nicenames['autosave_enabled']}   ", 'autosave_enabled', setting_tooltips['autosave_enabled'])
         autosave_enabled_children['Checkbox'].toggled.connect(partial(self.commit_checkbox, autosave_enabled_children['Checkbox'], 'autosave_enabled'))
@@ -289,6 +295,7 @@ class SettingsDialog(object):
         self.scrollarea_layout.addWidget(should_warn_zedset_frame)
         self.scrollarea_layout.addWidget(should_warn_gensettings_frame)
         self.scrollarea_layout.addWidget(should_warn_cyclelength_frame)
+        self.scrollarea_layout.addWidget(should_warn_emptywaves_frame)
         self.scrollarea_layout.addWidget(autosave_enabled_frame)
         self.scrollarea_layout.addWidget(autosave_interval_frame)
         self.scrollarea_layout.addWidget(save_json_default_target_frame)

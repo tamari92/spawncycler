@@ -2146,7 +2146,10 @@ class Ui_MainWindow(object):
         waves = []
         for line in lines:
             line = line.replace(' ', '').replace('SpawnCycleDefs=', '').replace('\n', '')
-            squads = [parse.format_squad(squad) for squad in line.split(',')] # Convert squads to dict format
+            if len(line) > 0:
+                squads = [parse.format_squad(squad) for squad in line.split(',')] # Convert squads to dict format
+            else:
+                squads = []
             waves.append(squads)
 
         num_waves, num_squads, num_zeds = self.populate_waves(waves) # Load up the waves!
@@ -2250,6 +2253,22 @@ class Ui_MainWindow(object):
             # Check if the user clicked "Don't show this again"
             if diag.checkbox.checkState(): # We know this will exist since checkbox=True
                 meta.set_keyvalue('should_warn_cyclelength', False) # Don't ever show the dialog again
+
+        # Warn the user if they have empty waves
+        num_empty = sum([1 if len(wave['Squads']) <= 0 else 0 for wave in self.wavedefs])
+        if not autosave and num_empty > 0 and meta.get_keyvalue('should_warn_emptywaves'):
+            diag_title = 'WARNING'
+            diag_text = f"\nYour SpawnCycle was found to contain {num_empty} empty wave(s).\n\nIf you continue, your SpawnCycle will not load in-game!\n"
+            x = self.central_widget.mapToGlobal(self.central_widget.rect().center()).x()-200 # Anchor dialog to center of window
+            y = self.central_widget.mapToGlobal(self.central_widget.rect().center()).y()
+            diag = widget_helpers.create_simple_dialog(self.central_widget, diag_title, diag_text, x, y, button=True, checkbox=True)
+            diag.setWindowIcon(QtGui.QIcon('img/icon_warning.png'))
+
+            diag.exec_() # Show the dialog
+
+            # Check if the user clicked "Don't show this again"
+            if diag.checkbox.checkState(): # We know this will exist since checkbox=True
+                meta.set_keyvalue('should_warn_emptywaves', False) # Don't ever show the dialog again
 
         # Ask user for filename to save as
         if file_browser or self.filename == 'Untitled':
