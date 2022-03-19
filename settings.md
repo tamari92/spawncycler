@@ -61,7 +61,7 @@ Sets the minimum amount of ZEDs added when creating a new Squad via dragging. Pe
 Sets the default GameLength used by the Analyzer.
 
 The available options are:
-- **Last Used**: Use the last GameLength that was selected when the Analyzer was closed. If this is the first time opening the Analyzer, use the Adaptive setting.
+- **Last Used**: Use the last GameLength that was selected when the Analyzer was closed. If this is the first time opening the Analyzer, use the *Preferred Long* setting.
 - **Adaptive**: Use the closest GameLength to the currently-defined amount of waves.
 - **Preferred Short**: Use the 4 Wave length whenever possible, otherwise use the *Adaptive* setting.
 - **Preferred Medium**: Use the 7 Wave length whenever possible, otherwise use the *Adaptive* setting.
