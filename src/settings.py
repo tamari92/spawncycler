@@ -165,7 +165,7 @@ class SettingsDialog(object):
 
         return frame, children
 
-    # Called when a generator textbox is edited
+    # Called when a textbox is edited
     def edit_textbox(self, textbox):
         if not textbox.text().isnumeric(): # NaN somehow (for example the field is empty)
             return
@@ -184,10 +184,6 @@ class SettingsDialog(object):
             textbox.setText(str(meta.get_keyvalue(key)))
             return
 
-        # Same value as we already have set. Do nothing
-        if int(textbox.text()) == meta.get_keyvalue(key):
-            return
-
         val = int(textbox.text())
 
         # Set the value of the textfield
@@ -198,6 +194,11 @@ class SettingsDialog(object):
 
         # Set the value
         textbox.setText(str(val))
+
+        # Same value as we already have set. Do nothing
+        if int(textbox.text()) == meta.get_keyvalue(key):
+            return
+
         meta.set_keyvalue(key, val)
 
         if key == 'autosave_interval':
