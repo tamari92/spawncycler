@@ -227,10 +227,10 @@ def parse_syntax_export(filename, wavedefs):
     if len(wavedefs) == 0: # Cannot save empty file
         errors.append(f"{parse_prefix} Cannot save an empty SpawnCycle! Define some waves first.")
 
-    for i in range(len(wavedefs)):
-        wave = wavedefs[i]
-        if len(wave['Squads']) < 1: # No squads to parse!
-            errors.append(f"{parse_prefix}wave {i+1}: No squads found to parse. Wave is empty!")
+    #for i in range(len(wavedefs)):
+    #    wave = wavedefs[i]
+    #    if len(wave['Squads']) < 1: # No squads to parse!
+    #        errors.append(f"{parse_prefix}wave {i+1}: No squads found to parse. Wave is empty!")
 
     return errors
 
@@ -248,9 +248,15 @@ def parse_syntax_import(filename, lines):
 
     errors = []
 
-    #if len(waves) not in [4, 7, 10]: # File must be 4, 7, or 10 lines (waves) long
-    #    errors.append(f"{parse_prefix}{len(waves):,d} lines found in file '{filename}'.\nFile length must be 4, 7, or 10 lines!")
-    #    return errors # Just leave after this error because it's likely there will be hundreds of syntax errors
+    # File is completely empty
+    if len(waves) == 0:
+        errors.append(f"No valid definitions found in file '{filename}'.\nFile is empty!")
+        return errors # Just leave after this error because it's likely there will be hundreds of syntax errors
+
+    # More waves defined than allowed
+    if len(waves) > 10:
+        errors.append(f"Unexpected extra data found in '{filename}'.\nDoes the file have more than 10 waves defined?")
+        return errors
 
     # Check for invalid characters or identifiers
     for i in range(len(waves)):
@@ -270,7 +276,7 @@ def parse_syntax_import(filename, lines):
         for j in range(len(squads)):
             squad = squads[j] # Current squad
             if len(squad) < 1: # Empty squad found
-                errors.append(f"{parse_prefix}{line_num} Found empty/missing squad definition ({j+1}).")
+                #errors.append(f"{parse_prefix}{line_num} Found empty/missing squad definition ({j+1}).")
                 continue
 
             # Check for bad symbols first
