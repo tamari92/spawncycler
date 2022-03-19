@@ -13,12 +13,13 @@ The following settings are available:
 1. Warn when using custom ZED sets
 2. Warn when using custom Generator settings
 3. Warn when saving invalid length
-4. Autosave Enabled
-5. Autosave Interval
-6. Default JSON Manual Save Length
-7. Default Manual Save Filetype
-8. New Squad Minimum ZED Amount
-9. Default Analyze Sample GameLength
+4. Warn when saving empty waves
+5. Autosave Enabled
+6. Autosave Interval
+7. Default JSON Manual Save Length
+8. Default Manual Save Filetype
+9. New Squad Minimum ZED Amount
+10. Default Analyze Sample GameLength
 
 ### Warn when using custom ZED sets
 Sets whether or not SpawnCycler should warn when switching to non-standard ZED sets.
@@ -28,6 +29,9 @@ Sets whether or not SpawnCycler should warn when using non-standard Generator se
 
 ### Warn when saving invalid length
 Sets whether or not SpawnCycler should warn when saving a SpawnCycle that is not exactly 4, 7, or 10 waves long.
+
+### Warn when saving empty waves
+Sets whether or not SpawnCycler should warn when saving a SpawnCycle that has empty waves.
 
 ### Autosave Enabled
 Toggles Autosave functionality. An autosave is only possible if the file is named, has unsaved changes, and autosave is enabled.
