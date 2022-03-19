@@ -5,7 +5,7 @@
 ## Overview
 The `Program Settings` window allows the user to alter SpawnCycler's behavior(s).
 
-![alternate_text](https://i.imgur.com/Y4FzPan.png)
+![alternate_text](https://i.imgur.com/kDVeNFo.png)
 
 **Figure 1** - Settings Interface
 
