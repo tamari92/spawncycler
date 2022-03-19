@@ -901,16 +901,16 @@ class AnalyzeDialog(object):
         # Set up GameLength
         preferred_length = meta.get_keyvalue('analyze_default_length')
         numwaves = {0: 4, 1: 7, 2: 10} # Last used
-        if preferred_length == 0 and self.parent.last_analyze_preset is not None and len(self.parent.wavedefs) <= numwaves[self.parent.last_analyze_preset['GameLength']]:
+        if (preferred_length == 0) and (self.parent.last_analyze_preset is not None) and (len(self.parent.wavedefs) <= numwaves[self.parent.last_analyze_preset['GameLength']]):
             gamelength_cbox.setCurrentIndex(self.parent.last_analyze_preset['GameLength'])
             self.params.update({'GameLength': self.parent.last_analyze_preset['GameLength']})
-        elif preferred_length == 2 and len(self.parent.wavedefs) <= 4: # Preferred Short
+        elif (preferred_length == 2) and (len(self.parent.wavedefs) <= 4): # Preferred Short
             gamelength_cbox.setCurrentIndex(0)
             self.params.update({'GameLength': 0})
-        elif preferred_length == 3 and len(self.parent.wavedefs) <= 7: # Preferred Medium
+        elif (preferred_length == 3) and (len(self.parent.wavedefs) <= 7): # Preferred Medium
             gamelength_cbox.setCurrentIndex(1)
             self.params.update({'GameLength': 1})
-        elif (preferred_length == 0 and self.parent.last_analyze_preset is None) or preferred_length == 4: # Preferred Long or last used where we don't have a last used yet
+        elif (preferred_length == 4) or (preferred_length == 0 and self.parent.last_analyze_preset is None): # Preferred Long or last used where we don't have a last used yet
             gamelength_cbox.setCurrentIndex(2)
             self.params.update({'GameLength': 2})
 
