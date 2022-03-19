@@ -68,11 +68,7 @@ To remove a wave, click the red "X". All ZED data will be lost!
 To clear a wave of all ZEDs, click the eraser button. All ZED data will be lost!
 
 ### Adding & Removing ZEDs
-To add ZEDs to the newly-created wave, simply **click and drag** an icon from the **ZED Pane** and place it into the Wave Frame.
-
-The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are.
-
-This is called a **Squad**. The inner-most box that houses a Squad's ZEDs is called the **Squad Frame**. This is shown as **2** in the below image.
+To add ZEDs to the newly-created wave, simply **click and drag** an icon from the **ZED Pane** and place it into the Wave Frame. The ZED's icon will now appear in it's own small box inside the Wave Frame, along with a number indicating how many of that ZED there are. This is called a **Squad**. The inner-most box that houses a Squad's ZEDs is called the **Squad Frame**. This is shown as **2** in the below image.
 
 ZEDs can also be added by clicking the **"+"** button to the right of each ZED's counter. The counter itself can also be directly typed into to set an amount.
 
