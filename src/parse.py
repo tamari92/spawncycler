@@ -102,7 +102,7 @@ def format_zed_id(id, albino=False, raged=False):
     elif id in zed_tokens['Abomination Spawn']:
         return 'Abomination Spawn'
     elif id in zed_tokens['Dr. Hans Volter']:
-        return 'Dr. Hans. Volter'
+        return 'Dr. Hans Volter'
     elif id in zed_tokens['Patriarch']:
         return 'Patriarch'
     elif id in zed_tokens['King Fleshpound']:
