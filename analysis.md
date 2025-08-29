@@ -18,7 +18,6 @@ The **Analysis Results** show the results of the simulation and include the foll
 Each of these include Pie and Line Charts that help visually reinforce the data.
 
 The Simulation Data is first shown for the SpawnCycle as a whole (summary data), followed by Simulation Data on a `per-wave` basis.
-
 The **Analysis Parameters** give you the ability to control the simulation, by setting pre-determined criteria.
 
 ![alternate_text](https://i.imgur.com/sSyeGjn.png)
@@ -41,9 +40,10 @@ The following parameters can be set:
 The Difficulty level of the game (Normal // Hard // Suicidal // Hell on Earth)
 
 #### Wave Size Fakes
-The `WaveSizeFakes` value represents the number of Human players in the current Squad. Higher fakes increases the number of ZEDs in the wave. Typically, in Vanilla KF2, this value scales up and down accordingly with the number of players in the server. CD allows you to set a **"Faked"** value, which locks it at a specific number. SpawnCycler also utilizes this behavior. The `WaveSizeFakes` setting is used in conjunction with `FakesMode=ignore_humans`, which means that the WSF value is not influenced by the actual number of players at all.
+The `WaveSizeFakes` (WSF) value represents the number of Human players in the current Squad. Higher player counts increases the number of ZEDs in the wave. In Vanilla KF2, this value scales up and down accordingly as players join and leave the game. CD allows you to set a **"faked"** value, which locks it at a specific number. This allows for making the wave much smaller/larger than is normally possible in the vanilla game for a given amount of players. In SpawnCycler, the WSF value operates exactly the same, increasing/decreasing the size of the waves during the simulation, which impacts the final totals for most statistics.
 
-Min: **1** // Max: **255**
+Min Value: **1**
+Max Value: **255**
 
 #### Overview Only
 This parameter causes all **per-wave Analysis Data** to be excluded from the report. Only the SpawnCycle summary data will be shown.
@@ -57,7 +57,8 @@ Tells SpawnCycler whether or not it should analyze the wave and produce an **Est
 #### Max Monsters
 Used in conjunction with the `Analyze Difficulty` setting. Tells SpawnCycler the maximum number of ZEDs that can exist on the battlefield at any given time. Increasing this value means more ZEDs can be alive at once, which greatly impacts the overall difficulty of the wave(s).
 
-Min: **1** // Max: **512**
+Min Value: **1**
+Max Value: **512**
 
 #### Display Charts
 Controls whether or not SpawnCycler should produce Pie charts representing the Group, Type, and Categorical total data for the wave. Does not affect whether or not the Difficulty chart is drawn. Use the `Analyze Difficulty` flag for that instead.
@@ -65,7 +66,7 @@ Controls whether or not SpawnCycler should produce Pie charts representing the G
 ## How the Simulation Works
 This section details how SpawnCycler simulates waves.
 
-A **SpawnCycle** is simply a list of ZED squads to spawn during a specific wave. Both CD and SpawnCycler simulate the SpawnCycle in the following way:
+A **SpawnCycle** is a list of ZED squads to spawn during a specific wave. Both CD and SpawnCycler simulate the SpawnCycle in the following way:
 - Determine the **Total Number of ZEDs to spawn**, based on `Difficulty`, `GameLength`, and the current `WaveSizeFakes` settings
 - Spawn ZEDs in order from the SpawnCycle until reaching the end of the cycle
 - Loop back around to the beginning of the SpawnCycle and repeat
@@ -309,10 +310,7 @@ Abomination Spawn: 200
 Matriarch: 10000
 ```
 
-As the wave is simulated, a list is kept of all of the ZEDs that are currently "spawned". The maximum capacity of this list is directly influenced by the `MaxMonsters` setting. The higher the `MaxMonsters` is, the more ZEDs that can be alive at once.
-
-
-The sum of all ZEDs' Point values in the wave gives the `TotalZEDScore`.
+As the wave is simulated, a list is kept of all of the ZEDs that are currently "spawned". The maximum capacity of this list is directly influenced by the `MaxMonsters` setting. The higher the `MaxMonsters` is, the more ZEDs that can be alive at once. The sum of all ZEDs' Point values in the wave gives the `TotalZEDScore`.
 
 The game's `Difficulty` factors into the calculation as well, since on higher difficulties, ZEDs both deal more damage and have more health. Some ZEDs, like the Husk, also have alternate attacks.
 ```
@@ -334,22 +332,22 @@ These two intermediate values come together to form the `WaveCompositionModifier
 `WaveCompositionModifier = TotalZEDScore x ZEDDifficultyModifier`
 
 As an example, the `WaveCompositionModifier` at an arbitrary point of a wave of a Suicidal match might be `156,000.00`.
-##### Putting it all together
+
+#### Putting it all together
 With the intermediate values calculated, we can now determine the `DifficultyScore` for the current Simulation iteration:
 
 `DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x WaveCompositionModifier`
 
 Suppose `WaveSizeModifier=1.09375`, `WaveDifficultyModifier=1.125`, and `WaveCompositionModifier=156,000.00`. This would give:
 
-`DifficultyScore = 1.10 x 2.292 x 156,000.00 = 393,307.20`
+`DifficultyScore = 1.09375 x 1.125 x 156,000.00 = 191,953.125`
 
 There is a `DifficultyScore` cap of `750,000.00`, so if this value were higher, it would be reduced to fit within that range.
 
 Next, suppose the current iteration were `61/273` (61 ZEDs spawned so far / 273 ZEDs to spawn total).
 
 This would imply that this `DifficultyScore` corresponds to `WaveProgress = (61 / 273) x 100.0 = 22.3%` through the wave.
-
-This forms a pair (x, y) of `(22.3, 393,307.20)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
+This forms a pair (x, y) of `(22.3, 191,953.125)`, which implies that `DifficultyScore` is mapped on the **Y-axis** while `WaveProgress` is mapped on the **X-axis**. This allows `SpawnCycler` to create the **Estimated Difficulty Chart**.
 
 Note that this chart is also created for the entire SpawnCycle, using the average `DifficultyScore` of each wave.
 
