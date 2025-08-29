@@ -46,7 +46,9 @@ CD allows you to set a **"faked"** value, via `WaveSizeFakes` (WSF), which simul
 
 In SpawnCycler, the WSF value operates exactly the same, increasing/decreasing the size of the waves during the simulation, which impacts the final totals for most statistics.
 
+
 Min Value: **1**
+
 Max Value: **255**
 
 #### Overview Only
@@ -61,7 +63,9 @@ Tells SpawnCycler whether or not it should analyze the wave and produce an **Est
 #### Max Monsters
 Used in conjunction with the `Analyze Difficulty` setting. Tells SpawnCycler the maximum number of ZEDs that can exist on the battlefield at any given time. Increasing this value means more ZEDs can be alive at once, which greatly impacts the overall difficulty of the wave(s).
 
+
 Min Value: **1**
+
 Max Value: **512**
 
 #### Display Charts
