@@ -126,7 +126,9 @@ for `WaveSizeFakes=16` the `WaveSizeMultiplier` would be `4.50 + ((16 - 6) x 0.2
 #### Calculating the Number of ZEDs to Spawn
 These three values are used to calculate the **Total Number of ZEDs to Spawn**, described by the formula:
 
-`NumZEDsToSpawn = DifficultyModifier x WaveSizeMultiplier x BaseNumZEDs`
+```
+NumZEDsToSpawn = DifficultyModifier x WaveSizeMultiplier x BaseNumZEDs
+```
 
 For example..
 
@@ -249,7 +251,9 @@ This modifier follows a trend in which longer waves (due to higher WSF) results 
 ##### WaveDifficultyModifier
 The value of the `WaveDifficultyModifier` is determined directly by the game's `Difficulty` and `GameLength`:
 
-`WaveDifficultyModifier = (1.50 x DoshModifier) + (0.25 / (WaveNum / MaxWave))`
+```
+WaveDifficultyModifier = (1.50 x DoshModifier) + (0.25 / (WaveNum / MaxWave))
+```
 
 The `DoshModifier` depends on the Difficulty of the game. In general, higher difficulties have a higher `DoshModifier` because ZEDs award less money:
 ```
@@ -329,7 +333,9 @@ Hell on Earth: 3.00
 ```
 The `ZEDDifficultyModifier` is found through the formula:
 
-`ZEDDifficultyModifier = 1.00 + (0.50 x DifficultyMod)`
+```
+ZEDDifficultyModifier = 1.00 + (0.50 x DifficultyMod)
+```
 
 So for example..
 
@@ -337,18 +343,24 @@ On a Hard difficulty match, the `ZEDDifficultyModifier` would be `1.00 + (0.50 x
 
 These two intermediate values come together to form the `WaveCompositionModifier`:
 
-`WaveCompositionModifier = TotalZEDScore x ZEDDifficultyModifier`
+```
+WaveCompositionModifier = TotalZEDScore x ZEDDifficultyModifier
+```
 
 As an example, the `WaveCompositionModifier` at an arbitrary point of a wave of a Suicidal match might be `156,000.00`.
 
 #### Putting it all together
 With the intermediate values calculated, we can now determine the `DifficultyScore` for the current Simulation iteration:
 
-`DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x WaveCompositionModifier`
+```
+DifficultyScore = WaveSizeModifier x WaveDifficultyModifier x WaveCompositionModifier
+```
 
 Suppose `WaveSizeModifier=1.09375`, `WaveDifficultyModifier=1.125`, and `WaveCompositionModifier=156,000.00`. This would give:
 
-`DifficultyScore = 1.09375 x 1.125 x 156,000.00 = 191,953.125`
+```
+DifficultyScore = 1.09375 x 1.125 x 156,000.00 = 191,953.125
+```
 
 There is a `DifficultyScore` cap of `750,000.00`, so if this value were higher, it would be reduced to fit within that range.
 
