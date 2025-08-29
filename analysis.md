@@ -349,7 +349,8 @@ WaveCompositionModifier = TotalZEDScore x ZEDDifficultyModifier
 
 As an example, the `WaveCompositionModifier` at an arbitrary point of a wave of a Suicidal match might be `156,000.00`.
 
-#### Putting it all together
+
+### Putting it all together
 With the intermediate values calculated, we can now determine the `DifficultyScore` for the current Simulation iteration:
 
 ```
