@@ -40,7 +40,11 @@ The following parameters can be set:
 The Difficulty level of the game (Normal // Hard // Suicidal // Hell on Earth)
 
 #### Wave Size Fakes
-The `WaveSizeFakes` (WSF) value represents the number of Human players in the current Squad. Higher player counts increases the number of ZEDs in the wave. In Vanilla KF2, this value scales up and down accordingly as players join and leave the game. CD allows you to set a **"faked"** value, which locks it at a specific number. This allows for making the wave much smaller/larger than is normally possible in the vanilla game for a given amount of players. In SpawnCycler, the WSF value operates exactly the same, increasing/decreasing the size of the waves during the simulation, which impacts the final totals for most statistics.
+In Vanilla KF2, the size of the waves depends on the current amount of Human players connected to the session. Naturally, this value scales up and down accordingly as players join and leave the game.
+
+CD allows you to set a **"faked"** value, via `WaveSizeFakes` (WSF), which simulates locking the player count at a specific value. This allows for making the wave much smaller/larger than is normally possible in the vanilla game for any given amount of players.
+
+In SpawnCycler, the WSF value operates exactly the same, increasing/decreasing the size of the waves during the simulation, which impacts the final totals for most statistics.
 
 Min Value: **1**
 Max Value: **255**
